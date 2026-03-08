@@ -27,7 +27,6 @@
             --danger: #F1416C;
             --success: #50CD89;
             --border-color: #E4E6EF;
-            --input-bg: #ffffff;
             --border-radius: 12px;
             --box-shadow: 0px 10px 30px 0px rgba(49, 27, 94, 0.05);
         }
@@ -84,6 +83,10 @@
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;}
         .admin-table th { background: var(--bg-light); color: var(--text-muted); padding: 12px; text-align: left; font-size: 0.9rem; font-weight: 600; border-bottom: 1px solid var(--border-color);}
         .admin-table td { padding: 12px; border-bottom: 1px dashed var(--border-color); font-size: 0.95rem;}
+        
+        .action-btns { display: flex; justify-content: center; gap: 8px; }
+        .btn-edit { background: #FFF3E0; color: var(--theme-orange); border: 1px solid #FFE0B2; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-family: 'Sarabun'; font-weight: 600; transition: 0.3s;}
+        .btn-edit:hover { background: var(--theme-orange); color: white; }
         .btn-delete { background: #FFEBEE; color: var(--danger); border: 1px solid #FFCDD2; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-family: 'Sarabun'; font-weight: 600; transition: 0.3s;}
         .btn-delete:hover { background: var(--danger); color: white; }
 
@@ -105,6 +108,18 @@
         .btn-save-master svg { fill: currentColor; width: 24px; height: 24px;}
 
         .loading-text { text-align: center; color: var(--theme-purple); font-weight: bold; padding: 20px; }
+
+        /* ================= MODAL EDIT ADMIN ================= */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-box { background: white; padding: 30px; border-radius: 20px; width: 350px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); text-align: center; position: relative; }
+        .modal-title { font-size: 1.4rem; font-weight: 700; color: var(--theme-purple); margin: 0 0 25px 0; }
+        .form-control { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid #E4E6EF; border-radius: 10px; font-family: 'Sarabun'; font-size: 1rem; box-sizing: border-box; background: #F9F9F9; transition: 0.2s; text-align: center;}
+        .form-control:focus { border-color: var(--theme-purple); outline: none; background: white; }
+        .btn-submit-edit { width: 100%; padding: 14px; background: var(--theme-purple); color: white; border: none; border-radius: 10px; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: 'Sarabun'; }
+        .btn-submit-edit:hover { background: var(--theme-orange); }
+        .btn-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5rem; color: #A1A5B7; cursor: pointer; transition: 0.2s; line-height: 1;}
+        .btn-close:hover { color: var(--danger); }
+
     </style>
 </head>
 <body>
@@ -222,6 +237,18 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-box">
+            <button class="btn-close" onclick="closeEditModal()">&times;</button>
+            <h3 class="modal-title">แก้ไขบัญชี</h3>
+            <input type="hidden" id="editIndex">
+            <input type="text" id="editName" class="form-control" placeholder="ชื่อผู้ดูแลระบบ">
+            <input type="text" id="editId" class="form-control" placeholder="Username">
+            <input type="text" id="editPass" class="form-control" placeholder="Password">
+            <button class="btn-submit-edit" id="btnSubmitEdit" onclick="saveEditAdmin()">บันทึกการแก้ไข</button>
+        </div>
+    </div>
+
     <script>
         // ⚠️ วาง Web App URL ที่นี่ให้ตรงกัน
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec";
@@ -239,7 +266,7 @@
             document.getElementById('phase' + currentPhase).checked = true;
             updateBoxHighlight(currentPhase);
 
-            // ดึงรายชื่อ Admin จาก Google Apps Script
+            // ดึงรายชื่อ Admin
             fetchAdmins();
         }
 
@@ -254,7 +281,7 @@
         }
 
         // =====================================
-        // ระบบจัดการ Admin ดึงข้อมูลจากเซิร์ฟเวอร์
+        // ระบบจัดการ Admin
         // =====================================
         function fetchAdmins() {
             fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'getAdmins' }) })
@@ -280,7 +307,10 @@
                         <td>${admin.id}</td>
                         <td>${admin.pass}</td>
                         <td style="text-align: center;">
-                            <button class="btn-delete" onclick="deleteAdmin(${index})">ลบบัญชี</button>
+                            <div class="action-btns">
+                                <button class="btn-edit" onclick="openEditModal(${index})">แก้ไข</button>
+                                <button class="btn-delete" onclick="deleteAdmin(${index})">ลบ</button>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -293,9 +323,7 @@
             const pass = document.getElementById('newAdminPass').value.trim();
             const btn = document.getElementById('btnAddAdmin');
 
-            if(!name || !id || !pass) {
-                return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
-            }
+            if(!name || !id || !pass) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
 
             btn.innerHTML = "กำลังเพิ่ม...";
             btn.disabled = true;
@@ -309,7 +337,7 @@
             .then(res => res.json())
             .then(result => {
                 if(result.status === 'success') {
-                    adminUsers = result.data; // อัปเดต Array ใหม่ที่ส่งกลับมาจากเซิร์ฟเวอร์
+                    adminUsers = result.data; 
                     renderAdminList();
                     document.getElementById('newAdminName').value = '';
                     document.getElementById('newAdminId').value = '';
@@ -319,15 +347,11 @@
                 }
             })
             .catch(err => alert("เกิดข้อผิดพลาดในการเชื่อมต่อ"))
-            .finally(() => {
-                btn.innerHTML = "เพิ่มบัญชี";
-                btn.disabled = false;
-            });
+            .finally(() => { btn.innerHTML = "เพิ่มบัญชี"; btn.disabled = false; });
         }
 
         function deleteAdmin(index) {
             if(confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบบัญชี "${adminUsers[index].name}" ?`)) {
-                
                 fetch(GAS_URL, { 
                     method: 'POST', 
                     body: JSON.stringify({ action: 'deleteAdmin', index: index }) 
@@ -345,7 +369,57 @@
             }
         }
 
-        // บันทึกการตั้งค่าปีการศึกษา / Phase / เวลา ลง Local Storage
+        // =====================================
+        // ระบบแก้ไข Admin (Modal)
+        // =====================================
+        function openEditModal(index) {
+            const admin = adminUsers[index];
+            document.getElementById('editIndex').value = index;
+            document.getElementById('editName').value = admin.name;
+            document.getElementById('editId').value = admin.id;
+            document.getElementById('editPass').value = admin.pass;
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        function saveEditAdmin() {
+            const index = document.getElementById('editIndex').value;
+            const name = document.getElementById('editName').value.trim();
+            const id = document.getElementById('editId').value.trim();
+            const pass = document.getElementById('editPass').value.trim();
+            const btn = document.getElementById('btnSubmitEdit');
+
+            if(!name || !id || !pass) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+
+            btn.innerHTML = "กำลังบันทึก... ⏳";
+            btn.disabled = true;
+
+            const updatedAdmin = { name: name, id: id, pass: pass };
+
+            fetch(GAS_URL, { 
+                method: 'POST', 
+                body: JSON.stringify({ action: 'editAdmin', index: index, updatedAdmin: updatedAdmin }) 
+            })
+            .then(res => res.json())
+            .then(result => {
+                if(result.status === 'success') {
+                    adminUsers = result.data; 
+                    renderAdminList();
+                    closeEditModal();
+                } else {
+                    alert(result.message);
+                }
+            })
+            .catch(err => alert("เกิดข้อผิดพลาดในการเชื่อมต่อ"))
+            .finally(() => { btn.innerHTML = "บันทึกการแก้ไข"; btn.disabled = false; });
+        }
+
+        // =====================================
+        // บันทึกการตั้งค่าระบบอื่นๆ
+        // =====================================
         function saveSettings() {
             const selectedPhase = document.querySelector('input[name="systemPhase"]:checked').value;
             const activeYear = document.getElementById('activeYear').value;
