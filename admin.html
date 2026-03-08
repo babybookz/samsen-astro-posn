@@ -21,7 +21,6 @@
             --kt-border-color: #E4E6EF; --kt-border-radius: 0.75rem; --kt-box-shadow: 0px 0px 20px 0px rgba(76, 87, 125, 0.1);
         }
         body { font-family: 'Sarabun', sans-serif; background: var(--kt-body-bg); padding: 30px; margin: 0; }
-        
         .container { background: #ffffff; padding: 2rem; border-radius: var(--kt-border-radius); box-shadow: var(--kt-box-shadow); max-width: 1300px; margin: 0 auto; box-sizing: border-box; }
         
         .header-title { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--kt-border-color); padding-bottom: 15px; margin-bottom: 20px; }
@@ -32,13 +31,11 @@
         .btn-back-header { background: #F5F8FA; color: var(--kt-text-dark); padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: 0.2s; }
         .btn-back-header:hover { background: #E4E6EF; }
 
-        /* ระบบ Tabs */
         .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
         .tab-btn { padding: 12px 25px; border: none; background: #F5F8FA; color: var(--kt-text-muted); font-size: 1.05rem; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.2s; font-family: 'Sarabun'; }
         .tab-btn:hover { background: #E4E6EF; color: var(--kt-text-dark); }
         .tab-btn.active { background: var(--kt-primary); color: white; box-shadow: 0 4px 10px rgba(0, 158, 247, 0.2); }
 
-        /* การจัดการตาราง */
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 1000px; }
         th { background: #F5F8FA; color: var(--kt-text-muted); font-size: 0.85rem; text-transform: uppercase; font-weight: 700; padding: 15px; text-align: left; border-bottom: 1px solid var(--kt-border-color); white-space: nowrap; }
@@ -51,17 +48,13 @@
         .badge-danger { background: #FFF5F8; color: var(--kt-danger); }
         .exam-id-badge { background: #F1FAFF; color: var(--kt-primary); font-family: monospace; font-size: 1rem; letter-spacing: 1px;}
 
-        /* ปุ่มในตาราง */
-        .btn-action { padding: 8px 15px; background: var(--kt-primary); color: white; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.2s; white-space: nowrap; font-family: 'Sarabun';}
+        .btn-action { padding: 8px 15px; background: var(--kt-primary); color: white; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.2s; font-family: 'Sarabun';}
         .btn-action:hover { background: #008BD9; }
-        
-        /* ปุ่มสถานะเสร็จสิ้น */
         .btn-done { background: #A1A5B7; }
         .btn-done:hover { background: #7E8299; }
 
         .empty-state { text-align: center; padding: 40px; color: var(--kt-text-muted); font-size: 1.1rem; }
 
-        /* ระบบ Modal แบบหน้ากว้าง */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
         .modal-content { background: white; padding: 30px; border-radius: var(--kt-border-radius); width: 850px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         .modal-header { font-size: 1.25rem; font-weight: 700; margin-bottom: 20px; color: var(--kt-text-dark); border-bottom: 1px solid var(--kt-border-color); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center;}
@@ -88,6 +81,8 @@
         .btn-save-modal:hover { background: #47BE7D; }
         .btn-cancel { flex: 1; padding: 12px; background: #F5F8FA; color: var(--kt-text-muted); border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s; font-family: 'Sarabun';}
         .btn-cancel:hover { background: #E4E6EF; color: var(--kt-text-dark); }
+        
+        .loading-box { text-align: center; padding: 50px; font-size: 1.2rem; color: var(--kt-primary); font-weight: 700;}
     </style>
 </head>
 <body>
@@ -98,7 +93,7 @@
                 <div class="header-icon">📋</div>
                 <div>
                     <h2>ระบบตรวจสอบสิทธิ์ผู้สมัคร</h2>
-                    <p class="subtitle">ศูนย์สอบ สอวน. ดาราศาสตร์ โรงเรียนสามเสนวิทยาลัย (ปีการศึกษา 2569)</p>
+                    <p class="subtitle" id="pageSubtitle">ศูนย์สอบ สอวน. ดาราศาสตร์ โรงเรียนสามเสนวิทยาลัย (กำลังโหลดปีการศึกษา...)</p>
                 </div>
             </div>
             <a href="home.html" class="btn-back-header">⬅️ กลับหน้าเมนูหลัก</a>
@@ -123,7 +118,8 @@
                     </tr>
                 </thead>
                 <tbody id="applicantTable">
-                    </tbody>
+                    <tr><td colspan="7"><div class="loading-box">กำลังโหลดข้อมูล... ⏳</div></td></tr>
+                </tbody>
             </table>
         </div>
     </div>
@@ -180,83 +176,86 @@
 
                 <div class="modal-footer">
                     <button class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
-                    <button class="btn-save-modal" onclick="submitReview()">💾 บันทึกข้อมูล</button>
+                    <button class="btn-save-modal" id="btnSaveData" onclick="submitReview()">💾 บันทึกข้อมูล</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // ==========================================
-        // ส่วนจำลองฐานข้อมูลผู้สมัคร (Mock Database)
-        // ==========================================
-        let mockApplicants = [
-            { 
-                no: 1, time: '01/03/2569 09:30', idCard: '1100012345678', prefix: 'เด็กชาย', fname: 'ดาราศาสตร์', lname: 'รักเรียน', 
-                dob: '15/05/2012', phone: '0812345678', grade: 'ม.2', school: 'สามเสนวิทยาลัย', province: 'กรุงเทพมหานคร', 
-                teacher: 'ครูสมคิด', applyLevel: 'ม.ต้น', slipUrl: '#', status: 'wait', note: '', examId: '' 
-            },
-            { 
-                no: 2, time: '01/03/2569 10:15', idCard: '1100011111111', prefix: 'เด็กหญิง', fname: 'จักรวาล', lname: 'กว้างไกล', 
-                dob: '12/08/2011', phone: '0822222222', grade: 'ม.3', school: 'หอวัง', province: 'กรุงเทพมหานคร', 
-                teacher: '-', applyLevel: 'ม.ต้น', slipUrl: '#', status: 'wait', note: '', examId: '' 
-            },
-            { 
-                no: 1, time: '02/03/2569 14:15', idCard: '1100098765432', prefix: 'นาย', fname: 'วิทยาศาสตร์', lname: 'ทดสอบ', 
-                dob: '20/10/2008', phone: '0898765432', grade: 'ม.4', school: 'เตรียมอุดมศึกษา', province: 'กรุงเทพมหานคร', 
-                teacher: '-', applyLevel: 'ม.ปลาย', slipUrl: '#', status: 'pass', note: '', examId: '6920001' 
-            },
-            { 
-                no: 2, time: '05/03/2569 10:00', idCard: '1100055555555', prefix: 'นางสาว', fname: 'เนบิวลา', lname: 'สว่างตา', 
-                dob: '01/01/2009', phone: '0855555555', grade: 'ม.5', school: 'สตรีวิทยา', province: 'กรุงเทพมหานคร', 
-                teacher: 'ครูสมชาย', applyLevel: 'ม.ปลาย', slipUrl: '#', status: 'fail', note: 'ไม่ผ่านเกณฑ์: รูปสลิปโอนเงินไม่ชัดเจน', examId: '' 
-            }
-        ];
-
+        // ⚠️ วาง Web App URL ล่าสุดที่คุณ Deploy มาแล้วที่นี่
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec";
+        
+        let dbApplicants = []; // ใช้เก็บข้อมูลของจริงที่โหลดมาจากชีต
         let currentReviewIdCard = '';
-        let currentLevel = 'ม.ต้น'; // ค่าเริ่มต้นเมื่อเปิดหน้าเว็บ
+        let currentLevel = 'ม.ต้น'; 
+        let activeYear = localStorage.getItem('activeYear') || new Date().getFullYear() + 543;
 
-        // ฟังก์ชันสลับแท็บ
+        // เมื่อเปิดหน้ามา ให้ดึงข้อมูลมาแสดงทันที
+        window.onload = function() {
+            document.getElementById('pageSubtitle').innerText = `ศูนย์สอบ สอวน. ดาราศาสตร์ โรงเรียนสามเสนวิทยาลัย (ปีการศึกษา ${activeYear})`;
+            fetchDataFromSheet();
+        };
+
         function switchTab(level) {
             currentLevel = level;
-            
             document.getElementById('tab-m-ton').classList.remove('active');
             document.getElementById('tab-m-plai').classList.remove('active');
             
-            if (level === 'ม.ต้น') {
-                document.getElementById('tab-m-ton').classList.add('active');
-            } else {
-                document.getElementById('tab-m-plai').classList.add('active');
-            }
+            if (level === 'ม.ต้น') document.getElementById('tab-m-ton').classList.add('active');
+            else document.getElementById('tab-m-plai').classList.add('active');
 
-            renderTable();
+            fetchDataFromSheet(); // โหลดข้อมูลของแท็บที่กดใหม่
         }
 
-        // ฟังก์ชันสร้างตารางโดยกรองตามระดับชั้น
+        // ฟังก์ชันดึงข้อมูลจาก Google Sheets ของจริง
+        function fetchDataFromSheet() {
+            document.getElementById('applicantTable').innerHTML = `<tr><td colspan="7"><div class="loading-box">กำลังโหลดข้อมูล... ⏳</div></td></tr>`;
+            
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'getAdminData',
+                    activeYear: activeYear,
+                    level: currentLevel
+                })
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.status === 'success') {
+                    dbApplicants = result.data; // เอาข้อมูลมาเก็บไว้ในตัวแปร
+                    renderTable();
+                } else {
+                    alert('❌ เกิดข้อผิดพลาดในการโหลดข้อมูล');
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                document.getElementById('applicantTable').innerHTML = `<tr><td colspan="7"><div class="empty-state">เชื่อมต่อฐานข้อมูลล้มเหลว โปรดลองใหม่</div></td></tr>`;
+            });
+        }
+
         function renderTable() {
             const tbody = document.getElementById('applicantTable');
             tbody.innerHTML = '';
 
-            let filteredData = mockApplicants.filter(app => app.applyLevel === currentLevel);
-
-            if (filteredData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">ยังไม่มีข้อมูลผู้สมัครในระดับชั้นนี้</div></td></tr>`;
+            if (dbApplicants.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">ยังไม่มีผู้สมัครในระดับชั้นนี้</div></td></tr>`;
                 return;
             }
 
-            filteredData.forEach(app => {
+            dbApplicants.forEach(app => {
                 let statusBadge = '';
                 let btnText = '';
                 let btnClass = 'btn-action';
 
-                // กำหนดรูปแบบ Badge และข้อความ/สีปุ่ม ตามสถานะ
                 if(app.status === 'wait') {
                     statusBadge = '<span class="badge badge-wait">รอตรวจสอบ</span>';
                     btnText = 'ตรวจสิทธิ์';
                 } else if(app.status === 'pass') {
                     statusBadge = '<span class="badge badge-success">ผ่านเกณฑ์</span>';
                     btnText = 'เสร็จสิ้น';
-                    btnClass = 'btn-action btn-done'; // เติม Class สีเทา
+                    btnClass = 'btn-action btn-done'; 
                 } else if(app.status === 'fail') {
                     statusBadge = '<span class="badge badge-danger">ไม่ผ่านเกณฑ์</span>';
                     btnText = 'แก้ไข';
@@ -277,14 +276,12 @@
             });
         }
 
-        // เปิด Modal พร้อมดึงข้อมูลใส่ฟอร์ม
         function openReviewModal(idCard) {
             currentReviewIdCard = idCard;
-            const app = mockApplicants.find(a => a.idCard === idCard);
+            const app = dbApplicants.find(a => a.idCard === idCard);
             
             document.getElementById('modalTitle').innerText = "พิจารณาใบสมัครลำดับที่ " + app.no + " (" + app.applyLevel + ")";
             
-            // ใส่ข้อมูลฝั่งซ้าย
             document.getElementById('v_no').innerText = app.no;
             document.getElementById('v_time').innerText = app.time;
             document.getElementById('v_idCard').innerText = app.idCard;
@@ -297,12 +294,10 @@
             document.getElementById('v_teacher').innerText = app.teacher || '-';
             document.getElementById('v_slipUrl').href = app.slipUrl;
 
-            // ตั้งค่าฟอร์มฝั่งขวา
             document.getElementById('statusSelect').value = app.status;
             document.getElementById('reasonNote').value = app.note;
             toggleReasonField();
 
-            // โชว์เลขที่สอบถ้ามี
             if(app.examId) {
                 document.getElementById('examIdDisplayBox').style.display = 'block';
                 document.getElementById('v_examId').innerText = app.examId;
@@ -322,46 +317,64 @@
             document.getElementById('reasonReq').style.display = (status === 'fail') ? 'inline' : 'none';
         }
 
-        // ฟังก์ชันบันทึกและรันเลขที่นั่งสอบ
+        // บันทึกและอัปเดตลง Google Sheets ของจริง
         function submitReview() {
             const status = document.getElementById('statusSelect').value;
             const note = document.getElementById('reasonNote').value;
+            const btn = document.getElementById('btnSaveData');
             
             if(status === 'fail' && note.trim() === '') {
-                alert('⚠️ กรุณาระบุเหตุผลที่ไม่ผ่านเกณฑ์ เพื่อแจ้งให้นักเรียนทราบครับ');
+                alert('⚠️ กรุณาระบุเหตุผลที่ไม่ผ่านเกณฑ์');
                 return;
             }
 
-            // หา Index ของข้อมูลใน Array
-            const appIndex = mockApplicants.findIndex(a => a.idCard === currentReviewIdCard);
-            const app = mockApplicants[appIndex];
-
+            const appIndex = dbApplicants.findIndex(a => a.idCard === currentReviewIdCard);
+            let app = dbApplicants[appIndex];
+            
             app.status = status;
             app.note = note;
 
-            // 🌟 ตรรกะการรันเลขประจำตัวสอบ
+            // รันรหัสใหม่ (เช่น 69 + 1 + 0001)
             if(status === 'pass' && !app.examId) {
-                const year = "69"; 
-                const levelCode = (app.applyLevel === "มัธยมศึกษาตอนต้น" || app.applyLevel === "ม.ต้น") ? "1" : "2";
+                const yearPrefix = activeYear.toString().substring(2); // ดึงเลข 69 จาก 2569
+                const levelCode = (app.applyLevel.includes("ต้น")) ? "1" : "2";
                 const sequence = String(app.no).padStart(4, '0');
-                
-                app.examId = year + levelCode + sequence; 
-            } 
-            else if (status !== 'pass') {
+                app.examId = yearPrefix + levelCode + sequence; 
+            } else if (status !== 'pass') {
                 app.examId = ''; 
             }
 
-            // [อัปเดตข้อมูลจำลอง]
-            mockApplicants[appIndex] = app;
+            btn.innerHTML = "กำลังบันทึก... ⏳";
+            btn.disabled = true;
 
-            alert(`✅ บันทึกข้อมูลเรียบร้อย!\nสถานะ: ${status === 'pass' ? 'ผ่านเกณฑ์ (ได้เลขสอบ: '+app.examId+')' : (status === 'fail' ? 'ไม่ผ่านเกณฑ์' : 'รอตรวจสอบ')}`);
-            
-            closeModal();
-            renderTable(); // วาดตารางใหม่เพื่ออัปเดตปุ่มทันที
+            // ยิงข้อมูลกลับไปเซฟที่ Sheet
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'updateStatus',
+                    activeYear: activeYear,
+                    level: currentLevel,
+                    rowIndex: app.rowIndex, // บ่งบอกว่าแก้บรรทัดไหนในชีต
+                    status: app.status,
+                    note: app.note,
+                    examId: app.examId
+                })
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.status === 'success') {
+                    alert(`✅ บันทึกข้อมูลสำเร็จ!\nสถานะ: ${status === 'pass' ? 'ผ่านเกณฑ์ (ได้เลขสอบ: '+app.examId+')' : (status === 'fail' ? 'ไม่ผ่านเกณฑ์' : 'รอตรวจสอบ')}`);
+                    dbApplicants[appIndex] = app; // อัปเดตข้อมูลบนหน้าจอ
+                    closeModal();
+                    renderTable(); 
+                }
+            })
+            .catch(error => alert('❌ บันทึกไม่สำเร็จ โปรดลองอีกครั้ง'))
+            .finally(() => {
+                btn.innerHTML = "💾 บันทึกข้อมูล";
+                btn.disabled = false;
+            });
         }
-
-        // เริ่มต้นวาดตารางเมื่อโหลดหน้าเว็บ
-        window.onload = renderTable;
     </script>
 </body>
 </html>
