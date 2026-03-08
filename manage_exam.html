@@ -32,13 +32,25 @@
         .btn-back-header { background: #F5F8FA; color: var(--kt-text-dark); padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: 0.2s; }
         .btn-back-header:hover { background: #E4E6EF; }
 
-        /* ระบบ Tabs */
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tabs { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;}
+        .tab-group { display: flex; gap: 10px; }
         .tab-btn { padding: 12px 25px; border: none; background: #F5F8FA; color: var(--kt-text-muted); font-size: 1.05rem; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.2s; font-family: 'Sarabun'; }
         .tab-btn:hover { background: #E4E6EF; color: var(--kt-text-dark); }
         .tab-btn.active { background: var(--kt-primary); color: white; box-shadow: 0 4px 10px rgba(0, 158, 247, 0.2); }
 
-        /* การจัดการตาราง */
+        .btn-save-all { padding: 12px 25px; background: var(--kt-success); color: white; border: none; border-radius: 8px; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: 0.2s; font-family: 'Sarabun'; box-shadow: 0 4px 14px rgba(80, 205, 137, 0.3);}
+        .btn-save-all:hover { background: #47BE7D; transform: translateY(-2px); }
+        .btn-save-all:disabled { background: var(--kt-text-muted); cursor: not-allowed; box-shadow: none; transform: none; }
+
+        /* ส่วนควบคุมหน้าจอ (Pagination & Rows Per Page) */
+        .controls-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: #F9F9F9; padding: 10px 20px; border-radius: 8px; border: 1px solid var(--kt-border-color);}
+        .select-rows { padding: 8px; border: 1px solid var(--kt-border-color); border-radius: 6px; font-family: 'Sarabun'; font-size: 0.95rem; outline: none; }
+        .pagination { display: flex; gap: 5px; align-items: center; }
+        .btn-page { padding: 6px 12px; background: white; border: 1px solid var(--kt-border-color); border-radius: 6px; cursor: pointer; transition: 0.2s; font-family: 'Sarabun'; font-weight: 600;}
+        .btn-page:hover:not(:disabled) { background: #E4E6EF; }
+        .btn-page:disabled { color: var(--kt-text-muted); cursor: not-allowed; opacity: 0.5;}
+        .page-info { font-size: 0.95rem; color: var(--kt-text-dark); font-weight: 600; margin: 0 10px;}
+
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 1000px; }
         th { background: #F5F8FA; color: var(--kt-text-muted); font-size: 0.85rem; text-transform: uppercase; font-weight: 700; padding: 15px; text-align: left; border-bottom: 1px solid var(--kt-border-color); white-space: nowrap; }
@@ -47,15 +59,12 @@
 
         .exam-id-badge { background: #F1FAFF; color: var(--kt-primary); font-family: monospace; font-size: 1.1rem; padding: 5px 10px; border-radius: 6px; font-weight: 700; letter-spacing: 1px; }
 
-        /* ช่องกรอกข้อมูลในตาราง */
-        .inline-input { width: 100%; padding: 8px 12px; border: 1px solid var(--kt-border-color); border-radius: 6px; font-family: 'Sarabun'; font-size: 0.95rem; box-sizing: border-box; transition: 0.2s; }
-        .inline-input:focus { border-color: var(--kt-primary); outline: none; background: #F1FAFF; }
-        .input-score { width: 80px; text-align: center; font-weight: 700; color: var(--kt-primary); }
-
-        .btn-save { padding: 8px 15px; background: var(--kt-success); color: white; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.2s; white-space: nowrap; font-family: 'Sarabun';}
-        .btn-save:hover { background: #47BE7D; }
+        .inline-input { width: 100%; padding: 10px 12px; border: 1px solid var(--kt-border-color); border-radius: 6px; font-family: 'Sarabun'; font-size: 1rem; box-sizing: border-box; transition: 0.2s; background: #ffffff; }
+        .inline-input:focus { border-color: var(--kt-primary); outline: none; background: #F1FAFF; box-shadow: 0 0 0 3px rgba(0, 158, 247, 0.1); }
+        .input-score { width: 100px; text-align: center; font-weight: 700; color: var(--kt-primary); font-size: 1.1rem;}
 
         .empty-state { text-align: center; padding: 40px; color: var(--kt-text-muted); font-size: 1.1rem; }
+        .loading-box { text-align: center; padding: 50px; font-size: 1.2rem; color: var(--kt-primary); font-weight: 700;}
     </style>
 </head>
 <body>
@@ -66,15 +75,34 @@
                 <div class="header-icon">✍️</div>
                 <div>
                     <h2>จัดการห้องสอบและคะแนน</h2>
-                    <p class="subtitle">ระบบบันทึกข้อมูลสำหรับผู้ที่มีสิทธิ์สอบเรียงตามเลขประจำตัวสอบ</p>
+                    <p class="subtitle" id="pageSubtitle">ระบบบันทึกข้อมูลสำหรับผู้ที่มีสิทธิ์สอบ (กำลังโหลด...)</p>
                 </div>
             </div>
             <a href="home.html" class="btn-back-header">⬅️ กลับหน้าเมนูหลัก</a>
         </div>
 
         <div class="tabs">
-            <button class="tab-btn active" id="tab-m-ton" onclick="switchTab('ม.ต้น')">มัธยมศึกษาตอนต้น</button>
-            <button class="tab-btn" id="tab-m-plai" onclick="switchTab('ม.ปลาย')">มัธยมศึกษาตอนปลาย</button>
+            <div class="tab-group">
+                <button class="tab-btn active" id="tab-m-ton" onclick="switchTab('ม.ต้น')">มัธยมศึกษาตอนต้น</button>
+                <button class="tab-btn" id="tab-m-plai" onclick="switchTab('ม.ปลาย')">มัธยมศึกษาตอนปลาย</button>
+            </div>
+            <button class="btn-save-all" id="btnSaveAll" onclick="saveAllData()">💾 บันทึกการเปลี่ยนแปลงในหน้านี้</button>
+        </div>
+
+        <div class="controls-row" id="controlsRow" style="display: none;">
+            <div>
+                <label style="font-weight: 600; font-size: 0.95rem; color: var(--kt-text-dark); margin-right: 10px;">แสดงผล:</label>
+                <select id="rowsPerPage" class="select-rows" onchange="changeRowsPerPage()">
+                    <option value="50">50 รายการ</option>
+                    <option value="100">100 รายการ</option>
+                    <option value="all">แสดงทั้งหมด</option>
+                </select>
+            </div>
+            <div class="pagination">
+                <button class="btn-page" id="btnPrev" onclick="prevPage()">◀ หน้าก่อนหน้า</button>
+                <span class="page-info" id="pageInfo">หน้า 1 / 1</span>
+                <button class="btn-page" id="btnNext" onclick="nextPage()">หน้าถัดไป ▶</button>
+            </div>
         </div>
 
         <div class="table-responsive">
@@ -84,101 +112,184 @@
                         <th>เลขประจำตัวสอบ</th>
                         <th>ชื่อ - นามสกุล</th>
                         <th>โรงเรียน</th>
-                        <th style="width: 180px;">ห้องสอบ</th>
-                        <th style="width: 100px;">ลำดับที่นั่ง</th>
-                        <th style="width: 100px;">คะแนนสอบ</th>
-                        <th>การจัดการ</th>
+                        <th style="width: 250px;">ห้องสอบ</th>
+                        <th style="width: 120px;">ลำดับที่นั่ง</th>
+                        <th style="width: 120px;">คะแนนสอบ</th>
                     </tr>
                 </thead>
                 <tbody id="examTableBody">
-                    </tbody>
+                    <tr><td colspan="6"><div class="loading-box">กำลังโหลดข้อมูลจากฐานข้อมูล... ⏳</div></td></tr>
+                </tbody>
             </table>
         </div>
     </div>
 
     <script>
-        // ==========================================
-        // ข้อมูลจำลอง (Mock Data) สำหรับทดสอบระบบ
-        // *ดึงมาเฉพาะคนที่ status = 'pass' เท่านั้น
-        // ==========================================
-        let mockApplicants = [
-            { idCard: '11111', examId: '690001', prefix: 'ด.ช.', fname: 'สมชาย', lname: 'ใจดี', school: 'สามเสนวิทยาลัย', applyLevel: 'ม.ต้น', status: 'pass', room: '', seat: '', score: '' },
-            { idCard: '22222', examId: '690002', prefix: 'ด.ญ.', fname: 'สมหญิง', lname: 'รักเรียน', school: 'หอวัง', applyLevel: 'ม.ต้น', status: 'pass', room: 'อาคาร 2 ห้อง 201', seat: '1', score: '85' },
-            { idCard: '33333', examId: '690005', prefix: 'นาย', fname: 'วิทยา', lname: 'ศาสตร์', school: 'เตรียมอุดมศึกษา', applyLevel: 'ม.ปลาย', status: 'pass', room: '', seat: '', score: '' },
-            { idCard: '44444', examId: '690003', prefix: 'ด.ช.', fname: 'ดารา', lname: 'ศาสตร์', school: 'สวนกุหลาบ', applyLevel: 'ม.ต้น', status: 'pass', room: '', seat: '', score: '' }
-        ];
+        // ⚠️ วาง Web App URL ที่นี่
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec";
+        
+        let dbApplicants = []; 
+        let filteredData = []; // เก็บข้อมูลที่กรองแล้วเฉพาะคนที่มีสิทธิ์สอบ
+        let currentLevel = 'ม.ต้น'; 
+        let activeYear = localStorage.getItem('activeYear') || new Date().getFullYear() + 543;
 
-        let currentLevel = 'ม.ต้น'; // ค่าเริ่มต้น
+        // ตัวแปรสำหรับ Pagination
+        let currentPage = 1;
+        let rowsPerPage = 50;
 
-        // ฟังก์ชันสลับแท็บ
+        window.onload = function() {
+            document.getElementById('pageSubtitle').innerText = `ระบบบันทึกข้อมูลสำหรับผู้ที่มีสิทธิ์สอบ (ปีการศึกษา ${activeYear})`;
+            fetchDataFromSheet();
+        };
+
         function switchTab(level) {
             currentLevel = level;
-            
-            // อัปเดตสไตล์ปุ่ม Tab
             document.getElementById('tab-m-ton').classList.remove('active');
             document.getElementById('tab-m-plai').classList.remove('active');
-            
-            if (level === 'ม.ต้น') {
-                document.getElementById('tab-m-ton').classList.add('active');
-            } else {
-                document.getElementById('tab-m-plai').classList.add('active');
-            }
+            if (level === 'ม.ต้น') document.getElementById('tab-m-ton').classList.add('active');
+            else document.getElementById('tab-m-plai').classList.add('active');
 
+            fetchDataFromSheet(); 
+        }
+
+        function fetchDataFromSheet() {
+            const tbody = document.getElementById('examTableBody');
+            tbody.innerHTML = `<tr><td colspan="6"><div class="loading-box">กำลังโหลดข้อมูล... ⏳</div></td></tr>`;
+            document.getElementById('controlsRow').style.display = 'none';
+            
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'getAdminData', activeYear: activeYear, level: currentLevel })
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.status === 'success') {
+                    dbApplicants = result.data; 
+                    
+                    // คัดเอาเฉพาะคนที่ผ่านเกณฑ์และมีรหัสสอบ แล้วเรียงลำดับ
+                    filteredData = dbApplicants.filter(app => app.status === 'pass' && app.examId !== '');
+                    filteredData.sort((a, b) => parseInt(a.examId) - parseInt(b.examId));
+                    
+                    currentPage = 1; // รีเซ็ตหน้ากลับไปเป็น 1
+                    renderTable();
+                } else {
+                    alert('❌ เกิดข้อผิดพลาดในการโหลดข้อมูล');
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state">เชื่อมต่อฐานข้อมูลล้มเหลว โปรดลองใหม่</div></td></tr>`;
+            });
+        }
+
+        // ================= Pagination Functions =================
+        function changeRowsPerPage() {
+            let val = document.getElementById('rowsPerPage').value;
+            rowsPerPage = (val === 'all') ? filteredData.length : parseInt(val);
+            currentPage = 1;
             renderTable();
         }
 
-        // ฟังก์ชันวาดตาราง
+        function prevPage() {
+            if (currentPage > 1) { currentPage--; renderTable(); }
+        }
+
+        function nextPage() {
+            let totalPages = Math.ceil(filteredData.length / rowsPerPage);
+            if (currentPage < totalPages) { currentPage++; renderTable(); }
+        }
+        // =======================================================
+
         function renderTable() {
             const tbody = document.getElementById('examTableBody');
             tbody.innerHTML = '';
 
-            // 1. คัดกรองข้อมูล: เอาเฉพาะ 'pass' และ ระดับชั้นที่เลือก
-            let filteredData = mockApplicants.filter(app => app.status === 'pass' && app.applyLevel === currentLevel);
-
-            // 2. เรียงลำดับ: ตามเลขประจำตัวสอบ (น้อยไปมาก)
-            filteredData.sort((a, b) => parseInt(a.examId) - parseInt(b.examId));
-
             if (filteredData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">ยังไม่มีข้อมูลผู้มีสิทธิ์สอบในระดับชั้นนี้</div></td></tr>`;
+                document.getElementById('controlsRow').style.display = 'none';
+                tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state">ยังไม่มีผู้มีสิทธิ์สอบที่ออกรหัสแล้วในระดับชั้นนี้</div></td></tr>`;
                 return;
             }
 
-            // 3. สร้างแถวตาราง
-            filteredData.forEach(app => {
+            document.getElementById('controlsRow').style.display = 'flex';
+
+            // คำนวณหน้า
+            let totalPages = Math.ceil(filteredData.length / rowsPerPage);
+            document.getElementById('pageInfo').innerText = `หน้า ${currentPage} / ${totalPages} (รวม ${filteredData.length} รายการ)`;
+            document.getElementById('btnPrev').disabled = (currentPage === 1);
+            document.getElementById('btnNext').disabled = (currentPage === totalPages);
+
+            // ดึงข้อมูลเฉพาะหน้าที่เลือกมาแสดง
+            let startIdx = (currentPage - 1) * rowsPerPage;
+            let endIdx = startIdx + rowsPerPage;
+            let displayData = filteredData.slice(startIdx, endIdx);
+
+            displayData.forEach(app => {
                 let row = `<tr>
                     <td><span class="exam-id-badge">${app.examId}</span></td>
                     <td style="font-weight: 600;">${app.prefix}${app.fname} ${app.lname}</td>
                     <td>${app.school}</td>
-                    <td><input type="text" id="room_${app.idCard}" class="inline-input" placeholder="เช่น อาคาร 2 ห้อง 201" value="${app.room}"></td>
-                    <td><input type="text" id="seat_${app.idCard}" class="inline-input" placeholder="เลขที่" value="${app.seat}"></td>
+                    <td><input type="text" id="room_${app.idCard}" class="inline-input" placeholder="อาคาร / ห้องสอบ" value="${app.room}"></td>
+                    <td><input type="text" id="seat_${app.idCard}" class="inline-input" placeholder="เลขที่นั่ง" value="${app.seat}"></td>
                     <td><input type="number" id="score_${app.idCard}" class="inline-input input-score" placeholder="คะแนน" value="${app.score}"></td>
-                    <td><button class="btn-save" onclick="saveData('${app.idCard}')">💾 บันทึก</button></td>
                 </tr>`;
                 tbody.innerHTML += row;
             });
         }
 
-        // ฟังก์ชันบันทึกข้อมูลของแต่ละแถว
-        function saveData(idCard) {
-            const roomVal = document.getElementById(`room_${idCard}`).value;
-            const seatVal = document.getElementById(`seat_${idCard}`).value;
-            const scoreVal = document.getElementById(`score_${idCard}`).value;
+        function saveAllData() {
+            const btn = document.getElementById('btnSaveAll');
+            btn.innerHTML = "กำลังบันทึกข้อมูล... ⏳";
+            btn.disabled = true;
 
-            // [จำลองการอัปเดตข้อมูล]
-            const index = mockApplicants.findIndex(app => app.idCard === idCard);
-            if (index !== -1) {
-                mockApplicants[index].room = roomVal;
-                mockApplicants[index].seat = seatVal;
-                mockApplicants[index].score = scoreVal;
+            let updatesPayload = [];
+            
+            // กวาดข้อมูลเฉพาะคนที่โชว์อยู่บนหน้าจอปัจจุบัน
+            let startIdx = (currentPage - 1) * rowsPerPage;
+            let endIdx = startIdx + rowsPerPage;
+            let displayData = filteredData.slice(startIdx, endIdx);
+
+            displayData.forEach(app => {
+                const roomVal = document.getElementById(`room_${app.idCard}`).value;
+                const seatVal = document.getElementById(`seat_${app.idCard}`).value;
+                const scoreVal = document.getElementById(`score_${app.idCard}`).value;
+
+                updatesPayload.push({
+                    rowIndex: app.rowIndex, 
+                    room: roomVal,
+                    seat: seatVal,
+                    score: scoreVal
+                });
+            });
+
+            if(updatesPayload.length === 0) {
+                btn.innerHTML = "💾 บันทึกการเปลี่ยนแปลงในหน้านี้";
+                btn.disabled = false;
+                return;
             }
 
-            // [อนาคต] ตรงนี้จะใส่ fetch(GAS_URL) เพื่อส่งข้อมูลไปเซฟทับใน Google Sheets ของจริง
-
-            alert(`✅ บันทึกข้อมูลของเลขบัตร ${idCard} สำเร็จ!\nห้องสอบ: ${roomVal || '-'} | ลำดับ: ${seatVal || '-'} | คะแนน: ${scoreVal || '-'}`);
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'updateExamDataBatch',
+                    activeYear: activeYear,
+                    level: currentLevel,
+                    updates: updatesPayload
+                })
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.status === 'success') {
+                    alert(`✅ บันทึกข้อมูลสำเร็จ! จำนวน ${updatesPayload.length} คน เรียบร้อยแล้ว`);
+                } else {
+                    alert('❌ เกิดข้อผิดพลาดจากเซิร์ฟเวอร์');
+                }
+            })
+            .catch(error => { console.error(error); alert('❌ เชื่อมต่อล้มเหลว'); })
+            .finally(() => {
+                btn.innerHTML = "💾 บันทึกการเปลี่ยนแปลงในหน้านี้";
+                btn.disabled = false;
+            });
         }
-
-        // โหลดข้อมูลครั้งแรก
-        window.onload = renderTable;
     </script>
 </body>
 </html>

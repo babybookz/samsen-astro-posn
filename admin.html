@@ -36,6 +36,15 @@
         .tab-btn:hover { background: #E4E6EF; color: var(--kt-text-dark); }
         .tab-btn.active { background: var(--kt-primary); color: white; box-shadow: 0 4px 10px rgba(0, 158, 247, 0.2); }
 
+        /* ส่วนควบคุมหน้าจอ (Pagination) */
+        .controls-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: #F9F9F9; padding: 10px 20px; border-radius: 8px; border: 1px solid var(--kt-border-color);}
+        .select-rows { padding: 8px; border: 1px solid var(--kt-border-color); border-radius: 6px; font-family: 'Sarabun'; font-size: 0.95rem; outline: none; }
+        .pagination { display: flex; gap: 5px; align-items: center; }
+        .btn-page { padding: 6px 12px; background: white; border: 1px solid var(--kt-border-color); border-radius: 6px; cursor: pointer; transition: 0.2s; font-family: 'Sarabun'; font-weight: 600;}
+        .btn-page:hover:not(:disabled) { background: #E4E6EF; }
+        .btn-page:disabled { color: var(--kt-text-muted); cursor: not-allowed; opacity: 0.5;}
+        .page-info { font-size: 0.95rem; color: var(--kt-text-dark); font-weight: 600; margin: 0 10px;}
+
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 1000px; }
         th { background: #F5F8FA; color: var(--kt-text-muted); font-size: 0.85rem; text-transform: uppercase; font-weight: 700; padding: 15px; text-align: left; border-bottom: 1px solid var(--kt-border-color); white-space: nowrap; }
@@ -54,7 +63,9 @@
         .btn-done:hover { background: #7E8299; }
 
         .empty-state { text-align: center; padding: 40px; color: var(--kt-text-muted); font-size: 1.1rem; }
+        .loading-box { text-align: center; padding: 50px; font-size: 1.2rem; color: var(--kt-primary); font-weight: 700;}
 
+        /* ระบบ Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
         .modal-content { background: white; padding: 30px; border-radius: var(--kt-border-radius); width: 850px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         .modal-header { font-size: 1.25rem; font-weight: 700; margin-bottom: 20px; color: var(--kt-text-dark); border-bottom: 1px solid var(--kt-border-color); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center;}
@@ -81,8 +92,6 @@
         .btn-save-modal:hover { background: #47BE7D; }
         .btn-cancel { flex: 1; padding: 12px; background: #F5F8FA; color: var(--kt-text-muted); border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s; font-family: 'Sarabun';}
         .btn-cancel:hover { background: #E4E6EF; color: var(--kt-text-dark); }
-        
-        .loading-box { text-align: center; padding: 50px; font-size: 1.2rem; color: var(--kt-primary); font-weight: 700;}
     </style>
 </head>
 <body>
@@ -102,6 +111,22 @@
         <div class="tabs">
             <button class="tab-btn active" id="tab-m-ton" onclick="switchTab('ม.ต้น')">มัธยมศึกษาตอนต้น</button>
             <button class="tab-btn" id="tab-m-plai" onclick="switchTab('ม.ปลาย')">มัธยมศึกษาตอนปลาย</button>
+        </div>
+
+        <div class="controls-row" id="controlsRow" style="display: none;">
+            <div>
+                <label style="font-weight: 600; font-size: 0.95rem; color: var(--kt-text-dark); margin-right: 10px;">แสดงผล:</label>
+                <select id="rowsPerPage" class="select-rows" onchange="changeRowsPerPage()">
+                    <option value="50">50 รายการ</option>
+                    <option value="100">100 รายการ</option>
+                    <option value="all">แสดงทั้งหมด</option>
+                </select>
+            </div>
+            <div class="pagination">
+                <button class="btn-page" id="btnPrev" onclick="prevPage()">◀ หน้าก่อนหน้า</button>
+                <span class="page-info" id="pageInfo">หน้า 1 / 1</span>
+                <button class="btn-page" id="btnNext" onclick="nextPage()">หน้าถัดไป ▶</button>
+            </div>
         </div>
 
         <div class="table-responsive">
@@ -130,7 +155,6 @@
                 <span id="modalTitle">พิจารณาใบสมัคร</span>
                 <button style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#A1A5B7;" onclick="closeModal()">&times;</button>
             </div>
-            
             <div class="modal-grid">
                 <div class="info-section">
                     <div class="info-title">📄 ข้อมูลผู้สมัคร</div>
@@ -144,16 +168,13 @@
                     <div class="info-row"><div class="info-label">โรงเรียน:</div><div class="info-value" id="v_school"></div></div>
                     <div class="info-row"><div class="info-label">เบอร์นักเรียน:</div><div class="info-value" id="v_phone"></div></div>
                     <div class="info-row"><div class="info-label">ครูผู้สอน:</div><div class="info-value" id="v_teacher"></div></div>
-                    
                     <div style="margin-top: 15px; border-top: 1px solid #E4E6EF; padding-top: 15px;">
                         <div class="info-label">หลักฐานการชำระเงิน:</div>
                         <a href="#" id="v_slipUrl" target="_blank" class="btn-view-slip">🔍 คลิกดูรูปภาพสลิปโอนเงิน</a>
                     </div>
                 </div>
-
                 <div>
                     <div class="info-title" style="color:#181C32;">⚙️ การพิจารณาอนุมัติ</div>
-                    
                     <div class="form-group">
                         <label>ผลการตรวจสอบสิทธิ์</label>
                         <select id="statusSelect" onchange="toggleReasonField()">
@@ -162,18 +183,15 @@
                             <option value="fail">ไม่ผ่านเกณฑ์ (ระบุเหตุผล)</option>
                         </select>
                     </div>
-
                     <div class="form-group">
                         <label>เหตุผล / หมายเหตุ <span style="color:var(--kt-danger); font-size:0.8rem; display:none;" id="reasonReq">(บังคับกรอก)</span></label>
                         <textarea id="reasonNote" rows="4" placeholder="ระบุสาเหตุ เช่น ภาพสลิปโอนเงินไม่ชัดเจน, อายุเกินเกณฑ์ตามธรรมนูญ ฯลฯ"></textarea>
                     </div>
-                    
                     <div id="examIdDisplayBox" style="display:none; margin-top: 15px; padding: 15px; background: #F1FAFF; border-radius: 8px; border: 1px dashed var(--kt-primary); text-align: center;">
                         <div style="font-size:0.85rem; color:var(--kt-text-muted);">เลขประจำตัวสอบที่ออกให้แล้ว</div>
                         <div id="v_examId" style="font-size:1.5rem; font-weight:700; color:var(--kt-primary); font-family:monospace;"></div>
                     </div>
                 </div>
-
                 <div class="modal-footer">
                     <button class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
                     <button class="btn-save-modal" id="btnSaveData" onclick="submitReview()">💾 บันทึกข้อมูล</button>
@@ -183,13 +201,17 @@
     </div>
 
     <script>
-        // ⚠️ วาง Web App URL ล่าสุดที่คุณ Deploy มาแล้วที่นี่
+        // ⚠️ วาง Web App URL ที่นี่
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec";
         
         let dbApplicants = []; 
         let currentReviewIdCard = '';
         let currentLevel = 'ม.ต้น'; 
         let activeYear = localStorage.getItem('activeYear') || new Date().getFullYear() + 543;
+
+        // ตัวแปร Pagination
+        let currentPage = 1;
+        let rowsPerPage = 50;
 
         window.onload = function() {
             document.getElementById('pageSubtitle').innerText = `ศูนย์สอบ สอวน. ดาราศาสตร์ โรงเรียนสามเสนวิทยาลัย (ปีการศึกษา ${activeYear})`;
@@ -200,7 +222,6 @@
             currentLevel = level;
             document.getElementById('tab-m-ton').classList.remove('active');
             document.getElementById('tab-m-plai').classList.remove('active');
-            
             if (level === 'ม.ต้น') document.getElementById('tab-m-ton').classList.add('active');
             else document.getElementById('tab-m-plai').classList.add('active');
 
@@ -209,19 +230,17 @@
 
         function fetchDataFromSheet() {
             document.getElementById('applicantTable').innerHTML = `<tr><td colspan="7"><div class="loading-box">กำลังโหลดข้อมูล... ⏳</div></td></tr>`;
+            document.getElementById('controlsRow').style.display = 'none';
             
             fetch(GAS_URL, {
                 method: 'POST',
-                body: JSON.stringify({
-                    action: 'getAdminData',
-                    activeYear: activeYear,
-                    level: currentLevel
-                })
+                body: JSON.stringify({ action: 'getAdminData', activeYear: activeYear, level: currentLevel })
             })
             .then(res => res.json())
             .then(result => {
                 if (result.status === 'success') {
                     dbApplicants = result.data; 
+                    currentPage = 1;
                     renderTable();
                 } else {
                     alert('❌ เกิดข้อผิดพลาดในการโหลดข้อมูล');
@@ -233,16 +252,48 @@
             });
         }
 
+        // ================= Pagination Functions =================
+        function changeRowsPerPage() {
+            let val = document.getElementById('rowsPerPage').value;
+            rowsPerPage = (val === 'all') ? dbApplicants.length : parseInt(val);
+            currentPage = 1;
+            renderTable();
+        }
+
+        function prevPage() {
+            if (currentPage > 1) { currentPage--; renderTable(); }
+        }
+
+        function nextPage() {
+            let totalPages = Math.ceil(dbApplicants.length / rowsPerPage);
+            if (currentPage < totalPages) { currentPage++; renderTable(); }
+        }
+        // =======================================================
+
         function renderTable() {
             const tbody = document.getElementById('applicantTable');
             tbody.innerHTML = '';
 
             if (!dbApplicants || dbApplicants.length === 0) {
+                document.getElementById('controlsRow').style.display = 'none';
                 tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">ยังไม่มีผู้สมัครในระดับชั้นนี้</div></td></tr>`;
                 return;
             }
 
-            dbApplicants.forEach(app => {
+            document.getElementById('controlsRow').style.display = 'flex';
+
+            // คำนวณหน้า
+            let totalPages = Math.ceil(dbApplicants.length / rowsPerPage);
+            document.getElementById('pageInfo').innerText = `หน้า ${currentPage} / ${totalPages} (รวม ${dbApplicants.length} รายการ)`;
+            document.getElementById('btnPrev').disabled = (currentPage === 1);
+            document.getElementById('btnNext').disabled = (currentPage === totalPages);
+
+            // ดึงข้อมูลเฉพาะหน้าที่เลือกมาแสดง
+            let startIdx = (currentPage - 1) * rowsPerPage;
+            let endIdx = startIdx + rowsPerPage;
+            let displayData = dbApplicants.slice(startIdx, endIdx);
+
+            displayData.forEach(app => {
                 let statusBadge = '';
                 let btnText = '';
                 let btnClass = 'btn-action';
@@ -274,26 +325,19 @@
             });
         }
 
-        // 🌟 ส่วนที่เพิ่ม Try-Catch เพื่อดักจับ Error ป้องกันไม่ให้หน้าต่างเงียบไป
         function openReviewModal(idCard) {
             try {
-                // บังคับแปลงเป็นข้อความและตัดช่องว่างทิ้ง เพื่อให้ค้นหาเจอแน่นอน
                 currentReviewIdCard = String(idCard).trim();
                 const app = dbApplicants.find(a => String(a.idCard).trim() === currentReviewIdCard);
                 
-                if (!app) {
-                    alert('❌ เกิดข้อผิดพลาด: ไม่พบข้อมูลผู้สมัคร รหัส ' + currentReviewIdCard + ' ในระบบ');
-                    return;
-                }
+                if (!app) return alert('❌ เกิดข้อผิดพลาด: ไม่พบข้อมูลผู้สมัคร รหัส ' + currentReviewIdCard);
                 
                 document.getElementById('modalTitle').innerText = "พิจารณาใบสมัครลำดับที่ " + (app.no || '-') + " (" + (app.applyLevel || '-') + ")";
-                
                 document.getElementById('v_no').innerText = app.no || '-';
                 document.getElementById('v_time').innerText = app.time || '-';
                 document.getElementById('v_idCard').innerText = app.idCard || '-';
                 document.getElementById('v_fullname').innerText = `${app.prefix || ''}${app.fname || ''} ${app.lname || ''}`;
                 
-                // การจัดการวันที่เกิดแบบปลอดภัย (ป้องกัน Error)
                 let dobText = app.dob || '-';
                 if (typeof dobText === 'string' && dobText.includes('T')) {
                     let d = new Date(dobText);
@@ -307,14 +351,10 @@
                 document.getElementById('v_phone').innerText = app.phone || '-';
                 document.getElementById('v_teacher').innerText = app.teacher || '-';
                 
-                // ตรวจสอบการแสดงปุ่มรูปลิงก์สลิป
                 const slipLink = document.getElementById('v_slipUrl');
                 if (app.slipUrl && app.slipUrl.startsWith('http')) {
-                    slipLink.href = app.slipUrl;
-                    slipLink.style.display = 'inline-block';
-                } else {
-                    slipLink.style.display = 'none';
-                }
+                    slipLink.href = app.slipUrl; slipLink.style.display = 'inline-block';
+                } else { slipLink.style.display = 'none'; }
 
                 document.getElementById('statusSelect').value = app.status || 'wait';
                 document.getElementById('reasonNote').value = app.note || '';
@@ -323,22 +363,14 @@
                 if(app.examId) {
                     document.getElementById('examIdDisplayBox').style.display = 'block';
                     document.getElementById('v_examId').innerText = app.examId;
-                } else {
-                    document.getElementById('examIdDisplayBox').style.display = 'none';
-                }
+                } else { document.getElementById('examIdDisplayBox').style.display = 'none'; }
 
-                // สั่งให้แสดงหน้าต่างขึ้นมา
                 document.getElementById('reviewModal').style.display = 'flex';
                 
-            } catch (error) {
-                console.error(error);
-                alert("⚠️ ระบบพบข้อผิดพลาดในการเปิดหน้าต่างข้อมูล: " + error.message);
-            }
+            } catch (error) { console.error(error); alert("⚠️ พบข้อผิดพลาด: " + error.message); }
         }
 
-        function closeModal() {
-            document.getElementById('reviewModal').style.display = 'none';
-        }
+        function closeModal() { document.getElementById('reviewModal').style.display = 'none'; }
 
         function toggleReasonField() {
             const status = document.getElementById('statusSelect').value;
@@ -350,45 +382,28 @@
             const note = document.getElementById('reasonNote').value;
             const btn = document.getElementById('btnSaveData');
             
-            if(status === 'fail' && note.trim() === '') {
-                alert('⚠️ กรุณาระบุเหตุผลที่ไม่ผ่านเกณฑ์');
-                return;
-            }
+            if(status === 'fail' && note.trim() === '') { alert('⚠️ กรุณาระบุเหตุผลที่ไม่ผ่านเกณฑ์'); return; }
 
             const appIndex = dbApplicants.findIndex(a => String(a.idCard).trim() === currentReviewIdCard);
-            if(appIndex === -1) {
-                alert('❌ ไม่สามารถบันทึกได้ เนื่องจากหาข้อมูลอ้างอิงไม่พบ');
-                return;
-            }
+            if(appIndex === -1) return alert('❌ ไม่สามารถบันทึกได้ เนื่องจากหาข้อมูลอ้างอิงไม่พบ');
 
             let app = dbApplicants[appIndex];
-            
-            app.status = status;
-            app.note = note;
+            app.status = status; app.note = note;
 
-            // รันรหัสใหม่ (เช่น 69 + 1 + 0001)
             if(status === 'pass' && !app.examId) {
                 const yearPrefix = activeYear.toString().substring(2); 
                 const levelCode = (app.applyLevel.includes("ต้น")) ? "1" : "2";
                 const sequence = String(app.no).padStart(4, '0');
                 app.examId = yearPrefix + levelCode + sequence; 
-            } else if (status !== 'pass') {
-                app.examId = ''; 
-            }
+            } else if (status !== 'pass') { app.examId = ''; }
 
-            btn.innerHTML = "กำลังบันทึก... ⏳";
-            btn.disabled = true;
+            btn.innerHTML = "กำลังบันทึก... ⏳"; btn.disabled = true;
 
             fetch(GAS_URL, {
                 method: 'POST',
                 body: JSON.stringify({
-                    action: 'updateStatus',
-                    activeYear: activeYear,
-                    level: currentLevel,
-                    rowIndex: app.rowIndex, 
-                    status: app.status,
-                    note: app.note,
-                    examId: app.examId
+                    action: 'updateStatus', activeYear: activeYear, level: currentLevel,
+                    rowIndex: app.rowIndex, status: app.status, note: app.note, examId: app.examId
                 })
             })
             .then(res => res.json())
@@ -396,20 +411,11 @@
                 if (result.status === 'success') {
                     alert(`✅ บันทึกข้อมูลสำเร็จ!\nสถานะ: ${status === 'pass' ? 'ผ่านเกณฑ์ (ได้เลขสอบ: '+app.examId+')' : (status === 'fail' ? 'ไม่ผ่านเกณฑ์' : 'รอตรวจสอบ')}`);
                     dbApplicants[appIndex] = app; 
-                    closeModal();
-                    renderTable(); 
-                } else {
-                    alert('❌ ' + result.message);
-                }
+                    closeModal(); renderTable(); 
+                } else { alert('❌ ' + result.message); }
             })
-            .catch(error => {
-                console.error(error);
-                alert('❌ บันทึกไม่สำเร็จ โปรดลองเชื่อมต่ออินเทอร์เน็ตอีกครั้ง');
-            })
-            .finally(() => {
-                btn.innerHTML = "💾 บันทึกข้อมูล";
-                btn.disabled = false;
-            });
+            .catch(error => { console.error(error); alert('❌ บันทึกไม่สำเร็จ โปรดลองอีกครั้ง'); })
+            .finally(() => { btn.innerHTML = "💾 บันทึกข้อมูล"; btn.disabled = false; });
         }
     </script>
 </body>
