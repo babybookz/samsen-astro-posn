@@ -7,6 +7,7 @@
     
     <script>
         const currentRole = localStorage.getItem('userRole');
+        const currentUserName = localStorage.getItem('userName') || 'Admin ไม่ระบุชื่อ';
         if (currentRole !== 'admin' && currentRole !== 'it') {
             alert('ไม่อนุญาตให้เข้าถึง: คุณไม่มีสิทธิ์เข้าใช้งานหน้านี้');
             window.location.replace('home.html');
@@ -80,6 +81,7 @@
         .badge-success { background: #E8F5E9; color: #2E7D32; border: 1px solid #A5D6A7;}
         .badge-danger { background: #FFEBEE; color: #C62828; border: 1px solid #EF9A9A;}
         .exam-id-badge { background: var(--bg-light); color: var(--theme-purple); border: 1px solid var(--border-color); font-family: monospace; font-size: 1.1rem; padding: 6px 12px; border-radius: 8px; font-weight: 700; letter-spacing: 1px;}
+        .approver-name { font-size: 0.85rem; color: var(--text-muted); display: block; margin-top: 5px; }
 
         .btn-action { padding: 10px 20px; background: var(--theme-orange); color: white; border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: 'Sarabun'; box-shadow: 0 4px 10px rgba(255, 143, 0, 0.2);}
         .btn-action:hover { background: var(--theme-orange-hover); transform: translateY(-2px);}
@@ -176,7 +178,7 @@
                             <th>เลขประจำตัวสอบ</th>
                             <th>ชื่อ - นามสกุล</th>
                             <th>โรงเรียน</th>
-                            <th>สถานะ</th>
+                            <th>สถานะ / ผู้อนุมัติ</th>
                             <th>การจัดการ</th>
                         </tr>
                     </thead>
@@ -230,6 +232,9 @@
                         <div style="font-size:0.95rem; opacity: 0.8; margin-bottom: 5px;">เลขประจำตัวสอบที่ออกให้แล้ว</div>
                         <div id="v_examId" style="font-size:1.8rem; font-weight:700; font-family:monospace; letter-spacing: 2px;"></div>
                     </div>
+                    <div style="margin-top: 15px; font-size: 0.9rem; color: var(--text-muted); text-align: right;">
+                        ผู้ทำรายการ: <span style="font-weight: bold; color: var(--theme-purple);" id="currentAdminNameDisplay"></span>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
@@ -253,6 +258,7 @@
 
         window.onload = function() {
             document.getElementById('pageSubtitle').innerText = `ประจำปีการศึกษา ${activeYear}`;
+            document.getElementById('currentAdminNameDisplay').innerText = currentUserName;
             fetchDataFromSheet();
         };
 
@@ -331,17 +337,22 @@
                 let statusBadge = '';
                 let btnText = '';
                 let btnClass = 'btn-action';
+                let approverHtml = ''; // เก็บชื่อคนตรวจ
 
                 if(app.status === 'wait') {
                     statusBadge = '<span class="badge badge-wait">รอตรวจสอบ</span>';
                     btnText = 'ตรวจสิทธิ์';
                 } else if(app.status === 'pass') {
                     statusBadge = '<span class="badge badge-success">ผ่านเกณฑ์</span>';
-                    btnText = 'เสร็จสิ้น';
+                    btnText = 'แก้ไข';
                     btnClass = 'btn-action btn-done'; 
+                    // แสดงชื่อคนอนุมัติ
+                    approverHtml = `<span class="approver-name">(ตรวจโดย: ${app.approverName || 'ไม่ทราบชื่อ'})</span>`;
                 } else if(app.status === 'fail') {
                     statusBadge = '<span class="badge badge-danger">ไม่ผ่านเกณฑ์</span>';
                     btnText = 'แก้ไข';
+                    // แสดงชื่อคนอนุมัติ
+                    approverHtml = `<span class="approver-name">(ตรวจโดย: ${app.approverName || 'ไม่ทราบชื่อ'})</span>`;
                 }
 
                 let examIdText = app.examId ? `<span class="badge exam-id-badge">${app.examId}</span>` : '<span style="color:var(--text-muted);">-</span>';
@@ -352,7 +363,10 @@
                     <td>${examIdText}</td>
                     <td style="font-weight: 600;">${app.prefix || ''}${app.fname || ''} ${app.lname || ''}</td>
                     <td>${app.school || '-'}</td>
-                    <td>${statusBadge}</td>
+                    <td>
+                        ${statusBadge}
+                        ${approverHtml}
+                    </td>
                     <td><button class="${btnClass}" onclick="openReviewModal('${app.idCard}')">${btnText}</button></td>
                 </tr>`;
                 tbody.innerHTML += row;
@@ -423,6 +437,9 @@
 
             let app = dbApplicants[appIndex];
             app.status = status; app.note = note;
+            
+            // 🌟 อัปเดตชื่อผู้อนุมัติในหน้าเว็บทันที
+            app.approverName = (status === 'wait') ? '' : currentUserName;
 
             if(status === 'pass' && !app.examId) {
                 const yearPrefix = activeYear.toString().substring(2); 
@@ -433,11 +450,13 @@
 
             btn.innerHTML = "กำลังบันทึก... ⏳"; btn.disabled = true;
 
+            // ส่งข้อมูลไปเซฟที่หลังบ้าน
             fetch(GAS_URL, {
                 method: 'POST',
                 body: JSON.stringify({
                     action: 'updateStatus', activeYear: activeYear, level: currentLevel,
-                    rowIndex: app.rowIndex, status: app.status, note: app.note, examId: app.examId
+                    rowIndex: app.rowIndex, status: app.status, note: app.note, examId: app.examId,
+                    approverName: app.approverName // ส่งชื่อคนตรวจไปเซฟด้วย
                 })
             })
             .then(res => res.json())

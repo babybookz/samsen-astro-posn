@@ -136,7 +136,7 @@
         <div class="nav-links">
             <a href="home.html" style="color: var(--theme-orange); font-weight: 700;">หน้าแรก</a>
             <a href="#">ระเบียบการสอบ</a>
-            <a href="#">ขั้นตอนการสมัคร</a>
+            <a href="register.html">ขั้นตอนการสมัคร</a>
             <a href="#">ติดต่อเรา</a>
         </div>
 
@@ -293,6 +293,7 @@
             document.getElementById('displayYearDesc').innerHTML = `ศูนย์สอบโรงเรียนสามเสนวิทยาลัย เปิดรับสมัครนักเรียนเพื่อสอบคัดเลือกเข้าค่ายโอลิมปิกวิชาการ <br>ประจำปีการศึกษา ${activeYear}`;
 
             const currentRole = localStorage.getItem('userRole') || 'guest';
+            const currentName = localStorage.getItem('userName') || '';
             
             const loginBtn = document.getElementById('loginBtnContainer');
             const profileForm = document.getElementById('profileForm');
@@ -310,15 +311,15 @@
                 adminTopBar.style.display = 'block';
                 adminZone.style.display = 'block';
                 
+                // ดึงชื่อที่รับมาจากเซิร์ฟเวอร์มาแสดง
+                document.getElementById('displayName').innerText = currentName;
+                document.getElementById('userAvatar').innerText = currentName ? currentName.charAt(0) : 'A';
+
                 if(currentRole === 'admin') {
-                    document.getElementById('displayName').innerText = 'คุณครูผู้ดูแลระบบ';
                     document.getElementById('displayRole').innerText = 'Administrator';
-                    document.getElementById('userAvatar').innerText = 'A';
                     document.getElementById('userAvatar').style.background = '#50CD89';
                 } else if(currentRole === 'it') {
-                    document.getElementById('displayName').innerText = 'ฝ่ายไอที';
                     document.getElementById('displayRole').innerText = 'IT Support';
-                    document.getElementById('userAvatar').innerText = 'IT';
                     document.getElementById('userAvatar').style.background = '#F1416C';
                 }
             }
@@ -356,6 +357,7 @@
             .then(result => {
                 if (result.status === 'success') {
                     localStorage.setItem('userRole', result.role);
+                    localStorage.setItem('userName', result.name); // บันทึกชื่อลง Local Storage
                     closeLoginModal(); 
                     updateUI();
                 } else {
@@ -375,6 +377,7 @@
 
         function handleLogout() { 
             localStorage.removeItem('userRole'); 
+            localStorage.removeItem('userName'); // ล้างชื่อออกตอน Logout
             updateUI(); 
         }
 
