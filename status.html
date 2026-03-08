@@ -4,16 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ตรวจสอบสถานะ | Samsen Astro POSN</title>
-    <script>
-        const maintState = localStorage.getItem('maintenanceMode');
-        const usrRole = localStorage.getItem('userRole');
-        // ถ้าโหมดซ่อมบำรุงเปิดอยู่ และคนเข้าไม่ใช่ IT ให้เด้งออก
-        if (maintState === 'on' && usrRole !== 'it') {
-            document.write('<div style="display:flex; justify-content:center; align-items:center; height:100vh; background:#F8F9FA; font-family:sans-serif; text-align:center;"><div style="background:white; padding:40px; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.1); border-top: 5px solid #F1416C;"><h2>🔴 ปิดปรับปรุงระบบชั่วคราว</h2><p>ระบบกำลังอยู่ระหว่างการบำรุงรักษาโดยเจ้าหน้าที่<br>กรุณากลับมาใช้งานใหม่อีกครั้งในภายหลังครับ</p></div></div>');
-            document.close();
-            window.stop();
-        }
-    </script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
