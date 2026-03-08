@@ -7,11 +7,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --main-bg: #F4F6F9; /* สีพื้นหลังสว่าง */
+            /* --- เปลี่ยนสีพื้นหลังให้ดู Premium ขึ้นเล็กน้อย --- */
+            --main-bg: #FAFAFA; /* Off-white */
             --text-dark: #181C32;
             --text-muted: #7E8299;
-            --btn-green: #00A65A; /* สีเขียวปุ่มเข้าสู่ระบบ */
-            --btn-green-hover: #008D4C;
+
+            /* --- NEW THEME: PURPLE & ORANGE (ELEGANT) --- */
+            --theme-purple: #4A148C; /* ม่วงเข้ม สวยสง่า (Primary) */
+            --theme-orange: #FF8F00; /* ส้มทอง หรูหรา (Accent/Hover) */
+            --theme-purple-light: rgba(74, 20, 140, 0.1);
         }
 
         body {
@@ -24,9 +28,11 @@
             background-color: var(--main-bg);
             padding: 20px;
             box-sizing: border-box;
+            /* เพิ่ม Gradient พื้นหลังบางๆ เพื่อความสวยงาม */
+            background-image: radial-gradient(var(--theme-purple-light) 1px, transparent 1px);
+            background-size: 20px 20px;
         }
 
-        /* กล่องตรงกลางจอ */
         .content-wrapper {
             text-align: center;
             max-width: 600px;
@@ -34,67 +40,112 @@
             background: transparent;
         }
 
-        .logo-placeholder {
-            width: 130px;
-            height: 130px;
-            background: #ffffff;
-            border-radius: 25px;
-            display: inline-flex;
+        /* --- สไตล์สำหรับโลโก้คู่ --- */
+        .logo-container {
+            display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 4.5rem;
-            margin-bottom: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            /* หากมีโลโก้โรงเรียน สามารถเปลี่ยน <div> นี้เป็นแท็ก <img> ได้เลยครับ */
+            gap: 25px; /* ระยะห่างระหว่าง 2 โลโก้ */
+            margin-bottom: 35px;
+        }
+
+        .logo-img {
+            max-height: 110px; /* กำหนดความสูงสูงสุดเพื่อให้ดูสง่า */
+            width: auto; /* รักษาอัตราส่วนรูปภาพ */
+            /* เพิ่มเงาอ่อนๆ ให้รูปภาพดูมีมิติ */
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.08));
+            transition: transform 0.3s ease;
+        }
+
+        /* ลูกเล่นเวลาเอาเมาส์วางที่รูปโลโก้ */
+        .logo-img:hover {
+            transform: scale(1.05);
+        }
+
+        /* เจาะจงขนาดแยกกันหากจำเป็น (ตัวอย่าง) */
+        .logo-samsen {
+            max-height: 110px;
+        }
+        .logo-astro {
+            max-height: 115px;
         }
 
         h1 {
             color: var(--text-dark);
-            font-size: 2.2rem;
+            font-size: 2.5rem; /* ขยายขนาดหัวข้อเล็กน้อย */
             font-weight: 700;
             margin: 0 0 10px 0;
-            letter-spacing: -0.5px;
+            letter-spacing: -1px;
+        }
+
+        /* เพิ่มเส้นใต้หัวข้อเล็กน้อย */
+        h1::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: var(--theme-orange); /* สีส้มทอง */
+            margin: 10px auto 0;
+            border-radius: 2px;
         }
 
         p {
             color: var(--text-muted);
-            font-size: 1.15rem;
+            font-size: 1.2rem;
             line-height: 1.6;
-            margin: 0 0 40px 0;
+            margin: 25px 0 50px 0;
         }
 
+        /* --- สไตล์ปุ่มในธีมใหม่ --- */
         .btn-enter {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            background: var(--btn-green);
+            gap: 12px;
+            background: var(--theme-purple); /* สีม่วงเข้ม */
             color: white;
-            padding: 15px 35px;
-            border-radius: 50px; /* ขอบมนแบบแคปซูล */
-            font-size: 1.15rem;
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-size: 1.2rem;
             font-weight: 600;
             text-decoration: none;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 166, 90, 0.2);
+            /* เงาปุ่มเป็นสีม่วงอ่อนๆ */
+            box-shadow: 0 5px 20px rgba(74, 20, 140, 0.25);
         }
 
         .btn-enter:hover {
-            background: var(--btn-green-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 166, 90, 0.3);
+            background: var(--theme-orange); /* เปลี่ยนเป็นสีส้มทองเวลา hover */
+            transform: translateY(-3px);
+            /* เงาเวลา hover เป็นสีส้มทอง */
+            box-shadow: 0 10px 30px rgba(255, 143, 0, 0.4);
+            color: #fff;
+        }
+
+        /* เพิ่มลูกเล่นลูกศรเล็กน้อย */
+        .btn-enter .arrow {
+            transition: transform 0.3s ease;
+        }
+        .btn-enter:hover .arrow {
+            transform: translateX(5px);
         }
     </style>
 </head>
 <body>
     
     <div class="content-wrapper">
-        <div class="logo-placeholder">🪐</div>
+        <div class="logo-container">
+            <img src="https://drive.google.com/uc?export=download&id=1LC6Bnn-m1BDTrWJv50wMGXkhVlx0yawJ" alt="Samsen Logo" class="logo-img logo-samsen">
+            
+            <img src="https://drive.google.com/uc?export=download&id=1EZJCLgDKwvVKEhmy2Ox4ksisQ7xvKvAz" alt="Astro Logo" class="logo-img logo-astro">
+        </div>
         
         <h1>Samsen Astro POSN</h1>
         <p>ระบบจัดการศูนย์สอบโอลิมปิกวิชาการ สอวน.<br>วิชาดาราศาสตร์ โรงเรียนสามเสนวิทยาลัย</p>
         
-        <a href="home.html" class="btn-enter">เข้าสู่เว็บไซต์ &rarr;</a>
+        <a href="home.html" class="btn-enter">
+            เข้าสู่เว็บไซต์ <span class="arrow">&rarr;</span>
+        </a>
     </div>
 
 </body>
