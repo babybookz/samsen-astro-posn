@@ -116,7 +116,7 @@
 
         input:focus, select:focus {
             border-color: var(--kt-primary);
-            box-shadow: 0 0 0 3px rgba(0, 158, 247, 0.15); /* เรืองแสงสีฟ้าอ่อนๆ */
+            box-shadow: 0 0 0 3px rgba(0, 158, 247, 0.15);
             outline: none;
         }
         
@@ -238,11 +238,11 @@
             <div class="grid-2">
                 <div class="input-group">
                     <label>เบอร์โทรนักเรียน <span class="req">*</span></label>
-                    <input type="tel" id="studentPhone" maxlength="10" placeholder="08xxxxxxxx" required>
+                    <input type="tel" id="studentPhone" maxlength="12" placeholder="08x-xxx-xxxx" required oninput="formatPhoneNumber(this)">
                 </div>
                 <div class="input-group">
                     <label>เบอร์โทรผู้ปกครอง <span class="req">*</span></label>
-                    <input type="tel" id="parentPhone" maxlength="10" placeholder="08xxxxxxxx" required>
+                    <input type="tel" id="parentPhone" maxlength="12" placeholder="08x-xxx-xxxx" required oninput="formatPhoneNumber(this)">
                 </div>
             </div>
 
@@ -382,11 +382,56 @@
         // ลิงก์ Web App URL ของคุณ
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec"; 
 
+        // 🌟 ฟังก์ชันจัดการเบอร์โทรศัพท์ (ใส่ขีดอัตโนมัติ)
+        function formatPhoneNumber(input) {
+            // ลบตัวอักษรที่ไม่ใช่ตัวเลขออกให้หมด
+            let val = input.value.replace(/\D/g, '');
+            
+            // ใส่ขีดตามรูปแบบ xxx-xxx-xxxx
+            if (val.length > 3 && val.length <= 6) {
+                val = val.slice(0, 3) + '-' + val.slice(3);
+            } else if (val.length > 6) {
+                val = val.slice(0, 3) + '-' + val.slice(3, 6) + '-' + val.slice(6, 10);
+            }
+            
+            input.value = val;
+        }
+
+        // 🌟 ฟังก์ชันดักจับคำนำหน้าในช่อง "ชื่อ"
+        function checkPrefixInName(nameStr) {
+            // รายการคำนำหน้าที่พบบ่อย
+            const invalidPrefixes = ["เด็กชาย", "ด.ช.", "ดช", "เด็กหญิง", "ด.ญ.", "ดญ", "นาย", "นางสาว", "น.ส.", "นส", "นาง"];
+            
+            for(let i=0; i<invalidPrefixes.length; i++){
+                if(nameStr.startsWith(invalidPrefixes[i])) {
+                    return invalidPrefixes[i]; // ส่งคำที่เจอคืนกลับไป
+                }
+            }
+            return null; // ถ้าไม่เจอคืนค่าว่าง
+        }
+
         document.getElementById('registerForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
             btn.innerHTML = "กำลังตรวจสอบเงื่อนไข... ⏳";
             btn.disabled = true;
+
+            const firstNameStr = document.getElementById('firstName').value.trim();
+
+            // ฟังก์ชันคืนค่าปุ่มเมื่อตรวจสอบไม่ผ่าน
+            const rejectApplication = (message) => {
+                alert(message);
+                btn.innerHTML = "✓ ยืนยันการส่งข้อมูลสมัครสอบ";
+                btn.disabled = false;
+            };
+
+            // ==========================================
+            // ดักจับการใส่คำนำหน้าในช่องชื่อ
+            // ==========================================
+            const foundPrefix = checkPrefixInName(firstNameStr);
+            if(foundPrefix) {
+                return rejectApplication(`⚠️ กรุณาลบคำว่า "${foundPrefix}" ออกจากช่อง "ชื่อ"\nเนื่องจากมีให้เลือกในช่อง "คำนำหน้าชื่อ" ด้านบนแล้วครับ`);
+            }
 
             // ==========================================
             // ส่วนตรวจสอบเงื่อนไขตามธรรมนูญการแข่งขัน สอวน.
@@ -404,13 +449,6 @@
             if (m < 0 || (m === 0 && baseDate.getDate() < bDate.getDate())) {
                 age--; // ลบอายุลง 1 ปีหากยังไม่ถึงวันเกิดในเดือน/วันนั้น
             }
-
-            // ฟังก์ชันคืนค่าปุ่มเมื่อตรวจสอบไม่ผ่าน
-            const rejectApplication = (message) => {
-                alert(message);
-                btn.innerHTML = "✓ ยืนยันการส่งข้อมูลสมัครสอบ";
-                btn.disabled = false;
-            };
 
             // 1. กฎทั่วไป: อายุต้องไม่ต่ำกว่า 13 ปี
             if (age < 13) {
@@ -461,8 +499,8 @@
                     lastName: document.getElementById('lastName').value,
                     idCard: document.getElementById('idCard').value,
                     birthDate: document.getElementById('birthDate').value,
-                    studentPhone: document.getElementById('studentPhone').value,
-                    parentPhone: document.getElementById('parentPhone').value,
+                    studentPhone: document.getElementById('studentPhone').value, 
+                    parentPhone: document.getElementById('parentPhone').value,   
                     grade: document.getElementById('grade').value,
                     province: document.getElementById('province').value,
                     school: document.getElementById('school').value,
