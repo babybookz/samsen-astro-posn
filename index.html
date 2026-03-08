@@ -40,19 +40,18 @@
             background: transparent;
         }
 
-        /* --- สไตล์สำหรับโลโก้คู่ --- */
+        /* 🌟 ส่วนควบคุมขนาดและระยะห่างของโลโก้คู่ 🌟 */
         .logo-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 25px; /* ระยะห่างระหว่าง 2 โลโก้ */
-            margin-bottom: 35px;
+            gap: 38px; /* ขยายระยะห่างอีก 50% (จาก 25px) */
+            margin-bottom: 40px; /* เพิ่มระยะห่างด้านล่างเล็กน้อย */
         }
 
         .logo-img {
-            max-height: 110px; /* กำหนดความสูงสูงสุดเพื่อให้ดูสง่า */
+            max-height: 165px; /* ขยายความสูงเพิ่มขึ้น 50% (จาก 110px) */
             width: auto; /* รักษาอัตราส่วนรูปภาพ */
-            /* เพิ่มเงาอ่อนๆ ให้รูปภาพดูมีมิติ */
             filter: drop-shadow(0 5px 10px rgba(0,0,0,0.08));
             transition: transform 0.3s ease;
         }
@@ -62,12 +61,12 @@
             transform: scale(1.05);
         }
 
-        /* เจาะจงขนาดแยกกันหากจำเป็น (ตัวอย่าง) */
+        /* สไตล์เฉพาะตัวของแต่ละโลโก้ (ไม่ต้องแก้ก็ได้ แต่ผมปรับให้สมดุล) */
         .logo-samsen {
-            max-height: 110px;
+            max-height: 165px; /* ขยายเพิ่มขึ้น 50% */
         }
         .logo-astro {
-            max-height: 115px;
+            max-height: 170px; /* ขยายเพิ่มขึ้น 50% (จาก 115px) */
         }
 
         h1 {
