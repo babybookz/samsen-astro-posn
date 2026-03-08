@@ -7,187 +7,51 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --kt-body-bg: #F3F6F9;
-            --kt-text-dark: #181C32;
-            --kt-text-muted: #A1A5B7;
-            --kt-primary: #009EF7;
-            --kt-success: #50CD89;
-            --kt-warning: #FFC700;
-            --kt-danger: #F1416C;
-            --kt-border-color: #E4E6EF;
-            --kt-input-bg: #ffffff;
-            --kt-border-radius: 0.75rem;
-            --kt-card-radius: 1rem;
-            --kt-box-shadow: 0px 0px 20px 0px rgba(76, 87, 125, 0.1);
+            --kt-body-bg: #F3F6F9; --kt-text-dark: #181C32; --kt-text-muted: #A1A5B7;
+            --kt-primary: #009EF7; --kt-success: #50CD89; --kt-warning: #FFC700; --kt-danger: #F1416C;
+            --kt-border-color: #E4E6EF; --kt-input-bg: #ffffff;
+            --kt-border-radius: 0.75rem; --kt-card-radius: 1rem; --kt-box-shadow: 0px 0px 20px 0px rgba(76, 87, 125, 0.1);
         }
 
-        body { 
-            font-family: 'Sarabun', sans-serif; 
-            background: var(--kt-body-bg); 
-            display: flex; 
-            justify-content: center; 
-            padding: 40px 20px; 
-            margin: 0; 
-        }
+        body { font-family: 'Sarabun', sans-serif; background: var(--kt-body-bg); display: flex; justify-content: center; padding: 40px 20px; margin: 0; }
+        .container { max-width: 650px; width: 100%; }
 
-        .container { 
-            max-width: 650px; 
-            width: 100%; 
-        }
+        .header-title { text-align: center; margin-bottom: 30px; }
+        h2 { color: var(--kt-text-dark); margin: 0 0 10px 0; font-weight: 700; font-size: 1.8rem; }
 
-        /* หัวข้อหน้า */
-        .header-title {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+        .search-card { background: #ffffff; padding: 25px; border-radius: var(--kt-card-radius); box-shadow: var(--kt-box-shadow); margin-bottom: 25px; }
+        .search-box { display: flex; gap: 15px; }
+        .search-box input { flex: 1; padding: 14px 20px; border: 2px solid var(--kt-border-color); border-radius: var(--kt-border-radius); font-size: 1.05rem; font-family: 'Sarabun', sans-serif; color: var(--kt-text-dark); transition: all 0.2s ease; }
+        .search-box input:focus { border-color: var(--kt-primary); outline: none; }
+        .search-box button { padding: 14px 25px; background: var(--kt-primary); color: white; border: none; border-radius: var(--kt-border-radius); font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 14px 0 rgba(0, 158, 247, 0.2); }
+        .search-box button:hover:not(:disabled) { background: #008BD9; transform: translateY(-2px); }
+        .search-box button:disabled { background: var(--kt-text-muted); cursor: not-allowed; box-shadow: none; }
 
-        h2 { 
-            color: var(--kt-text-dark); 
-            margin: 0 0 10px 0; 
-            font-weight: 700;
-            font-size: 1.8rem;
-        }
+        @media (max-width: 500px) { .search-box { flex-direction: column; } .search-box button { width: 100%; } }
 
-        /* กล่องค้นหา */
-        .search-card {
-            background: #ffffff; 
-            padding: 25px; 
-            border-radius: var(--kt-card-radius); 
-            box-shadow: var(--kt-box-shadow); 
-            margin-bottom: 25px;
-        }
-
-        .search-box { 
-            display: flex; 
-            gap: 15px; 
-        }
-
-        .search-box input { 
-            flex: 1; 
-            padding: 14px 20px; 
-            border: 2px solid var(--kt-border-color); 
-            border-radius: var(--kt-border-radius); 
-            font-size: 1.05rem; 
-            font-family: 'Sarabun', sans-serif;
-            color: var(--kt-text-dark);
-            transition: all 0.2s ease;
-        }
-
-        .search-box input:focus {
-            border-color: var(--kt-primary);
-            outline: none;
-        }
-
-        .search-box button { 
-            padding: 14px 25px; 
-            background: var(--kt-primary); 
-            color: white; 
-            border: none; 
-            border-radius: var(--kt-border-radius); 
-            font-size: 1.05rem; 
-            font-weight: 700; 
-            cursor: pointer; 
-            transition: all 0.3s ease; 
-            box-shadow: 0 4px 14px 0 rgba(0, 158, 247, 0.2);
-        }
-
-        .search-box button:hover { 
-            background: #008BD9; 
-            transform: translateY(-2px);
-        }
-
-        /* ปรับกล่องค้นหาให้ซ้อนกันบนมือถือ */
-        @media (max-width: 500px) {
-            .search-box { flex-direction: column; }
-            .search-box button { width: 100%; }
-        }
-
-        /* พื้นที่แสดงผลลัพธ์ */
         #resultContainer { display: none; }
         
-        /* สไตล์ของการ์ดข้อมูล (Metronic Cards) */
-        .card { 
-            background: #ffffff; 
-            border-radius: var(--kt-card-radius); 
-            box-shadow: var(--kt-box-shadow); 
-            margin-bottom: 20px; 
-            overflow: hidden;
-        }
-        
-        .card-header {
-            background: #F9F9F9;
-            padding: 15px 25px;
-            border-bottom: 1px solid var(--kt-border-color);
-            font-weight: 700;
-            font-size: 1.15rem;
-            color: var(--kt-text-dark);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-body {
-            padding: 25px;
-        }
+        .card { background: #ffffff; border-radius: var(--kt-card-radius); box-shadow: var(--kt-box-shadow); margin-bottom: 20px; overflow: hidden; }
+        .card-header { background: #F9F9F9; padding: 15px 25px; border-bottom: 1px solid var(--kt-border-color); font-weight: 700; font-size: 1.15rem; color: var(--kt-text-dark); display: flex; align-items: center; gap: 10px; }
+        .card-body { padding: 25px; }
         
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 15px; margin-bottom: 20px; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
-        
-        /* สลับเป็น 1 คอลัมน์เมื่อจอมือถือ */
-        @media (max-width: 500px) {
-            .grid-2, .grid-3 { grid-template-columns: 1fr; gap: 15px; }
-        }
+        @media (max-width: 500px) { .grid-2, .grid-3 { grid-template-columns: 1fr; gap: 15px; } }
 
-        .data-item {
-            display: flex;
-            flex-direction: column;
-        }
+        .data-item { display: flex; flex-direction: column; }
+        .label { font-size: 0.9rem; color: var(--kt-text-muted); font-weight: 500; margin-bottom: 3px; }
+        .value { font-size: 1.1rem; font-weight: 600; color: var(--kt-text-dark); }
         
-        .label { 
-            font-size: 0.9rem; 
-            color: var(--kt-text-muted); 
-            font-weight: 500;
-            margin-bottom: 3px;
-        }
-        
-        .value { 
-            font-size: 1.1rem; 
-            font-weight: 600; 
-            color: var(--kt-text-dark); 
-        }
-        
-        /* ป้ายสถานะ (Badges) */
-        .status-container {
-            text-align: center;
-            padding-top: 20px;
-            margin-top: 10px;
-            border-top: 1px dashed var(--kt-border-color);
-        }
-
-        .status-badge { 
-            display: inline-block; 
-            padding: 8px 20px; 
-            border-radius: 50px; 
-            font-weight: 700; 
-            font-size: 1.1rem; 
-            margin-top: 10px; 
-        }
-        
-        /* สีสถานะต่างๆ */
+        .status-container { text-align: center; padding-top: 20px; margin-top: 10px; border-top: 1px dashed var(--kt-border-color); }
+        .status-badge { display: inline-block; padding: 8px 20px; border-radius: 50px; font-weight: 700; font-size: 1.1rem; margin-top: 10px; }
         .status-pass { background: #E8FFF3; color: var(--kt-success); border: 1px solid var(--kt-success); }
         .status-fail { background: #FFF5F8; color: var(--kt-danger); border: 1px solid var(--kt-danger); }
         .status-wait { background: #FFF8DD; color: var(--kt-warning); border: 1px solid var(--kt-warning); }
 
-        .back-link { 
-            display: block; 
-            text-align: center; 
-            margin-top: 30px; 
-            color: var(--kt-text-muted); 
-            text-decoration: none; 
-            font-weight: 600;
-            transition: color 0.2s ease;
-        }
-        
+        .note-text { color: var(--kt-danger); font-size: 0.9rem; margin-top: 10px; font-weight: 500; }
+
+        .back-link { display: block; text-align: center; margin-top: 30px; color: var(--kt-text-muted); text-decoration: none; font-weight: 600; transition: color 0.2s ease; }
         .back-link:hover { color: var(--kt-primary); }
     </style>
 </head>
@@ -201,12 +65,11 @@
         <div class="search-card">
             <div class="search-box">
                 <input type="text" id="searchId" placeholder="กรอกเลขประจำตัวประชาชน 13 หลัก" maxlength="13">
-                <button onclick="checkStatus()">ค้นหาข้อมูล</button>
+                <button id="searchBtn" onclick="checkStatus()">ค้นหาข้อมูล</button>
             </div>
         </div>
 
         <div id="resultContainer">
-            
             <div class="card">
                 <div class="card-header">👤 ส่วนที่ 1: ข้อมูลการสมัครและสถานะ</div>
                 <div class="card-body">
@@ -221,6 +84,7 @@
                     <div class="status-container">
                         <span class="label">สถานะการสมัคร</span><br>
                         <div id="resStatus" class="status-badge status-wait">รอการตรวจสอบ</div>
+                        <div id="resNote" class="note-text" style="display:none;"></div>
                     </div>
                 </div>
             </div>
@@ -248,58 +112,107 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
         <a href="home.html" class="back-link">⬅️ กลับหน้าเมนูหลัก</a>
     </div>
 
     <script>
+        // ⚠️ นำ Web App URL อันใหม่ที่ Deploy เสร็จแล้วมาใส่ตรงนี้
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec";
+
         function checkStatus() {
             const searchId = document.getElementById('searchId').value;
+            const btn = document.getElementById('searchBtn');
+
             if(searchId.length < 13) {
                 alert("กรุณากรอกเลขประจำตัวประชาชนให้ครบ 13 หลัก");
                 return;
             }
 
-            // 1. อ่านค่าจากหน้า Admin (ถ้าไม่ได้ตั้งค่าไว้ ให้ถือว่าเป็นเฟส 1)
+            btn.innerHTML = "กำลังค้นหา... ⏳";
+            btn.disabled = true;
+            document.getElementById('resultContainer').style.display = 'none';
+
+            // ส่งข้อมูลไปถาม Google Apps Script
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'checkStatus',
+                    idCard: searchId
+                })
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.status === 'success') {
+                    // พบข้อมูลผู้ใช้งาน
+                    displayData(result.data);
+                } else {
+                    // ไม่พบข้อมูล
+                    alert("❌ " + result.message);
+                }
+            })
+            .catch(error => {
+                alert("❌ เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
+                console.error(error);
+            })
+            .finally(() => {
+                btn.innerHTML = "ค้นหาข้อมูล";
+                btn.disabled = false;
+            });
+        }
+
+        function displayData(data) {
+            // อ่านค่าจากหน้า Admin/IT
             const currentPhase = localStorage.getItem('systemPhase') || '1';
 
-            // แสดงกล่องผลลัพธ์หลัก
             document.getElementById('resultContainer').style.display = 'block';
 
-            // === ส่วน A: แสดงเสมอ (ข้อมูลการสมัคร) ===
-            document.getElementById('resName').innerText = "เด็กชายดาราศาสตร์";
-            document.getElementById('resLastname').innerText = "รักเรียน";
-            document.getElementById('resGrade').innerText = "ม.4";
-            document.getElementById('resSchool').innerText = "สามเสนวิทยาลัย";
-            document.getElementById('resProvince').innerText = "กรุงเทพมหานคร";
+            // === ส่วน 1: ข้อมูลการสมัคร ===
+            document.getElementById('resName').innerText = data.name || '-';
+            document.getElementById('resLastname').innerText = data.lastname || '-';
+            document.getElementById('resGrade').innerText = data.grade || '-';
+            document.getElementById('resSchool').innerText = data.school || '-';
+            document.getElementById('resProvince').innerText = data.province || '-';
             
             const statusElem = document.getElementById('resStatus');
-            statusElem.innerText = "ผ่านเกณฑ์ มีสิทธิ์สอบ";
-            statusElem.className = "status-badge status-pass"; 
-            // ตัวอย่าง: ถ้าไม่ผ่านให้เปลี่ยนคลาสเป็น "status-badge status-fail"
-
-            // === ส่วน B: ห้องสอบ (แสดงเมื่ออยู่เฟส 2 ขึ้นไป) ===
-            if (currentPhase >= 2) {
-                document.getElementById('resExamId').innerText = "69001";
-                document.getElementById('resRoom').innerText = "อาคาร 2 ห้อง 205";
-                document.getElementById('resSeat').innerText = "15";
+            const noteElem = document.getElementById('resNote');
+            
+            if (data.applyStatus === 'pass') {
+                statusElem.innerText = "ผ่านเกณฑ์ มีสิทธิ์สอบ";
+                statusElem.className = "status-badge status-pass";
+                noteElem.style.display = 'none';
+            } else if (data.applyStatus === 'fail') {
+                statusElem.innerText = "ไม่ผ่านเกณฑ์";
+                statusElem.className = "status-badge status-fail";
+                noteElem.innerText = "เหตุผล: " + (data.note || "กรุณาติดต่อศูนย์สอบ");
+                noteElem.style.display = 'block';
             } else {
-                document.getElementById('resExamId').innerText = "รอประกาศ";
-                document.getElementById('resRoom').innerText = "รอประกาศ";
+                statusElem.innerText = "รอการตรวจสอบ";
+                statusElem.className = "status-badge status-wait";
+                noteElem.style.display = 'none';
+            }
+
+            // === ส่วน 2: ห้องสอบ (แสดงเมื่ออยู่เฟส 2 ขึ้นไป และต้องผ่านเกณฑ์) ===
+            if (currentPhase >= 2 && data.applyStatus === 'pass') {
+                document.getElementById('resExamId').innerText = data.examId || "รอประกาศ";
+                document.getElementById('resRoom').innerText = data.room || "รอประกาศ";
+                document.getElementById('resSeat').innerText = data.seat || "-";
+            } else {
+                document.getElementById('resExamId').innerText = (data.applyStatus === 'pass') ? "รอประกาศ" : "-";
+                document.getElementById('resRoom').innerText = (data.applyStatus === 'pass') ? "รอประกาศ" : "-";
                 document.getElementById('resSeat').innerText = "-";
             }
 
-            // === ส่วน C: คะแนน (แสดงเมื่ออยู่เฟส 3 เท่านั้น) ===
-            if (currentPhase == 3) {
-                document.getElementById('resExamId2').innerText = "69001";
-                document.getElementById('resScore').innerText = "85";
-                document.getElementById('resScore').style.color = "#009EF7"; // สีฟ้า Metronic
+            // === ส่วน 3: คะแนน (แสดงเมื่ออยู่เฟส 3 เท่านั้น และต้องผ่านเกณฑ์) ===
+            if (currentPhase == 3 && data.applyStatus === 'pass') {
+                document.getElementById('resExamId2').innerText = data.examId || "รอประกาศ";
+                document.getElementById('resScore').innerText = data.score || "รอประกาศ";
+                document.getElementById('resScore').style.color = data.score ? "#009EF7" : "#A1A5B7";
             } else {
-                document.getElementById('resExamId2').innerText = "รอประกาศ";
-                document.getElementById('resScore').innerText = "รอประกาศ";
-                document.getElementById('resScore').style.color = "#A1A5B7"; // สีเทา Metronic
+                document.getElementById('resExamId2').innerText = (data.applyStatus === 'pass') ? "รอประกาศ" : "-";
+                document.getElementById('resScore').innerText = (data.applyStatus === 'pass') ? "รอประกาศ" : "-";
+                document.getElementById('resScore').style.color = "#A1A5B7";
             }
         }
     </script>

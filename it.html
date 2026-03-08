@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IT Control Panel | Samsen Astro POSN</title>
+    
+    <script>
+        const currentRole = localStorage.getItem('userRole');
+        // อนุญาตให้เฉพาะ 'it' เท่านั้นที่เข้าหน้านี้ได้
+        if (currentRole !== 'it') {
+            alert('⛔ ไม่อนุญาตให้เข้าถึง: พื้นที่นี้สงวนไว้สำหรับฝ่าย IT เท่านั้น');
+            window.location.replace('home.html'); 
+        }
+    </script>
+
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -16,9 +26,17 @@
         .container { background: #ffffff; padding: 2.5rem; border-radius: var(--kt-border-radius); box-shadow: var(--kt-box-shadow); max-width: 600px; width: 100%; box-sizing: border-box; }
         
         .header-title { display: flex; align-items: center; gap: 15px; margin-bottom: 5px; }
-        .header-icon { display: flex; align-items: center; justify-content: center; width: 50px; height: 50px; background: #181C32; color: white; border-radius: 12px; font-size: 1.5rem; }
+        .header-icon { display: flex; align-items: center; justify-content: center; width: 50px; height: 50px; border-radius: 12px; font-size: 1.5rem; }
+        .icon-dark { background: #181C32; color: white; }
+        .icon-blue { background: var(--kt-primary-light); color: var(--kt-primary); }
+
         h2 { color: var(--kt-text-dark); margin: 0; font-size: 1.5rem; font-weight: 700; }
-        p.subtitle { color: var(--kt-text-muted); margin-bottom: 25px; font-size: 1rem; border-bottom: 1px dashed var(--kt-border-color); padding-bottom: 15px; }
+        p.subtitle { color: var(--kt-text-muted); margin-bottom: 20px; font-size: 1rem; border-bottom: 1px dashed var(--kt-border-color); padding-bottom: 15px; }
+
+        /* กล่องตั้งค่าปีการศึกษา */
+        .year-setting-box { display: flex; align-items: center; gap: 15px; background: #ffffff; padding: 20px; border-radius: var(--kt-border-radius); margin-bottom: 30px; border: 2px solid var(--kt-border-color); }
+        .year-setting-box label { font-size: 1.1rem; font-weight: 700; color: var(--kt-text-dark); margin: 0; width: 140px; }
+        .year-input { flex: 1; padding: 12px 15px; border: 2px solid var(--kt-primary); border-radius: 8px; font-family: 'Sarabun'; font-size: 1.25rem; font-weight: 700; color: var(--kt-primary); text-align: center; outline: none; background: var(--kt-primary-light); }
 
         .radio-group { display: flex; align-items: flex-start; background: #ffffff; padding: 20px; border-radius: var(--kt-border-radius); margin-bottom: 15px; cursor: pointer; transition: all 0.2s ease; border: 2px dashed var(--kt-border-color); }
         .radio-group:hover { border-color: #B5B5C3; }
@@ -29,17 +47,31 @@
         label { font-size: 1.1rem; font-weight: 700; color: var(--kt-text-dark); cursor: pointer; }
         .desc { font-size: 0.95rem; color: var(--kt-text-muted); margin-top: 5px; line-height: 1.5; }
 
-        .btn-save { width: 100%; padding: 1.1rem; background: #181C32; color: white; border: none; border-radius: var(--kt-border-radius); font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 20px; transition: 0.3s; }
-        .btn-save:hover { background: #2b3047; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(24, 28, 50, 0.2); }
+        .btn-save { width: 100%; padding: 1.1rem; background: var(--kt-success); color: white; border: none; border-radius: var(--kt-border-radius); font-size: 1.15rem; font-weight: 700; cursor: pointer; margin-top: 20px; transition: 0.3s; font-family: 'Sarabun'; box-shadow: 0 4px 14px 0 rgba(80, 205, 137, 0.2);}
+        .btn-save:hover { background: #47BE7D; transform: translateY(-2px); box-shadow: 0 6px 20px 0 rgba(80, 205, 137, 0.3); }
+        .btn-back { display: block; text-align: center; margin-top: 20px; color: var(--kt-text-muted); text-decoration: none; font-weight: 600; transition: 0.2s; }
+        .btn-back:hover { color: var(--kt-primary); }
     </style>
 </head>
 <body>
     <div class="container">
+        
         <div class="header-title">
-            <div class="header-icon">💻</div>
-            <h2>IT Control Panel</h2>
+            <div class="header-icon icon-blue">📅</div>
+            <h2>การตั้งค่าปีการศึกษา</h2>
         </div>
-        <p class="subtitle">ระบบจัดการการแสดงผลหน้าเว็บไซต์ (System Phase Control)</p>
+        <p class="subtitle">กำหนดปีการศึกษาปัจจุบัน เพื่อให้ระบบดึงฐานข้อมูลได้ถูกต้อง</p>
+        
+        <div class="year-setting-box">
+            <label>ปีการศึกษาปัจจุบัน</label>
+            <input type="number" id="activeYear" class="year-input" value="2569">
+        </div>
+
+        <div class="header-title" style="margin-top: 40px;">
+            <div class="header-icon icon-dark">💻</div>
+            <h2>สถานะการแสดงผล (Phase)</h2>
+        </div>
+        <p class="subtitle">ควบคุมการเปิดเผยข้อมูลในหน้าตรวจสอบสถานะของผู้สมัคร</p>
 
         <div class="radio-group" id="box1" onclick="selectRadio('phase1')">
             <input type="radio" id="phase1" name="systemPhase" value="1">
@@ -66,10 +98,17 @@
         </div>
 
         <button class="btn-save" onclick="saveSettings()">💾 บันทึกและอัปเดตระบบ</button>
+        <a href="home.html" class="btn-back">⬅️ กลับหน้าเมนูหลัก</a>
     </div>
 
     <script>
+        // โหลดค่าเมื่อเปิดหน้าเว็บ
         window.onload = function() {
+            // โหลดปีการศึกษา (ถ้าไม่มีให้ใช้ 2569 เป็นค่าเริ่มต้น)
+            let savedYear = localStorage.getItem('activeYear') || '2569';
+            document.getElementById('activeYear').value = savedYear;
+
+            // โหลดเฟสการทำงาน
             let currentPhase = localStorage.getItem('systemPhase') || '1';
             document.getElementById('phase' + currentPhase).checked = true;
             updateBoxHighlight(currentPhase);
@@ -87,8 +126,21 @@
 
         function saveSettings() {
             const selectedPhase = document.querySelector('input[name="systemPhase"]:checked').value;
+            const activeYear = document.getElementById('activeYear').value;
+
+            if(!activeYear || activeYear.length !== 4) {
+                alert('⚠️ กรุณากรอกปีการศึกษาเป็นตัวเลข 4 หลัก (เช่น 2569)');
+                return;
+            }
+
+            // บันทึกลงใน Local Storage
             localStorage.setItem('systemPhase', selectedPhase); 
-            alert("✅ ระบบได้ทำการบันทึกและเปลี่ยนเฟสการทำงานเป็น 'เฟส " + selectedPhase + "' เรียบร้อยแล้ว");
+            localStorage.setItem('activeYear', activeYear); 
+
+            // [อนาคต] ต้องเขียน fetch ส่งค่า activeYear และ systemPhase นี้ขึ้นไปเซฟเก็บไว้ที่ Google Apps Script
+            // เพื่อให้ผู้ใช้ทุกคน (นักเรียน, แอดมินคนอื่น) เห็นค่าตรงกันทั้งระบบ
+
+            alert(`✅ อัปเดตระบบสำเร็จ!\nปีการศึกษาที่ใช้งาน: ${activeYear}\nเฟสการทำงาน: เฟส ${selectedPhase}`);
         }
     </script>
 </body>

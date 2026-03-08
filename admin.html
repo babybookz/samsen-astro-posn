@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบตรวจสอบใบสมัคร | Samsen Astro POSN</title>
+    
+    <script>
+        const currentRole = localStorage.getItem('userRole');
+        if (currentRole !== 'admin' && currentRole !== 'it') {
+            alert('⛔ ไม่อนุญาตให้เข้าถึง: คุณไม่มีสิทธิ์เข้าใช้งานหน้านี้');
+            window.location.replace('home.html');
+        }
+    </script>
+
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -13,43 +22,71 @@
         }
         body { font-family: 'Sarabun', sans-serif; background: var(--kt-body-bg); padding: 30px; margin: 0; }
         
-        .container { background: #ffffff; padding: 2rem; border-radius: var(--kt-border-radius); box-shadow: var(--kt-box-shadow); max-width: 1200px; margin: 0 auto; box-sizing: border-box; }
+        .container { background: #ffffff; padding: 2rem; border-radius: var(--kt-border-radius); box-shadow: var(--kt-box-shadow); max-width: 1300px; margin: 0 auto; box-sizing: border-box; }
         
         .header-title { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--kt-border-color); padding-bottom: 15px; margin-bottom: 20px; }
         .header-left { display: flex; align-items: center; gap: 15px; }
         .header-icon { font-size: 2rem; }
         h2 { color: var(--kt-text-dark); margin: 0; font-size: 1.6rem; font-weight: 700; }
         .subtitle { color: var(--kt-text-muted); font-size: 1rem; margin: 5px 0 0 0; }
+        .btn-back-header { background: #F5F8FA; color: var(--kt-text-dark); padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: 0.2s; }
+        .btn-back-header:hover { background: #E4E6EF; }
+
+        /* ระบบ Tabs */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { padding: 12px 25px; border: none; background: #F5F8FA; color: var(--kt-text-muted); font-size: 1.05rem; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.2s; font-family: 'Sarabun'; }
+        .tab-btn:hover { background: #E4E6EF; color: var(--kt-text-dark); }
+        .tab-btn.active { background: var(--kt-primary); color: white; box-shadow: 0 4px 10px rgba(0, 158, 247, 0.2); }
 
         /* การจัดการตาราง */
         .table-responsive { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
         th { background: #F5F8FA; color: var(--kt-text-muted); font-size: 0.85rem; text-transform: uppercase; font-weight: 700; padding: 15px; text-align: left; border-bottom: 1px solid var(--kt-border-color); white-space: nowrap; }
         td { padding: 15px; font-size: 0.95rem; color: var(--kt-text-dark); border-bottom: 1px dashed var(--kt-border-color); vertical-align: middle; }
         tr:hover { background-color: #F9F9F9; }
 
-        .badge { padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; display: inline-block; }
+        .badge { padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; display: inline-block; text-align: center; }
         .badge-wait { background: #FFF8DD; color: var(--kt-warning); }
         .badge-success { background: #E8FFF3; color: var(--kt-success); }
         .badge-danger { background: #FFF5F8; color: var(--kt-danger); }
+        .exam-id-badge { background: #F1FAFF; color: var(--kt-primary); font-family: monospace; font-size: 1rem; letter-spacing: 1px;}
 
-        .btn-action { padding: 8px 15px; background: var(--kt-primary); color: white; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.2s; white-space: nowrap; }
+        /* ปุ่มในตาราง */
+        .btn-action { padding: 8px 15px; background: var(--kt-primary); color: white; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.2s; white-space: nowrap; font-family: 'Sarabun';}
         .btn-action:hover { background: #008BD9; }
-
-        /* ระบบ Modal (Popup ตรวจสอบ) */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
-        .modal-content { background: white; padding: 30px; border-radius: var(--kt-border-radius); width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .modal-header { font-size: 1.25rem; font-weight: 700; margin-bottom: 20px; color: var(--kt-text-dark); border-bottom: 1px solid var(--kt-border-color); padding-bottom: 10px; }
         
+        /* ปุ่มสถานะเสร็จสิ้น */
+        .btn-done { background: #A1A5B7; }
+        .btn-done:hover { background: #7E8299; }
+
+        .empty-state { text-align: center; padding: 40px; color: var(--kt-text-muted); font-size: 1.1rem; }
+
+        /* ระบบ Modal แบบหน้ากว้าง */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
+        .modal-content { background: white; padding: 30px; border-radius: var(--kt-border-radius); width: 850px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .modal-header { font-size: 1.25rem; font-weight: 700; margin-bottom: 20px; color: var(--kt-text-dark); border-bottom: 1px solid var(--kt-border-color); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center;}
+        
+        .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        @media (max-width: 768px) { .modal-grid { grid-template-columns: 1fr; } }
+        
+        .info-section { background: #F9F9F9; padding: 20px; border-radius: 12px; border: 1px solid var(--kt-border-color); }
+        .info-title { font-size: 1.1rem; font-weight: 700; color: var(--kt-primary); margin-top: 0; margin-bottom: 15px; border-bottom: 1px dashed var(--kt-border-color); padding-bottom: 5px;}
+        .info-row { display: flex; margin-bottom: 10px; font-size: 0.95rem; }
+        .info-label { width: 140px; font-weight: 600; color: var(--kt-text-muted); }
+        .info-value { flex: 1; color: var(--kt-text-dark); font-weight: 500; }
+        
+        .btn-view-slip { display: inline-block; padding: 5px 10px; background: #181C32; color: white; text-decoration: none; border-radius: 6px; font-size: 0.85rem; margin-top: 5px; transition: 0.2s;}
+        .btn-view-slip:hover { background: #323a5e; }
+
         .form-group { margin-bottom: 15px; }
         label { display: block; font-weight: 600; color: var(--kt-text-dark); margin-bottom: 8px; font-size: 0.95rem; }
         select, textarea { width: 100%; padding: 12px; border: 1px solid var(--kt-border-color); border-radius: 8px; font-family: 'Sarabun'; font-size: 1rem; color: var(--kt-text-dark); box-sizing: border-box; }
         select:focus, textarea:focus { border-color: var(--kt-primary); outline: none; }
         
-        .modal-footer { display: flex; gap: 10px; margin-top: 25px; }
-        .btn-save-modal { flex: 1; padding: 12px; background: var(--kt-success); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .modal-footer { display: flex; gap: 10px; margin-top: 25px; grid-column: 1 / -1;}
+        .btn-save-modal { flex: 1; padding: 12px; background: var(--kt-success); color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s; font-family: 'Sarabun';}
         .btn-save-modal:hover { background: #47BE7D; }
-        .btn-cancel { flex: 1; padding: 12px; background: #F5F8FA; color: var(--kt-text-muted); border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-cancel { flex: 1; padding: 12px; background: #F5F8FA; color: var(--kt-text-muted); border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s; font-family: 'Sarabun';}
         .btn-cancel:hover { background: #E4E6EF; color: var(--kt-text-dark); }
     </style>
 </head>
@@ -61,120 +98,270 @@
                 <div class="header-icon">📋</div>
                 <div>
                     <h2>ระบบตรวจสอบสิทธิ์ผู้สมัคร</h2>
-                    <p class="subtitle">ศูนย์สอบ สอวน. ดาราศาสตร์ โรงเรียนสามเสนวิทยาลัย</p>
+                    <p class="subtitle">ศูนย์สอบ สอวน. ดาราศาสตร์ โรงเรียนสามเสนวิทยาลัย (ปีการศึกษา 2569)</p>
                 </div>
             </div>
+            <a href="home.html" class="btn-back-header">⬅️ กลับหน้าเมนูหลัก</a>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" id="tab-m-ton" onclick="switchTab('ม.ต้น')">มัธยมศึกษาตอนต้น</button>
+            <button class="tab-btn" id="tab-m-plai" onclick="switchTab('ม.ปลาย')">มัธยมศึกษาตอนปลาย</button>
         </div>
 
         <div class="table-responsive">
             <table>
                 <thead>
                     <tr>
-                        <th>เลขประจำตัวประชาชน</th>
-                        <th>ระดับ</th>
+                        <th>ลำดับใบสมัคร</th>
+                        <th>เวลาที่สมัคร</th>
+                        <th>เลขประจำตัวสอบ</th>
                         <th>ชื่อ - นามสกุล</th>
                         <th>โรงเรียน</th>
-                        <th>สถานะปัจจุบัน</th>
-                        <th>หมายเหตุ</th>
+                        <th>สถานะ</th>
                         <th>การจัดการ</th>
                     </tr>
                 </thead>
                 <tbody id="applicantTable">
-                    <tr>
-                        <td>1100012345678</td>
-                        <td>ม.ต้น</td>
-                        <td>เด็กชายดาราศาสตร์ รักเรียน</td>
-                        <td>สามเสนวิทยาลัย</td>
-                        <td><span class="badge badge-wait">รอตรวจสอบ</span></td>
-                        <td style="color:var(--kt-text-muted);">-</td>
-                        <td><button class="btn-action" onclick="openReviewModal('1100012345678', 'เด็กชายดาราศาสตร์ รักเรียน')">ตรวจสิทธิ์</button></td>
-                    </tr>
-                    <tr>
-                        <td>1100098765432</td>
-                        <td>ม.ปลาย</td>
-                        <td>นายวิทยาศาสตร์ ทดสอบ</td>
-                        <td>เตรียมอุดมศึกษา</td>
-                        <td><span class="badge badge-success">ผ่านเกณฑ์</span></td>
-                        <td style="color:var(--kt-text-muted);">-</td>
-                        <td><button class="btn-action" onclick="openReviewModal('1100098765432', 'นายวิทยาศาสตร์ ทดสอบ')">แก้ไข</button></td>
-                    </tr>
-                </tbody>
+                    </tbody>
             </table>
         </div>
     </div>
 
     <div id="reviewModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header" id="modalTitle">บันทึกผลการตรวจสอบ</div>
+            <div class="modal-header">
+                <span id="modalTitle">พิจารณาใบสมัคร</span>
+                <button style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#A1A5B7;" onclick="closeModal()">&times;</button>
+            </div>
             
-            <div class="form-group">
-                <label>ผลการตรวจสอบสิทธิ์</label>
-                <select id="statusSelect" onchange="toggleReasonField()">
-                    <option value="wait">รอตรวจสอบ</option>
-                    <option value="pass">ผ่านเกณฑ์ (มีสิทธิ์สอบ)</option>
-                    <option value="fail">ไม่ผ่านเกณฑ์</option>
-                </select>
-            </div>
+            <div class="modal-grid">
+                <div class="info-section">
+                    <div class="info-title">📄 ข้อมูลผู้สมัคร</div>
+                    <div class="info-row"><div class="info-label">ลำดับใบสมัคร:</div><div class="info-value" id="v_no"></div></div>
+                    <div class="info-row"><div class="info-label">เวลาที่สมัคร:</div><div class="info-value" id="v_time"></div></div>
+                    <div class="info-row"><div class="info-label">เลข ปชช.:</div><div class="info-value" id="v_idCard"></div></div>
+                    <div class="info-row"><div class="info-label">ชื่อ-นามสกุล:</div><div class="info-value" id="v_fullname"></div></div>
+                    <div class="info-row"><div class="info-label">ว/ด/ป เกิด:</div><div class="info-value" id="v_dob"></div></div>
+                    <div class="info-row"><div class="info-label">ระดับที่สมัคร:</div><div class="info-value" id="v_applyLevel"></div></div>
+                    <div class="info-row"><div class="info-label">ชั้นเรียนปัจจุบัน:</div><div class="info-value" id="v_grade"></div></div>
+                    <div class="info-row"><div class="info-label">โรงเรียน:</div><div class="info-value" id="v_school"></div></div>
+                    <div class="info-row"><div class="info-label">เบอร์นักเรียน:</div><div class="info-value" id="v_phone"></div></div>
+                    <div class="info-row"><div class="info-label">ครูผู้สอน:</div><div class="info-value" id="v_teacher"></div></div>
+                    
+                    <div style="margin-top: 15px; border-top: 1px solid #E4E6EF; padding-top: 15px;">
+                        <div class="info-label">หลักฐานการชำระเงิน:</div>
+                        <a href="#" id="v_slipUrl" target="_blank" class="btn-view-slip">🔍 คลิกดูรูปภาพสลิปโอนเงิน</a>
+                    </div>
+                </div>
 
-            <div class="form-group">
-                <label>เหตุผล / หมายเหตุ <span style="color:var(--kt-danger); font-size:0.8rem;" id="reasonReq">(จำเป็นหากไม่ผ่าน)</span></label>
-                <textarea id="reasonNote" rows="3" placeholder="ระบุสาเหตุ เช่น ภาพสลิปโอนเงินไม่ชัดเจน, อายุเกินเกณฑ์ ฯลฯ"></textarea>
-            </div>
+                <div>
+                    <div class="info-title" style="color:#181C32;">⚙️ การพิจารณาอนุมัติ</div>
+                    
+                    <div class="form-group">
+                        <label>ผลการตรวจสอบสิทธิ์</label>
+                        <select id="statusSelect" onchange="toggleReasonField()">
+                            <option value="wait">รอตรวจสอบ</option>
+                            <option value="pass">ผ่านเกณฑ์ (ออกเลขที่นั่งสอบ)</option>
+                            <option value="fail">ไม่ผ่านเกณฑ์ (ระบุเหตุผล)</option>
+                        </select>
+                    </div>
 
-            <div class="modal-footer">
-                <button class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
-                <button class="btn-save-modal" onclick="submitReview()">บันทึกข้อมูล</button>
+                    <div class="form-group">
+                        <label>เหตุผล / หมายเหตุ <span style="color:var(--kt-danger); font-size:0.8rem; display:none;" id="reasonReq">(บังคับกรอก)</span></label>
+                        <textarea id="reasonNote" rows="4" placeholder="ระบุสาเหตุ เช่น ภาพสลิปโอนเงินไม่ชัดเจน, อายุเกินเกณฑ์ตามธรรมนูญ ฯลฯ"></textarea>
+                    </div>
+                    
+                    <div id="examIdDisplayBox" style="display:none; margin-top: 15px; padding: 15px; background: #F1FAFF; border-radius: 8px; border: 1px dashed var(--kt-primary); text-align: center;">
+                        <div style="font-size:0.85rem; color:var(--kt-text-muted);">เลขประจำตัวสอบที่ออกให้แล้ว</div>
+                        <div id="v_examId" style="font-size:1.5rem; font-weight:700; color:var(--kt-primary); font-family:monospace;"></div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
+                    <button class="btn-save-modal" onclick="submitReview()">💾 บันทึกข้อมูล</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        let currentApplicantId = '';
+        // ==========================================
+        // ส่วนจำลองฐานข้อมูลผู้สมัคร (Mock Database)
+        // ==========================================
+        let mockApplicants = [
+            { 
+                no: 1, time: '01/03/2569 09:30', idCard: '1100012345678', prefix: 'เด็กชาย', fname: 'ดาราศาสตร์', lname: 'รักเรียน', 
+                dob: '15/05/2012', phone: '0812345678', grade: 'ม.2', school: 'สามเสนวิทยาลัย', province: 'กรุงเทพมหานคร', 
+                teacher: 'ครูสมคิด', applyLevel: 'ม.ต้น', slipUrl: '#', status: 'wait', note: '', examId: '' 
+            },
+            { 
+                no: 2, time: '01/03/2569 10:15', idCard: '1100011111111', prefix: 'เด็กหญิง', fname: 'จักรวาล', lname: 'กว้างไกล', 
+                dob: '12/08/2011', phone: '0822222222', grade: 'ม.3', school: 'หอวัง', province: 'กรุงเทพมหานคร', 
+                teacher: '-', applyLevel: 'ม.ต้น', slipUrl: '#', status: 'wait', note: '', examId: '' 
+            },
+            { 
+                no: 1, time: '02/03/2569 14:15', idCard: '1100098765432', prefix: 'นาย', fname: 'วิทยาศาสตร์', lname: 'ทดสอบ', 
+                dob: '20/10/2008', phone: '0898765432', grade: 'ม.4', school: 'เตรียมอุดมศึกษา', province: 'กรุงเทพมหานคร', 
+                teacher: '-', applyLevel: 'ม.ปลาย', slipUrl: '#', status: 'pass', note: '', examId: '6920001' 
+            },
+            { 
+                no: 2, time: '05/03/2569 10:00', idCard: '1100055555555', prefix: 'นางสาว', fname: 'เนบิวลา', lname: 'สว่างตา', 
+                dob: '01/01/2009', phone: '0855555555', grade: 'ม.5', school: 'สตรีวิทยา', province: 'กรุงเทพมหานคร', 
+                teacher: 'ครูสมชาย', applyLevel: 'ม.ปลาย', slipUrl: '#', status: 'fail', note: 'ไม่ผ่านเกณฑ์: รูปสลิปโอนเงินไม่ชัดเจน', examId: '' 
+            }
+        ];
 
-        // เปิดหน้าต่าง Modal
-        function openReviewModal(id, name) {
-            currentApplicantId = id;
-            document.getElementById('modalTitle').innerText = "พิจารณาสิทธิ์: " + name;
-            document.getElementById('statusSelect').value = 'wait'; // Reset ค่า
-            document.getElementById('reasonNote').value = ''; // Reset ค่า
+        let currentReviewIdCard = '';
+        let currentLevel = 'ม.ต้น'; // ค่าเริ่มต้นเมื่อเปิดหน้าเว็บ
+
+        // ฟังก์ชันสลับแท็บ
+        function switchTab(level) {
+            currentLevel = level;
+            
+            document.getElementById('tab-m-ton').classList.remove('active');
+            document.getElementById('tab-m-plai').classList.remove('active');
+            
+            if (level === 'ม.ต้น') {
+                document.getElementById('tab-m-ton').classList.add('active');
+            } else {
+                document.getElementById('tab-m-plai').classList.add('active');
+            }
+
+            renderTable();
+        }
+
+        // ฟังก์ชันสร้างตารางโดยกรองตามระดับชั้น
+        function renderTable() {
+            const tbody = document.getElementById('applicantTable');
+            tbody.innerHTML = '';
+
+            let filteredData = mockApplicants.filter(app => app.applyLevel === currentLevel);
+
+            if (filteredData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">ยังไม่มีข้อมูลผู้สมัครในระดับชั้นนี้</div></td></tr>`;
+                return;
+            }
+
+            filteredData.forEach(app => {
+                let statusBadge = '';
+                let btnText = '';
+                let btnClass = 'btn-action';
+
+                // กำหนดรูปแบบ Badge และข้อความ/สีปุ่ม ตามสถานะ
+                if(app.status === 'wait') {
+                    statusBadge = '<span class="badge badge-wait">รอตรวจสอบ</span>';
+                    btnText = 'ตรวจสิทธิ์';
+                } else if(app.status === 'pass') {
+                    statusBadge = '<span class="badge badge-success">ผ่านเกณฑ์</span>';
+                    btnText = 'เสร็จสิ้น';
+                    btnClass = 'btn-action btn-done'; // เติม Class สีเทา
+                } else if(app.status === 'fail') {
+                    statusBadge = '<span class="badge badge-danger">ไม่ผ่านเกณฑ์</span>';
+                    btnText = 'แก้ไข';
+                }
+
+                let examIdText = app.examId ? `<span class="badge exam-id-badge">${app.examId}</span>` : '<span style="color:#A1A5B7;">-</span>';
+
+                let row = `<tr>
+                    <td>${app.no}</td>
+                    <td>${app.time}</td>
+                    <td>${examIdText}</td>
+                    <td style="font-weight: 600;">${app.prefix}${app.fname} ${app.lname}</td>
+                    <td>${app.school}</td>
+                    <td>${statusBadge}</td>
+                    <td><button class="${btnClass}" onclick="openReviewModal('${app.idCard}')">${btnText}</button></td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // เปิด Modal พร้อมดึงข้อมูลใส่ฟอร์ม
+        function openReviewModal(idCard) {
+            currentReviewIdCard = idCard;
+            const app = mockApplicants.find(a => a.idCard === idCard);
+            
+            document.getElementById('modalTitle').innerText = "พิจารณาใบสมัครลำดับที่ " + app.no + " (" + app.applyLevel + ")";
+            
+            // ใส่ข้อมูลฝั่งซ้าย
+            document.getElementById('v_no').innerText = app.no;
+            document.getElementById('v_time').innerText = app.time;
+            document.getElementById('v_idCard').innerText = app.idCard;
+            document.getElementById('v_fullname').innerText = `${app.prefix}${app.fname} ${app.lname}`;
+            document.getElementById('v_dob').innerText = app.dob;
+            document.getElementById('v_applyLevel').innerText = app.applyLevel;
+            document.getElementById('v_grade').innerText = app.grade;
+            document.getElementById('v_school').innerText = `${app.school} (${app.province})`;
+            document.getElementById('v_phone').innerText = app.phone;
+            document.getElementById('v_teacher').innerText = app.teacher || '-';
+            document.getElementById('v_slipUrl').href = app.slipUrl;
+
+            // ตั้งค่าฟอร์มฝั่งขวา
+            document.getElementById('statusSelect').value = app.status;
+            document.getElementById('reasonNote').value = app.note;
             toggleReasonField();
+
+            // โชว์เลขที่สอบถ้ามี
+            if(app.examId) {
+                document.getElementById('examIdDisplayBox').style.display = 'block';
+                document.getElementById('v_examId').innerText = app.examId;
+            } else {
+                document.getElementById('examIdDisplayBox').style.display = 'none';
+            }
+
             document.getElementById('reviewModal').style.display = 'flex';
         }
 
-        // ปิดหน้าต่าง Modal
         function closeModal() {
             document.getElementById('reviewModal').style.display = 'none';
         }
 
-        // ไฮไลต์บังคับกรอกเหตุผลถ้าเลือก "ไม่ผ่านเกณฑ์"
         function toggleReasonField() {
             const status = document.getElementById('statusSelect').value;
-            const reasonReq = document.getElementById('reasonReq');
-            if(status === 'fail') {
-                reasonReq.style.display = 'inline';
-            } else {
-                reasonReq.style.display = 'none';
-            }
+            document.getElementById('reasonReq').style.display = (status === 'fail') ? 'inline' : 'none';
         }
 
-        // บันทึกข้อมูล
+        // ฟังก์ชันบันทึกและรันเลขที่นั่งสอบ
         function submitReview() {
             const status = document.getElementById('statusSelect').value;
             const note = document.getElementById('reasonNote').value;
             
             if(status === 'fail' && note.trim() === '') {
-                alert('กรุณาระบุเหตุผลที่ไม่ผ่านเกณฑ์ เพื่อให้นักเรียนทราบครับ');
+                alert('⚠️ กรุณาระบุเหตุผลที่ไม่ผ่านเกณฑ์ เพื่อแจ้งให้นักเรียนทราบครับ');
                 return;
             }
 
-            // [อนาคต] เขียนโค้ดส่งค่าไปยัง Google Apps Script / Firebase ตรงนี้
-            console.log("Saving Data...", { id: currentApplicantId, status: status, note: note });
+            // หา Index ของข้อมูลใน Array
+            const appIndex = mockApplicants.findIndex(a => a.idCard === currentReviewIdCard);
+            const app = mockApplicants[appIndex];
+
+            app.status = status;
+            app.note = note;
+
+            // 🌟 ตรรกะการรันเลขประจำตัวสอบ
+            if(status === 'pass' && !app.examId) {
+                const year = "69"; 
+                const levelCode = (app.applyLevel === "มัธยมศึกษาตอนต้น" || app.applyLevel === "ม.ต้น") ? "1" : "2";
+                const sequence = String(app.no).padStart(4, '0');
+                
+                app.examId = year + levelCode + sequence; 
+            } 
+            else if (status !== 'pass') {
+                app.examId = ''; 
+            }
+
+            // [อัปเดตข้อมูลจำลอง]
+            mockApplicants[appIndex] = app;
+
+            alert(`✅ บันทึกข้อมูลเรียบร้อย!\nสถานะ: ${status === 'pass' ? 'ผ่านเกณฑ์ (ได้เลขสอบ: '+app.examId+')' : (status === 'fail' ? 'ไม่ผ่านเกณฑ์' : 'รอตรวจสอบ')}`);
             
-            alert("✅ บันทึกผลการพิจารณาของเลขบัตร " + currentApplicantId + " สำเร็จ!");
             closeModal();
-            
-            // [อนาคต] สั่ง Refresh ตารางดึงข้อมูลใหม่
+            renderTable(); // วาดตารางใหม่เพื่ออัปเดตปุ่มทันที
         }
+
+        // เริ่มต้นวาดตารางเมื่อโหลดหน้าเว็บ
+        window.onload = renderTable;
     </script>
 </body>
 </html>

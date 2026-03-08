@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จัดการข้อมูลการสอบ | Samsen Astro POSN</title>
+    
+    <script>
+        const currentRole = localStorage.getItem('userRole');
+        if (currentRole !== 'admin' && currentRole !== 'it') {
+            alert('⛔ ไม่อนุญาตให้เข้าถึง: คุณไม่มีสิทธิ์เข้าใช้งานหน้านี้');
+            window.location.replace('home.html');
+        }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --kt-body-bg: #F3F6F9; --kt-text-dark: #181C32; --kt-text-muted: #A1A5B7;
+            --kt-primary: #009EF7; --kt-success: #50CD89; --kt-warning: #FFC700;
+            --kt-border-color: #E4E6EF; --kt-border-radius: 0.75rem; --kt-box-shadow: 0px 0px 20px 0px rgba(76, 87, 125, 0.1);
+        }
+        body { font-family: 'Sarabun', sans-serif; background: var(--kt-body-bg); padding: 30px; margin: 0; }
+        
+        .container { background: #ffffff; padding: 2rem; border-radius: var(--kt-border-radius); box-shadow: var(--kt-box-shadow); max-width: 1300px; margin: 0 auto; box-sizing: border-box; }
+        
+        .header-title { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--kt-border-color); padding-bottom: 15px; margin-bottom: 20px; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-icon { font-size: 2rem; }
+        h2 { color: var(--kt-text-dark); margin: 0; font-size: 1.6rem; font-weight: 700; }
+        .subtitle { color: var(--kt-text-muted); font-size: 1rem; margin: 5px 0 0 0; }
+        .btn-back-header { background: #F5F8FA; color: var(--kt-text-dark); padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: 0.2s; }
+        .btn-back-header:hover { background: #E4E6EF; }
+
+        /* ระบบ Tabs */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { padding: 12px 25px; border: none; background: #F5F8FA; color: var(--kt-text-muted); font-size: 1.05rem; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.2s; font-family: 'Sarabun'; }
+        .tab-btn:hover { background: #E4E6EF; color: var(--kt-text-dark); }
+        .tab-btn.active { background: var(--kt-primary); color: white; box-shadow: 0 4px 10px rgba(0, 158, 247, 0.2); }
+
+        /* การจัดการตาราง */
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th { background: #F5F8FA; color: var(--kt-text-muted); font-size: 0.85rem; text-transform: uppercase; font-weight: 700; padding: 15px; text-align: left; border-bottom: 1px solid var(--kt-border-color); white-space: nowrap; }
+        td { padding: 10px 15px; font-size: 0.95rem; color: var(--kt-text-dark); border-bottom: 1px dashed var(--kt-border-color); vertical-align: middle; }
+        tr:hover { background-color: #F9F9F9; }
+
+        .exam-id-badge { background: #F1FAFF; color: var(--kt-primary); font-family: monospace; font-size: 1.1rem; padding: 5px 10px; border-radius: 6px; font-weight: 700; letter-spacing: 1px; }
+
+        /* ช่องกรอกข้อมูลในตาราง */
+        .inline-input { width: 100%; padding: 8px 12px; border: 1px solid var(--kt-border-color); border-radius: 6px; font-family: 'Sarabun'; font-size: 0.95rem; box-sizing: border-box; transition: 0.2s; }
+        .inline-input:focus { border-color: var(--kt-primary); outline: none; background: #F1FAFF; }
+        .input-score { width: 80px; text-align: center; font-weight: 700; color: var(--kt-primary); }
+
+        .btn-save { padding: 8px 15px; background: var(--kt-success); color: white; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.2s; white-space: nowrap; font-family: 'Sarabun';}
+        .btn-save:hover { background: #47BE7D; }
+
+        .empty-state { text-align: center; padding: 40px; color: var(--kt-text-muted); font-size: 1.1rem; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-title">
+            <div class="header-left">
+                <div class="header-icon">✍️</div>
+                <div>
+                    <h2>จัดการห้องสอบและคะแนน</h2>
+                    <p class="subtitle">ระบบบันทึกข้อมูลสำหรับผู้ที่มีสิทธิ์สอบเรียงตามเลขประจำตัวสอบ</p>
+                </div>
+            </div>
+            <a href="home.html" class="btn-back-header">⬅️ กลับหน้าเมนูหลัก</a>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" id="tab-m-ton" onclick="switchTab('ม.ต้น')">มัธยมศึกษาตอนต้น</button>
+            <button class="tab-btn" id="tab-m-plai" onclick="switchTab('ม.ปลาย')">มัธยมศึกษาตอนปลาย</button>
+        </div>
+
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>เลขประจำตัวสอบ</th>
+                        <th>ชื่อ - นามสกุล</th>
+                        <th>โรงเรียน</th>
+                        <th style="width: 180px;">ห้องสอบ</th>
+                        <th style="width: 100px;">ลำดับที่นั่ง</th>
+                        <th style="width: 100px;">คะแนนสอบ</th>
+                        <th>การจัดการ</th>
+                    </tr>
+                </thead>
+                <tbody id="examTableBody">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // ข้อมูลจำลอง (Mock Data) สำหรับทดสอบระบบ
+        // *ดึงมาเฉพาะคนที่ status = 'pass' เท่านั้น
+        // ==========================================
+        let mockApplicants = [
+            { idCard: '11111', examId: '690001', prefix: 'ด.ช.', fname: 'สมชาย', lname: 'ใจดี', school: 'สามเสนวิทยาลัย', applyLevel: 'ม.ต้น', status: 'pass', room: '', seat: '', score: '' },
+            { idCard: '22222', examId: '690002', prefix: 'ด.ญ.', fname: 'สมหญิง', lname: 'รักเรียน', school: 'หอวัง', applyLevel: 'ม.ต้น', status: 'pass', room: 'อาคาร 2 ห้อง 201', seat: '1', score: '85' },
+            { idCard: '33333', examId: '690005', prefix: 'นาย', fname: 'วิทยา', lname: 'ศาสตร์', school: 'เตรียมอุดมศึกษา', applyLevel: 'ม.ปลาย', status: 'pass', room: '', seat: '', score: '' },
+            { idCard: '44444', examId: '690003', prefix: 'ด.ช.', fname: 'ดารา', lname: 'ศาสตร์', school: 'สวนกุหลาบ', applyLevel: 'ม.ต้น', status: 'pass', room: '', seat: '', score: '' }
+        ];
+
+        let currentLevel = 'ม.ต้น'; // ค่าเริ่มต้น
+
+        // ฟังก์ชันสลับแท็บ
+        function switchTab(level) {
+            currentLevel = level;
+            
+            // อัปเดตสไตล์ปุ่ม Tab
+            document.getElementById('tab-m-ton').classList.remove('active');
+            document.getElementById('tab-m-plai').classList.remove('active');
+            
+            if (level === 'ม.ต้น') {
+                document.getElementById('tab-m-ton').classList.add('active');
+            } else {
+                document.getElementById('tab-m-plai').classList.add('active');
+            }
+
+            renderTable();
+        }
+
+        // ฟังก์ชันวาดตาราง
+        function renderTable() {
+            const tbody = document.getElementById('examTableBody');
+            tbody.innerHTML = '';
+
+            // 1. คัดกรองข้อมูล: เอาเฉพาะ 'pass' และ ระดับชั้นที่เลือก
+            let filteredData = mockApplicants.filter(app => app.status === 'pass' && app.applyLevel === currentLevel);
+
+            // 2. เรียงลำดับ: ตามเลขประจำตัวสอบ (น้อยไปมาก)
+            filteredData.sort((a, b) => parseInt(a.examId) - parseInt(b.examId));
+
+            if (filteredData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">ยังไม่มีข้อมูลผู้มีสิทธิ์สอบในระดับชั้นนี้</div></td></tr>`;
+                return;
+            }
+
+            // 3. สร้างแถวตาราง
+            filteredData.forEach(app => {
+                let row = `<tr>
+                    <td><span class="exam-id-badge">${app.examId}</span></td>
+                    <td style="font-weight: 600;">${app.prefix}${app.fname} ${app.lname}</td>
+                    <td>${app.school}</td>
+                    <td><input type="text" id="room_${app.idCard}" class="inline-input" placeholder="เช่น อาคาร 2 ห้อง 201" value="${app.room}"></td>
+                    <td><input type="text" id="seat_${app.idCard}" class="inline-input" placeholder="เลขที่" value="${app.seat}"></td>
+                    <td><input type="number" id="score_${app.idCard}" class="inline-input input-score" placeholder="คะแนน" value="${app.score}"></td>
+                    <td><button class="btn-save" onclick="saveData('${app.idCard}')">💾 บันทึก</button></td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // ฟังก์ชันบันทึกข้อมูลของแต่ละแถว
+        function saveData(idCard) {
+            const roomVal = document.getElementById(`room_${idCard}`).value;
+            const seatVal = document.getElementById(`seat_${idCard}`).value;
+            const scoreVal = document.getElementById(`score_${idCard}`).value;
+
+            // [จำลองการอัปเดตข้อมูล]
+            const index = mockApplicants.findIndex(app => app.idCard === idCard);
+            if (index !== -1) {
+                mockApplicants[index].room = roomVal;
+                mockApplicants[index].seat = seatVal;
+                mockApplicants[index].score = scoreVal;
+            }
+
+            // [อนาคต] ตรงนี้จะใส่ fetch(GAS_URL) เพื่อส่งข้อมูลไปเซฟทับใน Google Sheets ของจริง
+
+            alert(`✅ บันทึกข้อมูลของเลขบัตร ${idCard} สำเร็จ!\nห้องสอบ: ${roomVal || '-'} | ลำดับ: ${seatVal || '-'} | คะแนน: ${scoreVal || '-'}`);
+        }
+
+        // โหลดข้อมูลครั้งแรก
+        window.onload = renderTable;
+    </script>
+</body>
+</html>
