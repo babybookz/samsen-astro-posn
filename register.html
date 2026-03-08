@@ -385,9 +385,58 @@
         document.getElementById('registerForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
-            btn.innerHTML = "กำลังแปลงไฟล์รูปและส่งข้อมูล... ⏳";
+            btn.innerHTML = "กำลังตรวจสอบเงื่อนไข... ⏳";
             btn.disabled = true;
 
+            // ==========================================
+            // ส่วนตรวจสอบเงื่อนไขตามธรรมนูญการแข่งขัน สอวน.
+            // ==========================================
+            const birthDateValue = document.getElementById('birthDate').value;
+            const applyLevel = document.querySelector('input[name="applyLevel"]:checked').value;
+            const grade = document.getElementById('grade').value;
+
+            // ตรวจสอบวันเกิดและคำนวณอายุโดยใช้วันที่ 1 ม.ค. ของปีที่จัดสอบเป็นเกณฑ์
+            const bDate = new Date(birthDateValue);
+            const baseDate = new Date('2026-01-01'); // ปีที่จัดแข่งขันคือ 2026 (พ.ศ. 2569)
+
+            let age = baseDate.getFullYear() - bDate.getFullYear();
+            const m = baseDate.getMonth() - bDate.getMonth();
+            if (m < 0 || (m === 0 && baseDate.getDate() < bDate.getDate())) {
+                age--; // ลบอายุลง 1 ปีหากยังไม่ถึงวันเกิดในเดือน/วันนั้น
+            }
+
+            // ฟังก์ชันคืนค่าปุ่มเมื่อตรวจสอบไม่ผ่าน
+            const rejectApplication = (message) => {
+                alert(message);
+                btn.innerHTML = "✓ ยืนยันการส่งข้อมูลสมัครสอบ";
+                btn.disabled = false;
+            };
+
+            // 1. กฎทั่วไป: อายุต้องไม่ต่ำกว่า 13 ปี
+            if (age < 13) {
+                return rejectApplication("❌ ไม่ผ่านเกณฑ์: ผู้เข้าแข่งขันต้องมีอายุไม่ต่ำกว่า 13 ปีบริบูรณ์\n(นับถึงวันที่ 1 ม.ค. 2026 อายุของคุณคือ " + Math.max(0, age) + " ปี)");
+            }
+
+            // 2. กฎแยกระดับชั้น
+            if (applyLevel === "มัธยมศึกษาตอนต้น") {
+                if (age > 15) {
+                    return rejectApplication("❌ ไม่ผ่านเกณฑ์: ผู้เข้าแข่งขันระดับ ม.ต้น ต้องมีอายุไม่เกิน 15 ปี\n(นับถึงวันที่ 1 ม.ค. 2026 อายุของคุณคือ " + age + " ปี)");
+                }
+                if (!["ม.1", "ม.2", "ม.3"].includes(grade)) {
+                    return rejectApplication("❌ ไม่ผ่านเกณฑ์: ผู้เข้าแข่งขันระดับ ม.ต้น ต้องกำลังศึกษาอยู่ในชั้น ม.1 ถึง ม.3 เท่านั้น");
+                }
+            } else if (applyLevel === "มัธยมศึกษาตอนปลาย") {
+                if (age > 19) {
+                    return rejectApplication("❌ ไม่ผ่านเกณฑ์: ผู้เข้าแข่งขันระดับ ม.ปลาย ต้องมีอายุไม่เกิน 19 ปี\n(นับถึงวันที่ 1 ม.ค. 2026 อายุของคุณคือ " + age + " ปี)");
+                }
+                if (!["ม.3", "ม.4", "ม.5"].includes(grade)) {
+                    return rejectApplication("❌ ไม่ผ่านเกณฑ์: ผู้เข้าแข่งขันระดับ ม.ปลาย ต้องกำลังศึกษาอยู่ในชั้น ม.3 ถึง ม.5 เท่านั้น\n(ไม่อนุญาตให้นักเรียนชั้น ม.6 สมัครสอบตามธรรมนูญการแข่งขัน)");
+                }
+            }
+            // ==========================================
+
+            // หากผ่านเงื่อนไขทั้งหมด ให้ทำการแปลงไฟล์และส่งข้อมูล
+            btn.innerHTML = "กำลังแปลงไฟล์รูปและส่งข้อมูล... ⏳";
             const fileInput = document.getElementById('paymentSlip');
             const file = fileInput.files[0];
 
@@ -399,9 +448,7 @@
                     sendData(base64String, file.type, file.name);
                 };
                 reader.onerror = function (error) {
-                    alert("❌ เกิดข้อผิดพลาดในการอ่านไฟล์รูปภาพ");
-                    btn.innerHTML = "✓ ยืนยันการส่งข้อมูลสมัครสอบ";
-                    btn.disabled = false;
+                    rejectApplication("❌ เกิดข้อผิดพลาดในการอ่านไฟล์รูปภาพ");
                 };
             } else {
                 sendData("", "", "");
@@ -437,10 +484,8 @@
                     window.location.href = "status.html";
                 })
                 .catch(error => {
-                    alert("❌ เกิดข้อผิดพลาด ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้\n(โปรดตรวจสอบว่าตั้งค่า 'ผู้มีสิทธิ์เข้าถึง' เป็น 'ทุกคน' ใน Google Apps Script แล้ว)");
                     console.error(error);
-                    btn.innerHTML = "✓ ยืนยันการส่งข้อมูลสมัครสอบ";
-                    btn.disabled = false;
+                    rejectApplication("❌ เกิดข้อผิดพลาด ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้\n(โปรดตรวจสอบว่าตั้งค่า 'ผู้มีสิทธิ์เข้าถึง' เป็น 'ทุกคน' ใน Google Apps Script แล้ว)");
                 });
             }
         });
