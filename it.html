@@ -7,7 +7,6 @@
     
     <script>
         const currentRole = localStorage.getItem('userRole');
-        // อนุญาตให้เฉพาะ 'it' เท่านั้นที่เข้าหน้านี้ได้
         if (currentRole !== 'it') {
             alert('⛔ ไม่อนุญาตให้เข้าถึง: พื้นที่นี้สงวนไว้สำหรับฝ่าย IT เท่านั้น');
             window.location.replace('home.html'); 
@@ -17,54 +16,76 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --kt-body-bg: #F3F6F9; --kt-text-dark: #181C32; --kt-text-muted: #A1A5B7;
-            --kt-primary: #009EF7; --kt-primary-light: #F1FAFF;
-            --kt-success: #50CD89; --kt-border-color: #E4E6EF;
-            --kt-border-radius: 0.75rem; --kt-box-shadow: 0px 0px 20px 0px rgba(76, 87, 125, 0.1);
+            /* Theme Colors */
+            --theme-purple: #311B5E;
+            --theme-purple-light: #E8EAF6;
+            --theme-orange: #FF8F00;
+            --theme-orange-hover: #E68100;
+            --bg-light: #F8F9FA;
+            --text-dark: #181C32;
+            --text-muted: #7E8299;
+            --border-color: #E4E6EF;
+            --border-radius: 15px;
+            --box-shadow: 0px 10px 30px 0px rgba(49, 27, 94, 0.08);
         }
-        body { font-family: 'Sarabun', sans-serif; background: var(--kt-body-bg); padding: 40px 20px; margin: 0; display: flex; justify-content: center; }
-        .container { background: #ffffff; padding: 2.5rem; border-radius: var(--kt-border-radius); box-shadow: var(--kt-box-shadow); max-width: 600px; width: 100%; box-sizing: border-box; }
+        body { font-family: 'Sarabun', sans-serif; background: var(--bg-light); padding: 40px 20px; margin: 0; display: flex; justify-content: center; }
+        .container { background: #ffffff; padding: 2.5rem; border-radius: var(--border-radius); box-shadow: var(--box-shadow); max-width: 650px; width: 100%; box-sizing: border-box; border-top: 5px solid var(--theme-purple); }
         
         .header-title { display: flex; align-items: center; gap: 15px; margin-bottom: 5px; }
-        .header-icon { display: flex; align-items: center; justify-content: center; width: 50px; height: 50px; border-radius: 12px; font-size: 1.5rem; }
-        .icon-dark { background: #181C32; color: white; }
-        .icon-blue { background: var(--kt-primary-light); color: var(--kt-primary); }
+        .header-icon { display: flex; align-items: center; justify-content: center; width: 45px; height: 45px; border-radius: 12px; font-size: 1.5rem; }
+        .icon-purple { background: var(--theme-purple-light); color: var(--theme-purple); }
+        .icon-orange { background: #FFF3E0; color: var(--theme-orange); }
+        .icon-dark { background: #ECEFF1; color: #455A64; }
 
-        h2 { color: var(--kt-text-dark); margin: 0; font-size: 1.5rem; font-weight: 700; }
-        p.subtitle { color: var(--kt-text-muted); margin-bottom: 20px; font-size: 1rem; border-bottom: 1px dashed var(--kt-border-color); padding-bottom: 15px; }
+        h2 { color: var(--theme-purple); margin: 0; font-size: 1.5rem; font-weight: 700; }
+        p.subtitle { color: var(--text-muted); margin-bottom: 20px; font-size: 0.95rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 15px; }
 
-        /* กล่องตั้งค่าปีการศึกษา */
-        .year-setting-box { display: flex; align-items: center; gap: 15px; background: #ffffff; padding: 20px; border-radius: var(--kt-border-radius); margin-bottom: 30px; border: 2px solid var(--kt-border-color); }
-        .year-setting-box label { font-size: 1.1rem; font-weight: 700; color: var(--kt-text-dark); margin: 0; width: 140px; }
-        .year-input { flex: 1; padding: 12px 15px; border: 2px solid var(--kt-primary); border-radius: 8px; font-family: 'Sarabun'; font-size: 1.25rem; font-weight: 700; color: var(--kt-primary); text-align: center; outline: none; background: var(--kt-primary-light); }
+        /* กล่องตั้งค่า Input */
+        .setting-box { display: flex; align-items: center; gap: 15px; background: #ffffff; padding: 20px; border-radius: 12px; margin-bottom: 30px; border: 1px solid var(--border-color); transition: 0.3s;}
+        .setting-box:focus-within { border-color: var(--theme-purple); box-shadow: 0 0 0 3px rgba(49, 27, 94, 0.1); }
+        .setting-box label { font-size: 1.05rem; font-weight: 700; color: var(--text-dark); margin: 0; width: 160px; }
+        .setting-input { flex: 1; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Sarabun'; font-size: 1.1rem; font-weight: 600; color: var(--theme-purple); outline: none; background: var(--bg-light); transition: 0.3s;}
+        .setting-input:focus { border-color: var(--theme-purple); background: white;}
 
-        .radio-group { display: flex; align-items: flex-start; background: #ffffff; padding: 20px; border-radius: var(--kt-border-radius); margin-bottom: 15px; cursor: pointer; transition: all 0.2s ease; border: 2px dashed var(--kt-border-color); }
-        .radio-group:hover { border-color: #B5B5C3; }
-        .radio-group.active { border: 2px solid var(--kt-primary); background: var(--kt-primary-light); }
+        /* Radio Group สำหรับ Phase */
+        .radio-group { display: flex; align-items: flex-start; background: #ffffff; padding: 20px; border-radius: 12px; margin-bottom: 15px; cursor: pointer; transition: all 0.2s ease; border: 2px dashed var(--border-color); }
+        .radio-group:hover { border-color: var(--text-muted); }
+        .radio-group.active { border: 2px solid var(--theme-purple); background: var(--theme-purple-light); }
         
-        input[type="radio"] { transform: scale(1.3); margin-right: 15px; margin-top: 5px; cursor: pointer; accent-color: var(--kt-primary); }
+        input[type="radio"] { transform: scale(1.3); margin-right: 15px; margin-top: 5px; cursor: pointer; accent-color: var(--theme-purple); }
         .label-content { display: flex; flex-direction: column; }
-        label { font-size: 1.1rem; font-weight: 700; color: var(--kt-text-dark); cursor: pointer; }
-        .desc { font-size: 0.95rem; color: var(--kt-text-muted); margin-top: 5px; line-height: 1.5; }
+        .label-content label { font-size: 1.1rem; font-weight: 700; color: var(--text-dark); cursor: pointer; margin: 0;}
+        .desc { font-size: 0.95rem; color: var(--text-muted); margin-top: 5px; line-height: 1.5; }
 
-        .btn-save { width: 100%; padding: 1.1rem; background: var(--kt-success); color: white; border: none; border-radius: var(--kt-border-radius); font-size: 1.15rem; font-weight: 700; cursor: pointer; margin-top: 20px; transition: 0.3s; font-family: 'Sarabun'; box-shadow: 0 4px 14px 0 rgba(80, 205, 137, 0.2);}
-        .btn-save:hover { background: #47BE7D; transform: translateY(-2px); box-shadow: 0 6px 20px 0 rgba(80, 205, 137, 0.3); }
-        .btn-back { display: block; text-align: center; margin-top: 20px; color: var(--kt-text-muted); text-decoration: none; font-weight: 600; transition: 0.2s; }
-        .btn-back:hover { color: var(--kt-primary); }
+        .btn-save { width: 100%; padding: 16px; background: var(--theme-orange); color: white; border: none; border-radius: 50px; font-size: 1.15rem; font-weight: 700; cursor: pointer; margin-top: 20px; transition: 0.3s; font-family: 'Sarabun'; box-shadow: 0 5px 15px rgba(255, 143, 0, 0.3);}
+        .btn-save:hover { background: var(--theme-orange-hover); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 143, 0, 0.4); }
+        .btn-back { display: block; text-align: center; margin-top: 20px; color: var(--text-muted); text-decoration: none; font-weight: 600; transition: 0.2s; }
+        .btn-back:hover { color: var(--theme-purple); }
     </style>
 </head>
 <body>
     <div class="container">
         
         <div class="header-title">
-            <div class="header-icon icon-blue">📅</div>
-            <h2>การตั้งค่าปีการศึกษา</h2>
+            <div class="header-icon icon-purple">📅</div>
+            <h2>ปีการศึกษา (Active Year)</h2>
         </div>
-        <p class="subtitle">กำหนดปีการศึกษาปัจจุบัน เพื่อให้ระบบดึงฐานข้อมูลได้ถูกต้อง</p>
+        <p class="subtitle">ระบบจะดึงฐานข้อมูลและแสดงผลหน้าเว็บตามปีการศึกษานี้ทั้งหมด</p>
         
-        <div class="year-setting-box">
+        <div class="setting-box">
             <label>ปีการศึกษาปัจจุบัน</label>
-            <input type="number" id="activeYear" class="year-input" value="2569">
+            <input type="number" id="activeYear" class="setting-input" value="2569" style="text-align: center; font-size: 1.25rem;">
+        </div>
+
+        <div class="header-title">
+            <div class="header-icon icon-orange">⏳</div>
+            <h2>เวลาปิดรับสมัคร (Deadline)</h2>
+        </div>
+        <p class="subtitle">เวลาสิ้นสุดการรับสมัคร จะไปเชื่อมต่อกับนาฬิกานับถอยหลังในหน้าแรก</p>
+        
+        <div class="setting-box">
+            <label>วัน-เวลาสิ้นสุด</label>
+            <input type="datetime-local" id="regDeadline" class="setting-input">
         </div>
 
         <div class="header-title" style="margin-top: 40px;">
@@ -97,16 +118,21 @@
             </div>
         </div>
 
-        <button class="btn-save" onclick="saveSettings()">💾 บันทึกและอัปเดตระบบ</button>
+        <button class="btn-save" onclick="saveSettings()">💾 บันทึกและอัปเดตระบบทั่วทั้งเว็บไซต์</button>
         <a href="home.html" class="btn-back">⬅️ กลับหน้าเมนูหลัก</a>
     </div>
 
     <script>
-        // โหลดค่าเมื่อเปิดหน้าเว็บ
         window.onload = function() {
-            // โหลดปีการศึกษา (ถ้าไม่มีให้ใช้ 2569 เป็นค่าเริ่มต้น)
+            // โหลดปีการศึกษา
             let savedYear = localStorage.getItem('activeYear') || '2569';
             document.getElementById('activeYear').value = savedYear;
+
+            // โหลดเวลาปิดรับสมัคร
+            let savedDeadline = localStorage.getItem('regDeadline');
+            if(savedDeadline) {
+                document.getElementById('regDeadline').value = savedDeadline;
+            }
 
             // โหลดเฟสการทำงาน
             let currentPhase = localStorage.getItem('systemPhase') || '1';
@@ -127,20 +153,25 @@
         function saveSettings() {
             const selectedPhase = document.querySelector('input[name="systemPhase"]:checked').value;
             const activeYear = document.getElementById('activeYear').value;
+            const regDeadline = document.getElementById('regDeadline').value;
 
             if(!activeYear || activeYear.length !== 4) {
-                alert('⚠️ กรุณากรอกปีการศึกษาเป็นตัวเลข 4 หลัก (เช่น 2569)');
-                return;
+                return alert('⚠️ กรุณากรอกปีการศึกษาเป็นตัวเลข 4 หลัก (เช่น 2569)');
+            }
+            if(!regDeadline) {
+                return alert('⚠️ กรุณาระบุวัน-เวลาปิดรับสมัครให้ชัดเจน');
             }
 
-            // บันทึกลงใน Local Storage
+            // บันทึกลงใน Local Storage เพื่อให้หน้าอื่นดึงไปใช้
             localStorage.setItem('systemPhase', selectedPhase); 
             localStorage.setItem('activeYear', activeYear); 
+            localStorage.setItem('regDeadline', regDeadline); 
 
-            // [อนาคต] ต้องเขียน fetch ส่งค่า activeYear และ systemPhase นี้ขึ้นไปเซฟเก็บไว้ที่ Google Apps Script
-            // เพื่อให้ผู้ใช้ทุกคน (นักเรียน, แอดมินคนอื่น) เห็นค่าตรงกันทั้งระบบ
+            // จัดรูปแบบวันที่เพื่อแจ้งเตือน
+            let dateObj = new Date(regDeadline);
+            let dateString = dateObj.toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' });
 
-            alert(`✅ อัปเดตระบบสำเร็จ!\nปีการศึกษาที่ใช้งาน: ${activeYear}\nเฟสการทำงาน: เฟส ${selectedPhase}`);
+            alert(`✅ อัปเดตระบบสำเร็จ!\n\nปีการศึกษา: ${activeYear}\nเวลาปิดรับสมัคร: ${dateString}\nเฟสการทำงาน: เฟส ${selectedPhase}`);
         }
     </script>
 </body>

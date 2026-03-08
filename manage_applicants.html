@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จัดการผู้สมัครสอบ | Samsen Astro POSN</title>
+    
+    <script>
+        const currentRole = localStorage.getItem('userRole');
+        if (currentRole !== 'admin' && currentRole !== 'it') {
+            alert('ไม่อนุญาตให้เข้าถึง: คุณไม่มีสิทธิ์เข้าใช้งานหน้านี้');
+            window.location.replace('home.html');
+        }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Theme Colors (Match with Home) */
+            --theme-purple: #311B5E; 
+            --theme-purple-light: #4A2B8C;
+            --theme-orange: #FF8F00; 
+            --theme-orange-hover: #E68100;
+            --bg-light: #F8F9FA;
+            --text-dark: #181C32;
+            --text-muted: #7E8299;
+            --danger: #F1416C;
+            --success: #50CD89;
+            --warning: #FFC700;
+            --border-color: #E4E6EF;
+            --border-radius: 12px;
+            --box-shadow: 0px 10px 30px 0px rgba(49, 27, 94, 0.05);
+        }
+        body { font-family: 'Sarabun', sans-serif; background: var(--bg-light); margin: 0; color: var(--text-dark); overflow-x: hidden; }
+        
+        /* ================= HEADER & NAVIGATION ================= */
+        .navbar { background-color: var(--theme-purple); padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        .nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: white;}
+        .nav-brand img { height: 45px; width: auto; background: white; padding: 3px; border-radius: 8px;}
+        .nav-brand div { line-height: 1.1; }
+        .brand-title { font-weight: 700; font-size: 1.2rem; }
+        .brand-sub { font-size: 0.8rem; color: #D1C4E9; }
+
+        .nav-links { display: flex; gap: 25px; align-items: center; }
+        .nav-links a { color: white; text-decoration: none; font-weight: 500; font-size: 1rem; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--theme-orange); }
+
+        /* ================= MAIN CONTAINER ================= */
+        .page-wrapper { padding: 40px 20px; display: flex; justify-content: center; }
+        .container { background: #ffffff; padding: 40px; border-radius: var(--border-radius); box-shadow: var(--box-shadow); max-width: 1400px; width: 100%; box-sizing: border-box; border-top: 5px solid var(--theme-purple); }
+        
+        .header-title { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--border-color); padding-bottom: 20px; margin-bottom: 30px; }
+        h2 { color: var(--theme-purple); margin: 0; font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px;}
+        .subtitle { color: var(--text-muted); font-size: 1.05rem; margin: 5px 0 0 0; }
+
+        /* Tabs */
+        .tabs { display: flex; gap: 15px; margin-bottom: 25px; }
+        .tab-btn { padding: 12px 30px; border: 1px solid var(--border-color); background: var(--bg-light); color: var(--text-muted); font-size: 1.1rem; font-weight: 700; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; font-family: 'Sarabun'; }
+        .tab-btn:hover { border-color: var(--theme-purple); color: var(--theme-purple); }
+        .tab-btn.active { background: var(--theme-purple); color: white; border-color: var(--theme-purple); box-shadow: 0 4px 15px rgba(49, 27, 94, 0.2); }
+
+        /* Controls Row */
+        .controls-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: var(--bg-light); padding: 15px 25px; border-radius: var(--border-radius); border: 1px solid var(--border-color);}
+        .select-rows { padding: 8px 15px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Sarabun'; font-size: 1rem; outline: none; color: var(--text-dark); background: white;}
+        .pagination { display: flex; gap: 10px; align-items: center; }
+        .btn-page { padding: 8px 15px; background: white; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: 0.2s; font-family: 'Sarabun'; font-weight: 600; color: var(--theme-purple);}
+        .btn-page:hover:not(:disabled) { background: var(--theme-purple-light); color: white; border-color: var(--theme-purple-light);}
+        .btn-page:disabled { color: var(--text-muted); cursor: not-allowed; opacity: 0.6;}
+        .page-info { font-size: 1rem; color: var(--text-dark); font-weight: 600; margin: 0 10px;}
+
+        /* Table */
+        .table-responsive { overflow-x: auto; border: 1px solid var(--border-color); border-radius: var(--border-radius); }
+        table { width: 100%; border-collapse: collapse; min-width: 1100px; background: white;}
+        th { background: var(--theme-purple); color: white; font-size: 0.95rem; font-weight: 600; padding: 18px; text-align: left; white-space: nowrap; letter-spacing: 0.5px;}
+        td { padding: 12px 18px; font-size: 1rem; color: var(--text-dark); border-bottom: 1px dashed var(--border-color); vertical-align: middle; }
+        tr:hover { background-color: #F9FAFC; }
+
+        .badge { padding: 8px 15px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; display: inline-block; text-align: center; }
+        .badge-wait { background: #FFF8E1; color: var(--theme-orange); border: 1px solid #FFE082;}
+        .badge-success { background: #E8F5E9; color: #2E7D32; border: 1px solid #A5D6A7;}
+        .badge-danger { background: #FFEBEE; color: #C62828; border: 1px solid #EF9A9A;}
+        .exam-id-badge { background: var(--bg-light); color: var(--theme-purple); border: 1px solid var(--border-color); font-family: monospace; font-size: 1.1rem; padding: 6px 12px; border-radius: 8px; font-weight: 700; letter-spacing: 1px;}
+
+        .btn-action { padding: 10px 20px; background: var(--theme-orange); color: white; border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: 'Sarabun'; box-shadow: 0 4px 10px rgba(255, 143, 0, 0.2);}
+        .btn-action:hover { background: var(--theme-orange-hover); transform: translateY(-2px);}
+        .btn-done { background: var(--text-muted); box-shadow: none;}
+        .btn-done:hover { background: #6c757d; transform: none;}
+
+        .empty-state { text-align: center; padding: 60px; color: var(--text-muted); font-size: 1.2rem; }
+        .loading-box { text-align: center; padding: 60px; font-size: 1.2rem; color: var(--theme-purple); font-weight: 700;}
+
+        /* Modal (Popup) */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
+        .modal-content { background: white; padding: 40px; border-radius: var(--border-radius); width: 850px; max-height: 90vh; overflow-y: auto; box-shadow: 0 15px 40px rgba(0,0,0,0.2); border-top: 5px solid var(--theme-orange);}
+        .modal-header { font-size: 1.4rem; font-weight: 700; margin-bottom: 25px; color: var(--theme-purple); border-bottom: 2px solid var(--border-color); padding-bottom: 15px; display: flex; justify-content: space-between; align-items: center;}
+        .btn-close-modal { background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--text-muted); transition: 0.3s; line-height: 1;}
+        .btn-close-modal:hover { color: var(--danger); }
+        
+        .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        @media (max-width: 768px) { .modal-grid { grid-template-columns: 1fr; } }
+        
+        .info-section { background: var(--bg-light); padding: 25px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .info-title { font-size: 1.15rem; font-weight: 700; color: var(--theme-purple); margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid var(--theme-orange); padding-bottom: 8px; display: inline-block;}
+        .info-row { display: flex; margin-bottom: 12px; font-size: 1rem; }
+        .info-label { width: 140px; font-weight: 600; color: var(--text-muted); }
+        .info-value { flex: 1; color: var(--text-dark); font-weight: 600; }
+        
+        .btn-view-slip { display: inline-block; padding: 10px 20px; background: var(--theme-purple); color: white; text-decoration: none; border-radius: 8px; font-size: 0.95rem; font-weight: 600; margin-top: 10px; transition: 0.3s;}
+        .btn-view-slip:hover { background: var(--theme-purple-light); box-shadow: 0 4px 10px rgba(49, 27, 94, 0.2);}
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; font-size: 1.05rem; }
+        select, textarea { width: 100%; padding: 14px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Sarabun'; font-size: 1rem; color: var(--text-dark); box-sizing: border-box; background: var(--bg-light); transition: 0.3s;}
+        select:focus, textarea:focus { border-color: var(--theme-orange); outline: none; background: white; box-shadow: 0 0 0 3px rgba(255, 143, 0, 0.1);}
+        
+        .modal-footer { display: flex; gap: 15px; margin-top: 30px; grid-column: 1 / -1; border-top: 1px solid var(--border-color); padding-top: 20px;}
+        .btn-save-modal { flex: 1; padding: 15px; background: var(--theme-orange); color: white; border: none; border-radius: 50px; font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: 0.3s; font-family: 'Sarabun';}
+        .btn-save-modal:hover { background: var(--theme-orange-hover); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 143, 0, 0.3);}
+        .btn-cancel { flex: 1; padding: 15px; background: white; color: var(--text-muted); border: 1px solid var(--border-color); border-radius: 50px; font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: 0.3s; font-family: 'Sarabun';}
+        .btn-cancel:hover { background: var(--bg-light); color: var(--text-dark); }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="home.html" class="nav-brand">
+            <img src="assets/samsen-emblem.png" alt="Samsen Logo">
+            <div>
+                <div class="brand-title">SAMSEN ASTRO</div>
+                <div class="brand-sub">POSN System</div>
+            </div>
+        </a>
+        <div class="nav-links">
+            <a href="home.html">หน้าแรก</a>
+            <a href="manage_applicants.html" style="color: var(--theme-orange); font-weight: 700;">จัดการผู้สมัคร</a>
+            <a href="manage_exam.html">จัดการคะแนน</a>
+        </div>
+    </nav>
+
+    <div class="page-wrapper">
+        <div class="container">
+            <div class="header-title">
+                <div>
+                    <h2>ระบบตรวจสอบสิทธิ์และจัดการผู้สมัคร</h2>
+                    <p class="subtitle" id="pageSubtitle">ศูนย์สอบ สอวน. ดาราศาสตร์ โรงเรียนสามเสนวิทยาลัย</p>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" id="tab-m-ton" onclick="switchTab('ม.ต้น')">ระดับมัธยมศึกษาตอนต้น</button>
+                <button class="tab-btn" id="tab-m-plai" onclick="switchTab('ม.ปลาย')">ระดับมัธยมศึกษาตอนปลาย</button>
+            </div>
+
+            <div class="controls-row" id="controlsRow" style="display: none;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <label style="font-weight: 600; font-size: 1rem; color: var(--theme-purple);">แสดงผล:</label>
+                    <select id="rowsPerPage" class="select-rows" onchange="changeRowsPerPage()">
+                        <option value="50">50 รายการ</option>
+                        <option value="100">100 รายการ</option>
+                        <option value="all">แสดงทั้งหมด</option>
+                    </select>
+                </div>
+                <div class="pagination">
+                    <button class="btn-page" id="btnPrev" onclick="prevPage()">หน้าก่อนหน้า</button>
+                    <span class="page-info" id="pageInfo">หน้า 1 / 1</span>
+                    <button class="btn-page" id="btnNext" onclick="nextPage()">หน้าถัดไป</button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ลำดับ</th>
+                            <th>เวลาที่สมัคร</th>
+                            <th>เลขประจำตัวสอบ</th>
+                            <th>ชื่อ - นามสกุล</th>
+                            <th>โรงเรียน</th>
+                            <th>สถานะ</th>
+                            <th>การจัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="applicantTable">
+                        <tr><td colspan="7"><div class="loading-box">กำลังโหลดข้อมูล... ⏳</div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="reviewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalTitle">พิจารณาใบสมัคร</span>
+                <button class="btn-close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-grid">
+                <div class="info-section">
+                    <div class="info-title">ข้อมูลผู้สมัคร</div>
+                    <div class="info-row"><div class="info-label">ลำดับใบสมัคร:</div><div class="info-value" id="v_no"></div></div>
+                    <div class="info-row"><div class="info-label">เวลาที่สมัคร:</div><div class="info-value" id="v_time"></div></div>
+                    <div class="info-row"><div class="info-label">เลข ปชช.:</div><div class="info-value" id="v_idCard"></div></div>
+                    <div class="info-row"><div class="info-label">ชื่อ-นามสกุล:</div><div class="info-value" id="v_fullname"></div></div>
+                    <div class="info-row"><div class="info-label">ว/ด/ป เกิด:</div><div class="info-value" id="v_dob"></div></div>
+                    <div class="info-row"><div class="info-label">ระดับที่สมัคร:</div><div class="info-value" id="v_applyLevel"></div></div>
+                    <div class="info-row"><div class="info-label">ชั้นเรียนปัจจุบัน:</div><div class="info-value" id="v_grade"></div></div>
+                    <div class="info-row"><div class="info-label">โรงเรียน:</div><div class="info-value" id="v_school"></div></div>
+                    <div class="info-row"><div class="info-label">เบอร์นักเรียน:</div><div class="info-value" id="v_phone"></div></div>
+                    <div class="info-row"><div class="info-label">ครูผู้สอน:</div><div class="info-value" id="v_teacher"></div></div>
+                    <div style="margin-top: 20px; border-top: 1px dashed var(--border-color); padding-top: 15px;">
+                        <div class="info-label" style="margin-bottom: 5px;">หลักฐานการชำระเงิน:</div>
+                        <a href="#" id="v_slipUrl" target="_blank" class="btn-view-slip">คลิกดูรูปภาพสลิปโอนเงิน</a>
+                    </div>
+                </div>
+                <div>
+                    <div class="info-title">การพิจารณาอนุมัติ</div>
+                    <div class="form-group">
+                        <label>ผลการตรวจสอบสิทธิ์</label>
+                        <select id="statusSelect" onchange="toggleReasonField()">
+                            <option value="wait">รอตรวจสอบ</option>
+                            <option value="pass">ผ่านเกณฑ์ (ระบบจะออกเลขที่นั่งสอบให้)</option>
+                            <option value="fail">ไม่ผ่านเกณฑ์ (ต้องระบุเหตุผล)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>เหตุผล / หมายเหตุ <span style="color:var(--danger); font-size:0.85rem; display:none;" id="reasonReq">(บังคับกรอก)</span></label>
+                        <textarea id="reasonNote" rows="4" placeholder="ระบุสาเหตุ เช่น ภาพสลิปโอนเงินไม่ชัดเจน, อายุเกินเกณฑ์ตามธรรมนูญ ฯลฯ"></textarea>
+                    </div>
+                    <div id="examIdDisplayBox" style="display:none; margin-top: 20px; padding: 20px; background: var(--theme-purple-light); border-radius: 12px; text-align: center; color: white;">
+                        <div style="font-size:0.95rem; opacity: 0.8; margin-bottom: 5px;">เลขประจำตัวสอบที่ออกให้แล้ว</div>
+                        <div id="v_examId" style="font-size:1.8rem; font-weight:700; font-family:monospace; letter-spacing: 2px;"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
+                    <button class="btn-save-modal" id="btnSaveData" onclick="submitReview()">บันทึกข้อมูล</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ⚠️ วาง Web App URL ที่นี่
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec";
+        
+        let dbApplicants = []; 
+        let currentReviewIdCard = '';
+        let currentLevel = 'ม.ต้น'; 
+        let activeYear = localStorage.getItem('activeYear') || new Date().getFullYear() + 543;
+
+        let currentPage = 1;
+        let rowsPerPage = 50;
+
+        window.onload = function() {
+            document.getElementById('pageSubtitle').innerText = `ประจำปีการศึกษา ${activeYear}`;
+            fetchDataFromSheet();
+        };
+
+        function switchTab(level) {
+            currentLevel = level;
+            document.getElementById('tab-m-ton').classList.remove('active');
+            document.getElementById('tab-m-plai').classList.remove('active');
+            if (level === 'ม.ต้น') document.getElementById('tab-m-ton').classList.add('active');
+            else document.getElementById('tab-m-plai').classList.add('active');
+
+            fetchDataFromSheet(); 
+        }
+
+        function fetchDataFromSheet() {
+            document.getElementById('applicantTable').innerHTML = `<tr><td colspan="7"><div class="loading-box">กำลังโหลดข้อมูล... ⏳</div></td></tr>`;
+            document.getElementById('controlsRow').style.display = 'none';
+            
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'getAdminData', activeYear: activeYear, level: currentLevel })
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.status === 'success') {
+                    dbApplicants = result.data; 
+                    currentPage = 1;
+                    renderTable();
+                } else {
+                    alert('เกิดข้อผิดพลาดในการโหลดข้อมูล');
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                document.getElementById('applicantTable').innerHTML = `<tr><td colspan="7"><div class="empty-state">เชื่อมต่อฐานข้อมูลล้มเหลว กรุณาลองใหม่</div></td></tr>`;
+            });
+        }
+
+        function changeRowsPerPage() {
+            let val = document.getElementById('rowsPerPage').value;
+            rowsPerPage = (val === 'all') ? dbApplicants.length : parseInt(val);
+            currentPage = 1;
+            renderTable();
+        }
+
+        function prevPage() {
+            if (currentPage > 1) { currentPage--; renderTable(); }
+        }
+
+        function nextPage() {
+            let totalPages = Math.ceil(dbApplicants.length / rowsPerPage);
+            if (currentPage < totalPages) { currentPage++; renderTable(); }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('applicantTable');
+            tbody.innerHTML = '';
+
+            if (!dbApplicants || dbApplicants.length === 0) {
+                document.getElementById('controlsRow').style.display = 'none';
+                tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">ยังไม่มีผู้สมัครในระดับชั้นนี้</div></td></tr>`;
+                return;
+            }
+
+            document.getElementById('controlsRow').style.display = 'flex';
+
+            let totalPages = Math.ceil(dbApplicants.length / rowsPerPage);
+            document.getElementById('pageInfo').innerText = `หน้า ${currentPage} / ${totalPages} (รวม ${dbApplicants.length} รายการ)`;
+            document.getElementById('btnPrev').disabled = (currentPage === 1);
+            document.getElementById('btnNext').disabled = (currentPage === totalPages);
+
+            let startIdx = (currentPage - 1) * rowsPerPage;
+            let endIdx = startIdx + rowsPerPage;
+            let displayData = dbApplicants.slice(startIdx, endIdx);
+
+            displayData.forEach(app => {
+                let statusBadge = '';
+                let btnText = '';
+                let btnClass = 'btn-action';
+
+                if(app.status === 'wait') {
+                    statusBadge = '<span class="badge badge-wait">รอตรวจสอบ</span>';
+                    btnText = 'ตรวจสิทธิ์';
+                } else if(app.status === 'pass') {
+                    statusBadge = '<span class="badge badge-success">ผ่านเกณฑ์</span>';
+                    btnText = 'เสร็จสิ้น';
+                    btnClass = 'btn-action btn-done'; 
+                } else if(app.status === 'fail') {
+                    statusBadge = '<span class="badge badge-danger">ไม่ผ่านเกณฑ์</span>';
+                    btnText = 'แก้ไข';
+                }
+
+                let examIdText = app.examId ? `<span class="badge exam-id-badge">${app.examId}</span>` : '<span style="color:var(--text-muted);">-</span>';
+
+                let row = `<tr>
+                    <td style="font-weight: 600; color: var(--theme-purple);">${app.no || '-'}</td>
+                    <td>${app.time || '-'}</td>
+                    <td>${examIdText}</td>
+                    <td style="font-weight: 600;">${app.prefix || ''}${app.fname || ''} ${app.lname || ''}</td>
+                    <td>${app.school || '-'}</td>
+                    <td>${statusBadge}</td>
+                    <td><button class="${btnClass}" onclick="openReviewModal('${app.idCard}')">${btnText}</button></td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function openReviewModal(idCard) {
+            try {
+                currentReviewIdCard = String(idCard).trim();
+                const app = dbApplicants.find(a => String(a.idCard).trim() === currentReviewIdCard);
+                
+                if (!app) return alert('ไม่พบข้อมูลผู้สมัคร รหัส ' + currentReviewIdCard);
+                
+                document.getElementById('modalTitle').innerText = "พิจารณาใบสมัครลำดับที่ " + (app.no || '-') + " (" + (app.applyLevel || '-') + ")";
+                document.getElementById('v_no').innerText = app.no || '-';
+                document.getElementById('v_time').innerText = app.time || '-';
+                document.getElementById('v_idCard').innerText = app.idCard || '-';
+                document.getElementById('v_fullname').innerText = `${app.prefix || ''}${app.fname || ''} ${app.lname || ''}`;
+                
+                let dobText = app.dob || '-';
+                if (typeof dobText === 'string' && dobText.includes('T')) {
+                    let d = new Date(dobText);
+                    dobText = d.toLocaleDateString('th-TH', { day:'2-digit', month:'2-digit', year:'numeric' });
+                }
+                document.getElementById('v_dob').innerText = dobText;
+                
+                document.getElementById('v_applyLevel').innerText = app.applyLevel || '-';
+                document.getElementById('v_grade').innerText = app.grade || '-';
+                document.getElementById('v_school').innerText = `${app.school || '-'} (${app.province || '-'})`;
+                document.getElementById('v_phone').innerText = app.phone || '-';
+                document.getElementById('v_teacher').innerText = app.teacher || '-';
+                
+                const slipLink = document.getElementById('v_slipUrl');
+                if (app.slipUrl && app.slipUrl.startsWith('http')) {
+                    slipLink.href = app.slipUrl; slipLink.style.display = 'inline-block';
+                } else { slipLink.style.display = 'none'; }
+
+                document.getElementById('statusSelect').value = app.status || 'wait';
+                document.getElementById('reasonNote').value = app.note || '';
+                toggleReasonField();
+
+                if(app.examId) {
+                    document.getElementById('examIdDisplayBox').style.display = 'block';
+                    document.getElementById('v_examId').innerText = app.examId;
+                } else { document.getElementById('examIdDisplayBox').style.display = 'none'; }
+
+                document.getElementById('reviewModal').style.display = 'flex';
+                
+            } catch (error) { console.error(error); alert("พบข้อผิดพลาด: " + error.message); }
+        }
+
+        function closeModal() { document.getElementById('reviewModal').style.display = 'none'; }
+
+        function toggleReasonField() {
+            const status = document.getElementById('statusSelect').value;
+            document.getElementById('reasonReq').style.display = (status === 'fail') ? 'inline' : 'none';
+        }
+
+        function submitReview() {
+            const status = document.getElementById('statusSelect').value;
+            const note = document.getElementById('reasonNote').value;
+            const btn = document.getElementById('btnSaveData');
+            
+            if(status === 'fail' && note.trim() === '') { alert('กรุณาระบุเหตุผลที่ไม่ผ่านเกณฑ์'); return; }
+
+            const appIndex = dbApplicants.findIndex(a => String(a.idCard).trim() === currentReviewIdCard);
+            if(appIndex === -1) return alert('ไม่สามารถบันทึกได้ เนื่องจากหาข้อมูลอ้างอิงไม่พบ');
+
+            let app = dbApplicants[appIndex];
+            app.status = status; app.note = note;
+
+            if(status === 'pass' && !app.examId) {
+                const yearPrefix = activeYear.toString().substring(2); 
+                const levelCode = (app.applyLevel.includes("ต้น")) ? "1" : "2";
+                const sequence = String(app.no).padStart(4, '0');
+                app.examId = yearPrefix + levelCode + sequence; 
+            } else if (status !== 'pass') { app.examId = ''; }
+
+            btn.innerHTML = "กำลังบันทึก... ⏳"; btn.disabled = true;
+
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'updateStatus', activeYear: activeYear, level: currentLevel,
+                    rowIndex: app.rowIndex, status: app.status, note: app.note, examId: app.examId
+                })
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.status === 'success') {
+                    alert(`บันทึกข้อมูลสำเร็จ!\nสถานะ: ${status === 'pass' ? 'ผ่านเกณฑ์ (ได้เลขสอบ: '+app.examId+')' : (status === 'fail' ? 'ไม่ผ่านเกณฑ์' : 'รอตรวจสอบ')}`);
+                    dbApplicants[appIndex] = app; 
+                    closeModal(); renderTable(); 
+                } else { alert(result.message); }
+            })
+            .catch(error => { console.error(error); alert('บันทึกไม่สำเร็จ กรุณาลองอีกครั้ง'); })
+            .finally(() => { btn.innerHTML = "บันทึกข้อมูล"; btn.disabled = false; });
+        }
+    </script>
+</body>
+</html>

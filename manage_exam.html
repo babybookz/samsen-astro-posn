@@ -8,7 +8,7 @@
     <script>
         const currentRole = localStorage.getItem('userRole');
         if (currentRole !== 'admin' && currentRole !== 'it') {
-            alert('⛔ ไม่อนุญาตให้เข้าถึง: คุณไม่มีสิทธิ์เข้าใช้งานหน้านี้');
+            alert('ไม่อนุญาตให้เข้าถึง: คุณไม่มีสิทธิ์เข้าใช้งานหน้านี้');
             window.location.replace('home.html');
         }
     </script>
@@ -16,111 +16,155 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --kt-body-bg: #F3F6F9; --kt-text-dark: #181C32; --kt-text-muted: #A1A5B7;
-            --kt-primary: #009EF7; --kt-success: #50CD89; --kt-warning: #FFC700;
-            --kt-border-color: #E4E6EF; --kt-border-radius: 0.75rem; --kt-box-shadow: 0px 0px 20px 0px rgba(76, 87, 125, 0.1);
+            /* Theme Colors (Match with Home) */
+            --theme-purple: #311B5E; 
+            --theme-purple-light: #4A2B8C;
+            --theme-orange: #FF8F00; 
+            --theme-orange-hover: #E68100;
+            --bg-light: #F8F9FA;
+            --text-dark: #181C32;
+            --text-muted: #7E8299;
+            --danger: #F1416C;
+            --success: #50CD89;
+            --border-color: #E4E6EF;
+            --input-bg: #ffffff;
+            --border-radius: 12px;
+            --box-shadow: 0px 10px 30px 0px rgba(49, 27, 94, 0.05);
         }
-        body { font-family: 'Sarabun', sans-serif; background: var(--kt-body-bg); padding: 30px; margin: 0; }
+        body { font-family: 'Sarabun', sans-serif; background: var(--bg-light); margin: 0; color: var(--text-dark); overflow-x: hidden; }
         
-        .container { background: #ffffff; padding: 2rem; border-radius: var(--kt-border-radius); box-shadow: var(--kt-box-shadow); max-width: 1300px; margin: 0 auto; box-sizing: border-box; }
+        /* ================= HEADER & NAVIGATION ================= */
+        .navbar { background-color: var(--theme-purple); padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        .nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: white;}
+        .nav-brand img { height: 45px; width: auto; background: white; padding: 3px; border-radius: 8px;}
+        .nav-brand div { line-height: 1.1; }
+        .brand-title { font-weight: 700; font-size: 1.2rem; }
+        .brand-sub { font-size: 0.8rem; color: #D1C4E9; }
+
+        .nav-links { display: flex; gap: 25px; align-items: center; }
+        .nav-links a { color: white; text-decoration: none; font-weight: 500; font-size: 1rem; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--theme-orange); }
+
+        /* ================= MAIN CONTAINER ================= */
+        .page-wrapper { padding: 40px 20px; display: flex; justify-content: center; }
+        .container { background: #ffffff; padding: 40px; border-radius: var(--border-radius); box-shadow: var(--box-shadow); max-width: 1400px; width: 100%; box-sizing: border-box; border-top: 5px solid var(--theme-orange); }
         
-        .header-title { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--kt-border-color); padding-bottom: 15px; margin-bottom: 20px; }
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        .header-icon { font-size: 2rem; }
-        h2 { color: var(--kt-text-dark); margin: 0; font-size: 1.6rem; font-weight: 700; }
-        .subtitle { color: var(--kt-text-muted); font-size: 1rem; margin: 5px 0 0 0; }
-        .btn-back-header { background: #F5F8FA; color: var(--kt-text-dark); padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: 0.2s; }
-        .btn-back-header:hover { background: #E4E6EF; }
+        .header-title { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--border-color); padding-bottom: 20px; margin-bottom: 30px; }
+        h2 { color: var(--theme-purple); margin: 0; font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px;}
+        .subtitle { color: var(--text-muted); font-size: 1.05rem; margin: 5px 0 0 0; }
 
-        .tabs { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;}
-        .tab-group { display: flex; gap: 10px; }
-        .tab-btn { padding: 12px 25px; border: none; background: #F5F8FA; color: var(--kt-text-muted); font-size: 1.05rem; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.2s; font-family: 'Sarabun'; }
-        .tab-btn:hover { background: #E4E6EF; color: var(--kt-text-dark); }
-        .tab-btn.active { background: var(--kt-primary); color: white; box-shadow: 0 4px 10px rgba(0, 158, 247, 0.2); }
+        /* Tabs & Save Button */
+        .tabs { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;}
+        .tab-group { display: flex; gap: 15px; }
+        .tab-btn { padding: 12px 30px; border: 1px solid var(--border-color); background: var(--bg-light); color: var(--text-muted); font-size: 1.1rem; font-weight: 700; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; font-family: 'Sarabun'; }
+        .tab-btn:hover { border-color: var(--theme-purple); color: var(--theme-purple); }
+        .tab-btn.active { background: var(--theme-purple); color: white; border-color: var(--theme-purple); box-shadow: 0 4px 15px rgba(49, 27, 94, 0.2); }
 
-        .btn-save-all { padding: 12px 25px; background: var(--kt-success); color: white; border: none; border-radius: 8px; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: 0.2s; font-family: 'Sarabun'; box-shadow: 0 4px 14px rgba(80, 205, 137, 0.3);}
-        .btn-save-all:hover { background: #47BE7D; transform: translateY(-2px); }
-        .btn-save-all:disabled { background: var(--kt-text-muted); cursor: not-allowed; box-shadow: none; transform: none; }
+        .btn-save-all { padding: 14px 30px; background: var(--theme-orange); color: white; border: none; border-radius: 50px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-family: 'Sarabun'; box-shadow: 0 4px 15px rgba(255, 143, 0, 0.3);}
+        .btn-save-all:hover { background: var(--theme-orange-hover); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 143, 0, 0.4);}
+        .btn-save-all:disabled { background: var(--text-muted); cursor: not-allowed; box-shadow: none; transform: none; }
 
-        /* ส่วนควบคุมหน้าจอ (Pagination & Rows Per Page) */
-        .controls-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: #F9F9F9; padding: 10px 20px; border-radius: 8px; border: 1px solid var(--kt-border-color);}
-        .select-rows { padding: 8px; border: 1px solid var(--kt-border-color); border-radius: 6px; font-family: 'Sarabun'; font-size: 0.95rem; outline: none; }
-        .pagination { display: flex; gap: 5px; align-items: center; }
-        .btn-page { padding: 6px 12px; background: white; border: 1px solid var(--kt-border-color); border-radius: 6px; cursor: pointer; transition: 0.2s; font-family: 'Sarabun'; font-weight: 600;}
-        .btn-page:hover:not(:disabled) { background: #E4E6EF; }
-        .btn-page:disabled { color: var(--kt-text-muted); cursor: not-allowed; opacity: 0.5;}
-        .page-info { font-size: 0.95rem; color: var(--kt-text-dark); font-weight: 600; margin: 0 10px;}
+        /* Controls Row */
+        .controls-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: var(--bg-light); padding: 15px 25px; border-radius: var(--border-radius); border: 1px solid var(--border-color);}
+        .select-rows { padding: 8px 15px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Sarabun'; font-size: 1rem; outline: none; color: var(--text-dark); background: white;}
+        .pagination { display: flex; gap: 10px; align-items: center; }
+        .btn-page { padding: 8px 15px; background: white; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: 0.2s; font-family: 'Sarabun'; font-weight: 600; color: var(--theme-purple);}
+        .btn-page:hover:not(:disabled) { background: var(--theme-purple-light); color: white; border-color: var(--theme-purple-light);}
+        .btn-page:disabled { color: var(--text-muted); cursor: not-allowed; opacity: 0.6;}
+        .page-info { font-size: 1rem; color: var(--text-dark); font-weight: 600; margin: 0 10px;}
 
-        .table-responsive { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
-        th { background: #F5F8FA; color: var(--kt-text-muted); font-size: 0.85rem; text-transform: uppercase; font-weight: 700; padding: 15px; text-align: left; border-bottom: 1px solid var(--kt-border-color); white-space: nowrap; }
-        td { padding: 10px 15px; font-size: 0.95rem; color: var(--kt-text-dark); border-bottom: 1px dashed var(--kt-border-color); vertical-align: middle; }
-        tr:hover { background-color: #F9F9F9; }
+        /* Table */
+        .table-responsive { overflow-x: auto; border: 1px solid var(--border-color); border-radius: var(--border-radius); }
+        table { width: 100%; border-collapse: collapse; min-width: 1100px; background: white;}
+        th { background: var(--theme-purple); color: white; font-size: 0.95rem; font-weight: 600; padding: 18px; text-align: left; white-space: nowrap; letter-spacing: 0.5px;}
+        td { padding: 12px 18px; font-size: 1rem; color: var(--text-dark); border-bottom: 1px dashed var(--border-color); vertical-align: middle; }
+        tr:hover { background-color: #F9FAFC; }
 
-        .exam-id-badge { background: #F1FAFF; color: var(--kt-primary); font-family: monospace; font-size: 1.1rem; padding: 5px 10px; border-radius: 6px; font-weight: 700; letter-spacing: 1px; }
+        .exam-id-badge { background: var(--bg-light); color: var(--theme-purple); border: 1px solid var(--border-color); font-family: monospace; font-size: 1.15rem; padding: 6px 12px; border-radius: 8px; font-weight: 700; letter-spacing: 1px; display: inline-block;}
 
-        .inline-input { width: 100%; padding: 10px 12px; border: 1px solid var(--kt-border-color); border-radius: 6px; font-family: 'Sarabun'; font-size: 1rem; box-sizing: border-box; transition: 0.2s; background: #ffffff; }
-        .inline-input:focus { border-color: var(--kt-primary); outline: none; background: #F1FAFF; box-shadow: 0 0 0 3px rgba(0, 158, 247, 0.1); }
-        .input-score { width: 100px; text-align: center; font-weight: 700; color: var(--kt-primary); font-size: 1.1rem;}
+        .inline-input { width: 100%; padding: 10px 15px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Sarabun'; font-size: 1rem; box-sizing: border-box; transition: all 0.3s ease; background: var(--bg-light); color: var(--text-dark);}
+        .inline-input:focus { border-color: var(--theme-orange); outline: none; background: white; box-shadow: 0 0 0 3px rgba(255, 143, 0, 0.15); }
+        .input-score { width: 120px; text-align: center; font-weight: 700; color: var(--theme-purple); font-size: 1.15rem;}
 
-        .empty-state { text-align: center; padding: 40px; color: var(--kt-text-muted); font-size: 1.1rem; }
-        .loading-box { text-align: center; padding: 50px; font-size: 1.2rem; color: var(--kt-primary); font-weight: 700;}
+        .empty-state { text-align: center; padding: 60px; color: var(--text-muted); font-size: 1.2rem; }
+        .loading-box { text-align: center; padding: 60px; font-size: 1.2rem; color: var(--theme-purple); font-weight: 700;}
+
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; gap: 15px; padding: 15px; }
+            .header-title { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .controls-row { flex-direction: column; gap: 15px; align-items: flex-start; }
+            .tabs { flex-direction: column; align-items: stretch; }
+            .btn-save-all { width: 100%; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="header-title">
-            <div class="header-left">
-                <div class="header-icon">✍️</div>
+    <nav class="navbar">
+        <a href="home.html" class="nav-brand">
+            <img src="assets/samsen-emblem.png" alt="Samsen Logo">
+            <div>
+                <div class="brand-title">SAMSEN ASTRO</div>
+                <div class="brand-sub">POSN System</div>
+            </div>
+        </a>
+        <div class="nav-links">
+            <a href="home.html">หน้าแรก</a>
+            <a href="manage_applicants.html">ระบบตรวจสอบสิทธิ์</a>
+            <a href="manage_exam.html" style="color: var(--theme-orange); font-weight: 700;">จัดการคะแนน</a>
+        </div>
+    </nav>
+
+    <div class="page-wrapper">
+        <div class="container">
+            <div class="header-title">
                 <div>
-                    <h2>จัดการห้องสอบและคะแนน</h2>
-                    <p class="subtitle" id="pageSubtitle">ระบบบันทึกข้อมูลสำหรับผู้ที่มีสิทธิ์สอบ (กำลังโหลด...)</p>
+                    <h2>ระบบจัดการห้องสอบและบันทึกคะแนน</h2>
+                    <p class="subtitle" id="pageSubtitle">บันทึกข้อมูลสำหรับผู้ที่มีสิทธิ์สอบ (กำลังโหลด...)</p>
                 </div>
             </div>
-            <a href="home.html" class="btn-back-header">⬅️ กลับหน้าเมนูหลัก</a>
-        </div>
 
-        <div class="tabs">
-            <div class="tab-group">
-                <button class="tab-btn active" id="tab-m-ton" onclick="switchTab('ม.ต้น')">มัธยมศึกษาตอนต้น</button>
-                <button class="tab-btn" id="tab-m-plai" onclick="switchTab('ม.ปลาย')">มัธยมศึกษาตอนปลาย</button>
+            <div class="tabs">
+                <div class="tab-group">
+                    <button class="tab-btn active" id="tab-m-ton" onclick="switchTab('ม.ต้น')">ระดับมัธยมศึกษาตอนต้น</button>
+                    <button class="tab-btn" id="tab-m-plai" onclick="switchTab('ม.ปลาย')">ระดับมัธยมศึกษาตอนปลาย</button>
+                </div>
+                <button class="btn-save-all" id="btnSaveAll" onclick="saveAllData()">บันทึกการเปลี่ยนแปลงหน้านี้</button>
             </div>
-            <button class="btn-save-all" id="btnSaveAll" onclick="saveAllData()">💾 บันทึกการเปลี่ยนแปลงในหน้านี้</button>
-        </div>
 
-        <div class="controls-row" id="controlsRow" style="display: none;">
-            <div>
-                <label style="font-weight: 600; font-size: 0.95rem; color: var(--kt-text-dark); margin-right: 10px;">แสดงผล:</label>
-                <select id="rowsPerPage" class="select-rows" onchange="changeRowsPerPage()">
-                    <option value="50">50 รายการ</option>
-                    <option value="100">100 รายการ</option>
-                    <option value="all">แสดงทั้งหมด</option>
-                </select>
+            <div class="controls-row" id="controlsRow" style="display: none;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <label style="font-weight: 600; font-size: 1rem; color: var(--theme-purple);">แสดงผล:</label>
+                    <select id="rowsPerPage" class="select-rows" onchange="changeRowsPerPage()">
+                        <option value="50">50 รายการ</option>
+                        <option value="100">100 รายการ</option>
+                        <option value="all">แสดงทั้งหมด</option>
+                    </select>
+                </div>
+                <div class="pagination">
+                    <button class="btn-page" id="btnPrev" onclick="prevPage()">หน้าก่อนหน้า</button>
+                    <span class="page-info" id="pageInfo">หน้า 1 / 1</span>
+                    <button class="btn-page" id="btnNext" onclick="nextPage()">หน้าถัดไป</button>
+                </div>
             </div>
-            <div class="pagination">
-                <button class="btn-page" id="btnPrev" onclick="prevPage()">◀ หน้าก่อนหน้า</button>
-                <span class="page-info" id="pageInfo">หน้า 1 / 1</span>
-                <button class="btn-page" id="btnNext" onclick="nextPage()">หน้าถัดไป ▶</button>
-            </div>
-        </div>
 
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th>เลขประจำตัวสอบ</th>
-                        <th>ชื่อ - นามสกุล</th>
-                        <th>โรงเรียน</th>
-                        <th style="width: 250px;">ห้องสอบ</th>
-                        <th style="width: 120px;">ลำดับที่นั่ง</th>
-                        <th style="width: 120px;">คะแนนสอบ</th>
-                    </tr>
-                </thead>
-                <tbody id="examTableBody">
-                    <tr><td colspan="6"><div class="loading-box">กำลังโหลดข้อมูลจากฐานข้อมูล... ⏳</div></td></tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 180px;">เลขประจำตัวสอบ</th>
+                            <th>ชื่อ - นามสกุล</th>
+                            <th>โรงเรียน</th>
+                            <th style="width: 250px;">อาคาร / ห้องสอบ</th>
+                            <th style="width: 150px;">ลำดับที่นั่ง</th>
+                            <th style="width: 150px;">คะแนนสอบ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="examTableBody">
+                        <tr><td colspan="6"><div class="loading-box">กำลังโหลดข้อมูลจากฐานข้อมูล... ⏳</div></td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -129,7 +173,7 @@
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec";
         
         let dbApplicants = []; 
-        let filteredData = []; // เก็บข้อมูลที่กรองแล้วเฉพาะคนที่มีสิทธิ์สอบ
+        let filteredData = []; 
         let currentLevel = 'ม.ต้น'; 
         let activeYear = localStorage.getItem('activeYear') || new Date().getFullYear() + 543;
 
@@ -138,7 +182,7 @@
         let rowsPerPage = 50;
 
         window.onload = function() {
-            document.getElementById('pageSubtitle').innerText = `ระบบบันทึกข้อมูลสำหรับผู้ที่มีสิทธิ์สอบ (ปีการศึกษา ${activeYear})`;
+            document.getElementById('pageSubtitle').innerText = `ประจำปีการศึกษา ${activeYear}`;
             fetchDataFromSheet();
         };
 
@@ -170,10 +214,10 @@
                     filteredData = dbApplicants.filter(app => app.status === 'pass' && app.examId !== '');
                     filteredData.sort((a, b) => parseInt(a.examId) - parseInt(b.examId));
                     
-                    currentPage = 1; // รีเซ็ตหน้ากลับไปเป็น 1
+                    currentPage = 1; 
                     renderTable();
                 } else {
-                    alert('❌ เกิดข้อผิดพลาดในการโหลดข้อมูล');
+                    alert('เกิดข้อผิดพลาดในการโหลดข้อมูล');
                 }
             })
             .catch(error => {
@@ -212,13 +256,11 @@
 
             document.getElementById('controlsRow').style.display = 'flex';
 
-            // คำนวณหน้า
             let totalPages = Math.ceil(filteredData.length / rowsPerPage);
             document.getElementById('pageInfo').innerText = `หน้า ${currentPage} / ${totalPages} (รวม ${filteredData.length} รายการ)`;
             document.getElementById('btnPrev').disabled = (currentPage === 1);
             document.getElementById('btnNext').disabled = (currentPage === totalPages);
 
-            // ดึงข้อมูลเฉพาะหน้าที่เลือกมาแสดง
             let startIdx = (currentPage - 1) * rowsPerPage;
             let endIdx = startIdx + rowsPerPage;
             let displayData = filteredData.slice(startIdx, endIdx);
@@ -228,8 +270,8 @@
                     <td><span class="exam-id-badge">${app.examId}</span></td>
                     <td style="font-weight: 600;">${app.prefix}${app.fname} ${app.lname}</td>
                     <td>${app.school}</td>
-                    <td><input type="text" id="room_${app.idCard}" class="inline-input" placeholder="อาคาร / ห้องสอบ" value="${app.room}"></td>
-                    <td><input type="text" id="seat_${app.idCard}" class="inline-input" placeholder="เลขที่นั่ง" value="${app.seat}"></td>
+                    <td><input type="text" id="room_${app.idCard}" class="inline-input" placeholder="ระบุห้องสอบ" value="${app.room}"></td>
+                    <td><input type="text" id="seat_${app.idCard}" class="inline-input" placeholder="ระบุเลขที่นั่ง" value="${app.seat}"></td>
                     <td><input type="number" id="score_${app.idCard}" class="inline-input input-score" placeholder="คะแนน" value="${app.score}"></td>
                 </tr>`;
                 tbody.innerHTML += row;
@@ -243,7 +285,6 @@
 
             let updatesPayload = [];
             
-            // กวาดข้อมูลเฉพาะคนที่โชว์อยู่บนหน้าจอปัจจุบัน
             let startIdx = (currentPage - 1) * rowsPerPage;
             let endIdx = startIdx + rowsPerPage;
             let displayData = filteredData.slice(startIdx, endIdx);
@@ -262,7 +303,7 @@
             });
 
             if(updatesPayload.length === 0) {
-                btn.innerHTML = "💾 บันทึกการเปลี่ยนแปลงในหน้านี้";
+                btn.innerHTML = "บันทึกการเปลี่ยนแปลงหน้านี้";
                 btn.disabled = false;
                 return;
             }
@@ -279,14 +320,14 @@
             .then(res => res.json())
             .then(result => {
                 if (result.status === 'success') {
-                    alert(`✅ บันทึกข้อมูลสำเร็จ! จำนวน ${updatesPayload.length} คน เรียบร้อยแล้ว`);
+                    alert(`บันทึกข้อมูลสำเร็จ! จำนวน ${updatesPayload.length} คน เรียบร้อยแล้ว`);
                 } else {
-                    alert('❌ เกิดข้อผิดพลาดจากเซิร์ฟเวอร์');
+                    alert('เกิดข้อผิดพลาดจากเซิร์ฟเวอร์');
                 }
             })
-            .catch(error => { console.error(error); alert('❌ เชื่อมต่อล้มเหลว'); })
+            .catch(error => { console.error(error); alert('การเชื่อมต่อล้มเหลว กรุณาลองใหม่'); })
             .finally(() => {
-                btn.innerHTML = "💾 บันทึกการเปลี่ยนแปลงในหน้านี้";
+                btn.innerHTML = "บันทึกการเปลี่ยนแปลงหน้านี้";
                 btn.disabled = false;
             });
         }
