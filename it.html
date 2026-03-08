@@ -60,6 +60,7 @@
         .icon-purple { background: #F3E5F5; } .icon-purple svg { fill: var(--theme-purple); }
         .icon-orange { background: #FFF8E1; } .icon-orange svg { fill: var(--theme-orange); }
         .icon-dark { background: #ECEFF1; } .icon-dark svg { fill: #455A64; }
+        .icon-blue { background: #E3F2FD; } .icon-blue svg { fill: #1976D2; }
         
         .section-title-text { font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0;}
 
@@ -102,6 +103,8 @@
         .btn-save-master { width: 100%; padding: 18px; background: var(--theme-orange); color: white; border: none; border-radius: 50px; font-size: 1.2rem; font-weight: 700; cursor: pointer; margin-top: 40px; transition: 0.3s; font-family: 'Sarabun'; box-shadow: 0 5px 15px rgba(255, 143, 0, 0.3); display: flex; justify-content: center; align-items: center; gap: 10px;}
         .btn-save-master:hover { background: var(--theme-orange-hover); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 143, 0, 0.4); }
         .btn-save-master svg { fill: currentColor; width: 24px; height: 24px;}
+
+        .loading-text { text-align: center; color: var(--theme-purple); font-weight: bold; padding: 20px; }
     </style>
 </head>
 <body>
@@ -185,8 +188,8 @@
             </div>
 
             <div class="section-header" style="margin-top: 50px;">
-                <div class="section-icon" style="background: #E3F2FD;">
-                    <svg style="fill: #1976D2;" viewBox="0 0 24 24"><path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" /></svg>
+                <div class="section-icon icon-blue">
+                    <svg viewBox="0 0 24 24"><path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" /></svg>
                 </div>
                 <h3 class="section-title-text">จัดการบัญชีผู้ดูแลระบบ (Admin)</h3>
             </div>
@@ -201,16 +204,16 @@
                     </tr>
                 </thead>
                 <tbody id="adminListBody">
-                    </tbody>
+                    <tr><td colspan="4" class="loading-text">กำลังโหลดรายชื่อบัญชี... ⏳</td></tr>
+                </tbody>
             </table>
 
             <div class="add-admin-form">
                 <input type="text" id="newAdminName" class="add-admin-input" placeholder="ชื่อ-นามสกุล">
                 <input type="text" id="newAdminId" class="add-admin-input" placeholder="Username">
                 <input type="text" id="newAdminPass" class="add-admin-input" placeholder="Password">
-                <button class="btn-add" onclick="addAdmin()">เพิ่มบัญชี</button>
+                <button class="btn-add" id="btnAddAdmin" onclick="addAdmin()">เพิ่มบัญชี</button>
             </div>
-
 
             <button class="btn-save-master" onclick="saveSettings()">
                 <svg viewBox="0 0 24 24"><path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" /></svg>
@@ -220,10 +223,10 @@
     </div>
 
     <script>
-        // Array จำลองสำหรับเก็บข้อมูล Admin (ในระบบจริงต้องย้ายไปเก็บที่ Google Sheets)
-        let adminUsers = JSON.parse(localStorage.getItem('adminList')) || [
-            { name: "คุณครูสมศรี ใจดี", id: "admin", pass: "admin" }
-        ];
+        // ⚠️ วาง Web App URL ที่นี่ให้ตรงกัน
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec";
+        
+        let adminUsers = [];
 
         window.onload = function() {
             let savedYear = localStorage.getItem('activeYear') || '2569';
@@ -236,7 +239,8 @@
             document.getElementById('phase' + currentPhase).checked = true;
             updateBoxHighlight(currentPhase);
 
-            renderAdminList();
+            // ดึงรายชื่อ Admin จาก Google Apps Script
+            fetchAdmins();
         }
 
         function selectRadio(id) {
@@ -249,14 +253,30 @@
             document.getElementById('box' + phaseNumber).classList.add('active');
         }
 
-        // ฟังก์ชันจัดการรายการ Admin
+        // =====================================
+        // ระบบจัดการ Admin ดึงข้อมูลจากเซิร์ฟเวอร์
+        // =====================================
+        function fetchAdmins() {
+            fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'getAdmins' }) })
+            .then(res => res.json())
+            .then(result => {
+                if(result.status === 'success') {
+                    adminUsers = result.data;
+                    renderAdminList();
+                }
+            })
+            .catch(error => {
+                document.getElementById('adminListBody').innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">โหลดข้อมูลผิดพลาด</td></tr>';
+            });
+        }
+
         function renderAdminList() {
             const tbody = document.getElementById('adminListBody');
             tbody.innerHTML = '';
             adminUsers.forEach((admin, index) => {
                 tbody.innerHTML += `
                     <tr>
-                        <td style="font-weight: 600; color: var(--theme-purple);">${admin.name}</td>
+                        <td style="font-weight: 600; color: var(--theme-purple);">${admin.name} ${admin.role === 'it' ? '(ฝ่ายไอที)' : ''}</td>
                         <td>${admin.id}</td>
                         <td>${admin.pass}</td>
                         <td style="text-align: center;">
@@ -271,34 +291,61 @@
             const name = document.getElementById('newAdminName').value.trim();
             const id = document.getElementById('newAdminId').value.trim();
             const pass = document.getElementById('newAdminPass').value.trim();
+            const btn = document.getElementById('btnAddAdmin');
 
             if(!name || !id || !pass) {
                 return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
             }
 
-            // ตรวจสอบ Username ซ้ำ
-            if(adminUsers.some(a => a.id === id)) {
-                return alert("Username นี้มีในระบบแล้ว กรุณาใช้ชื่ออื่น");
-            }
+            btn.innerHTML = "กำลังเพิ่ม...";
+            btn.disabled = true;
 
-            adminUsers.push({ name: name, id: id, pass: pass });
-            localStorage.setItem('adminList', JSON.stringify(adminUsers)); // บันทึกจำลอง
-            renderAdminList();
+            const newAdmin = { name: name, id: id, pass: pass, role: "admin" };
 
-            // ล้างช่องกรอก
-            document.getElementById('newAdminName').value = '';
-            document.getElementById('newAdminId').value = '';
-            document.getElementById('newAdminPass').value = '';
+            fetch(GAS_URL, { 
+                method: 'POST', 
+                body: JSON.stringify({ action: 'addAdmin', newAdmin: newAdmin }) 
+            })
+            .then(res => res.json())
+            .then(result => {
+                if(result.status === 'success') {
+                    adminUsers = result.data; // อัปเดต Array ใหม่ที่ส่งกลับมาจากเซิร์ฟเวอร์
+                    renderAdminList();
+                    document.getElementById('newAdminName').value = '';
+                    document.getElementById('newAdminId').value = '';
+                    document.getElementById('newAdminPass').value = '';
+                } else {
+                    alert(result.message);
+                }
+            })
+            .catch(err => alert("เกิดข้อผิดพลาดในการเชื่อมต่อ"))
+            .finally(() => {
+                btn.innerHTML = "เพิ่มบัญชี";
+                btn.disabled = false;
+            });
         }
 
         function deleteAdmin(index) {
             if(confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบบัญชี "${adminUsers[index].name}" ?`)) {
-                adminUsers.splice(index, 1);
-                localStorage.setItem('adminList', JSON.stringify(adminUsers)); // บันทึกจำลอง
-                renderAdminList();
+                
+                fetch(GAS_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: 'deleteAdmin', index: index }) 
+                })
+                .then(res => res.json())
+                .then(result => {
+                    if(result.status === 'success') {
+                        adminUsers = result.data; 
+                        renderAdminList();
+                    } else {
+                        alert(result.message);
+                    }
+                })
+                .catch(err => alert("เกิดข้อผิดพลาดในการเชื่อมต่อ"));
             }
         }
 
+        // บันทึกการตั้งค่าปีการศึกษา / Phase / เวลา ลง Local Storage
         function saveSettings() {
             const selectedPhase = document.querySelector('input[name="systemPhase"]:checked').value;
             const activeYear = document.getElementById('activeYear').value;
@@ -307,7 +354,6 @@
             if(!activeYear || activeYear.length !== 4) return alert('กรุณากรอกปีการศึกษาเป็นตัวเลข 4 หลัก');
             if(!regDeadline) return alert('กรุณาระบุวัน-เวลาปิดรับสมัคร');
 
-            // บันทึกลง Local Storage
             localStorage.setItem('systemPhase', selectedPhase); 
             localStorage.setItem('activeYear', activeYear); 
             localStorage.setItem('regDeadline', regDeadline); 
