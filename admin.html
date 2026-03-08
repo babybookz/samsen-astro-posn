@@ -93,7 +93,7 @@
                 <div class="header-icon">📋</div>
                 <div>
                     <h2>ระบบตรวจสอบสิทธิ์ผู้สมัคร</h2>
-                    <p class="subtitle" id="pageSubtitle">ศูนย์สอบ สอวน. ดาราศาสตร์ โรงเรียนสามเสนวิทยาลัย (กำลังโหลดปีการศึกษา...)</p>
+                    <p class="subtitle" id="pageSubtitle">ศูนย์สอบ สอวน. ดาราศาสตร์ โรงเรียนสามเสนวิทยาลัย</p>
                 </div>
             </div>
             <a href="home.html" class="btn-back-header">⬅️ กลับหน้าเมนูหลัก</a>
@@ -186,12 +186,11 @@
         // ⚠️ วาง Web App URL ล่าสุดที่คุณ Deploy มาแล้วที่นี่
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec";
         
-        let dbApplicants = []; // ใช้เก็บข้อมูลของจริงที่โหลดมาจากชีต
+        let dbApplicants = []; 
         let currentReviewIdCard = '';
         let currentLevel = 'ม.ต้น'; 
         let activeYear = localStorage.getItem('activeYear') || new Date().getFullYear() + 543;
 
-        // เมื่อเปิดหน้ามา ให้ดึงข้อมูลมาแสดงทันที
         window.onload = function() {
             document.getElementById('pageSubtitle').innerText = `ศูนย์สอบ สอวน. ดาราศาสตร์ โรงเรียนสามเสนวิทยาลัย (ปีการศึกษา ${activeYear})`;
             fetchDataFromSheet();
@@ -205,10 +204,9 @@
             if (level === 'ม.ต้น') document.getElementById('tab-m-ton').classList.add('active');
             else document.getElementById('tab-m-plai').classList.add('active');
 
-            fetchDataFromSheet(); // โหลดข้อมูลของแท็บที่กดใหม่
+            fetchDataFromSheet(); 
         }
 
-        // ฟังก์ชันดึงข้อมูลจาก Google Sheets ของจริง
         function fetchDataFromSheet() {
             document.getElementById('applicantTable').innerHTML = `<tr><td colspan="7"><div class="loading-box">กำลังโหลดข้อมูล... ⏳</div></td></tr>`;
             
@@ -223,7 +221,7 @@
             .then(res => res.json())
             .then(result => {
                 if (result.status === 'success') {
-                    dbApplicants = result.data; // เอาข้อมูลมาเก็บไว้ในตัวแปร
+                    dbApplicants = result.data; 
                     renderTable();
                 } else {
                     alert('❌ เกิดข้อผิดพลาดในการโหลดข้อมูล');
@@ -239,7 +237,7 @@
             const tbody = document.getElementById('applicantTable');
             tbody.innerHTML = '';
 
-            if (dbApplicants.length === 0) {
+            if (!dbApplicants || dbApplicants.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">ยังไม่มีผู้สมัครในระดับชั้นนี้</div></td></tr>`;
                 return;
             }
@@ -264,11 +262,11 @@
                 let examIdText = app.examId ? `<span class="badge exam-id-badge">${app.examId}</span>` : '<span style="color:#A1A5B7;">-</span>';
 
                 let row = `<tr>
-                    <td>${app.no}</td>
-                    <td>${app.time}</td>
+                    <td>${app.no || '-'}</td>
+                    <td>${app.time || '-'}</td>
                     <td>${examIdText}</td>
-                    <td style="font-weight: 600;">${app.prefix}${app.fname} ${app.lname}</td>
-                    <td>${app.school}</td>
+                    <td style="font-weight: 600;">${app.prefix || ''}${app.fname || ''} ${app.lname || ''}</td>
+                    <td>${app.school || '-'}</td>
                     <td>${statusBadge}</td>
                     <td><button class="${btnClass}" onclick="openReviewModal('${app.idCard}')">${btnText}</button></td>
                 </tr>`;
@@ -276,55 +274,77 @@
             });
         }
 
-        // เปิด Modal พร้อมดึงข้อมูลใส่ฟอร์ม
+        // 🌟 ส่วนที่เพิ่ม Try-Catch เพื่อดักจับ Error ป้องกันไม่ให้หน้าต่างเงียบไป
         function openReviewModal(idCard) {
-            currentReviewIdCard = String(idCard); // บังคับให้เป็น String
-            
-            // หาข้อมูลโดยแปลง idCard จากฐานข้อมูลให้เป็น String ก่อนเทียบ
-            const app = dbApplicants.find(a => String(a.idCard) === currentReviewIdCard);
-            
-            // ดักจับ error เผื่อหาข้อมูลไม่เจอ
-            if (!app) {
-                alert('❌ ไม่พบข้อมูลผู้สมัคร รหัส: ' + currentReviewIdCard);
-                return;
+            try {
+                // บังคับแปลงเป็นข้อความและตัดช่องว่างทิ้ง เพื่อให้ค้นหาเจอแน่นอน
+                currentReviewIdCard = String(idCard).trim();
+                const app = dbApplicants.find(a => String(a.idCard).trim() === currentReviewIdCard);
+                
+                if (!app) {
+                    alert('❌ เกิดข้อผิดพลาด: ไม่พบข้อมูลผู้สมัคร รหัส ' + currentReviewIdCard + ' ในระบบ');
+                    return;
+                }
+                
+                document.getElementById('modalTitle').innerText = "พิจารณาใบสมัครลำดับที่ " + (app.no || '-') + " (" + (app.applyLevel || '-') + ")";
+                
+                document.getElementById('v_no').innerText = app.no || '-';
+                document.getElementById('v_time').innerText = app.time || '-';
+                document.getElementById('v_idCard').innerText = app.idCard || '-';
+                document.getElementById('v_fullname').innerText = `${app.prefix || ''}${app.fname || ''} ${app.lname || ''}`;
+                
+                // การจัดการวันที่เกิดแบบปลอดภัย (ป้องกัน Error)
+                let dobText = app.dob || '-';
+                if (typeof dobText === 'string' && dobText.includes('T')) {
+                    let d = new Date(dobText);
+                    dobText = d.toLocaleDateString('th-TH', { day:'2-digit', month:'2-digit', year:'numeric' });
+                }
+                document.getElementById('v_dob').innerText = dobText;
+                
+                document.getElementById('v_applyLevel').innerText = app.applyLevel || '-';
+                document.getElementById('v_grade').innerText = app.grade || '-';
+                document.getElementById('v_school').innerText = `${app.school || '-'} (${app.province || '-'})`;
+                document.getElementById('v_phone').innerText = app.phone || '-';
+                document.getElementById('v_teacher').innerText = app.teacher || '-';
+                
+                // ตรวจสอบการแสดงปุ่มรูปลิงก์สลิป
+                const slipLink = document.getElementById('v_slipUrl');
+                if (app.slipUrl && app.slipUrl.startsWith('http')) {
+                    slipLink.href = app.slipUrl;
+                    slipLink.style.display = 'inline-block';
+                } else {
+                    slipLink.style.display = 'none';
+                }
+
+                document.getElementById('statusSelect').value = app.status || 'wait';
+                document.getElementById('reasonNote').value = app.note || '';
+                toggleReasonField();
+
+                if(app.examId) {
+                    document.getElementById('examIdDisplayBox').style.display = 'block';
+                    document.getElementById('v_examId').innerText = app.examId;
+                } else {
+                    document.getElementById('examIdDisplayBox').style.display = 'none';
+                }
+
+                // สั่งให้แสดงหน้าต่างขึ้นมา
+                document.getElementById('reviewModal').style.display = 'flex';
+                
+            } catch (error) {
+                console.error(error);
+                alert("⚠️ ระบบพบข้อผิดพลาดในการเปิดหน้าต่างข้อมูล: " + error.message);
             }
-            
-            document.getElementById('modalTitle').innerText = "พิจารณาใบสมัครลำดับที่ " + app.no + " (" + app.applyLevel + ")";
-            
-            // แปลงรูปแบบวันที่เกิด (ถ้า Google Sheets ส่งมาเป็นก้อนยาวๆ)
-            let dobText = app.dob;
-            if(typeof dobText === 'string' && dobText.includes('T')) {
-                let d = new Date(dobText);
-                dobText = d.toLocaleDateString('th-TH', { day:'2-digit', month:'2-digit', year:'numeric' });
-            }
-
-            document.getElementById('v_no').innerText = app.no;
-            document.getElementById('v_time').innerText = app.time;
-            document.getElementById('v_idCard').innerText = app.idCard;
-            document.getElementById('v_fullname').innerText = `${app.prefix}${app.fname} ${app.lname}`;
-            document.getElementById('v_dob').innerText = dobText;
-            document.getElementById('v_applyLevel').innerText = app.applyLevel;
-            document.getElementById('v_grade').innerText = app.grade;
-            document.getElementById('v_school').innerText = `${app.school} (${app.province})`;
-            document.getElementById('v_phone').innerText = app.phone;
-            document.getElementById('v_teacher').innerText = app.teacher || '-';
-            document.getElementById('v_slipUrl').href = app.slipUrl;
-
-            document.getElementById('statusSelect').value = app.status;
-            document.getElementById('reasonNote').value = app.note;
-            toggleReasonField();
-
-            if(app.examId) {
-                document.getElementById('examIdDisplayBox').style.display = 'block';
-                document.getElementById('v_examId').innerText = app.examId;
-            } else {
-                document.getElementById('examIdDisplayBox').style.display = 'none';
-            }
-
-            document.getElementById('reviewModal').style.display = 'flex';
         }
 
-        // บันทึกและอัปเดตลง Google Sheets ของจริง
+        function closeModal() {
+            document.getElementById('reviewModal').style.display = 'none';
+        }
+
+        function toggleReasonField() {
+            const status = document.getElementById('statusSelect').value;
+            document.getElementById('reasonReq').style.display = (status === 'fail') ? 'inline' : 'none';
+        }
+
         function submitReview() {
             const status = document.getElementById('statusSelect').value;
             const note = document.getElementById('reasonNote').value;
@@ -335,11 +355,9 @@
                 return;
             }
 
-            // หา Index โดยแปลง idCard ให้เป็น String ก่อนเทียบ
-            const appIndex = dbApplicants.findIndex(a => String(a.idCard) === currentReviewIdCard);
-            
+            const appIndex = dbApplicants.findIndex(a => String(a.idCard).trim() === currentReviewIdCard);
             if(appIndex === -1) {
-                alert('❌ เกิดข้อผิดพลาด หาข้อมูลอ้างอิงไม่พบ');
+                alert('❌ ไม่สามารถบันทึกได้ เนื่องจากหาข้อมูลอ้างอิงไม่พบ');
                 return;
             }
 
@@ -367,7 +385,7 @@
                     action: 'updateStatus',
                     activeYear: activeYear,
                     level: currentLevel,
-                    rowIndex: app.rowIndex,
+                    rowIndex: app.rowIndex, 
                     status: app.status,
                     note: app.note,
                     examId: app.examId
@@ -380,9 +398,14 @@
                     dbApplicants[appIndex] = app; 
                     closeModal();
                     renderTable(); 
+                } else {
+                    alert('❌ ' + result.message);
                 }
             })
-            .catch(error => alert('❌ บันทึกไม่สำเร็จ โปรดลองอีกครั้ง'))
+            .catch(error => {
+                console.error(error);
+                alert('❌ บันทึกไม่สำเร็จ โปรดลองเชื่อมต่ออินเทอร์เน็ตอีกครั้ง');
+            })
             .finally(() => {
                 btn.innerHTML = "💾 บันทึกข้อมูล";
                 btn.disabled = false;
