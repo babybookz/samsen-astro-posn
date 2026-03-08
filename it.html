@@ -7,6 +7,7 @@
     
     <script>
         const currentRole = localStorage.getItem('userRole');
+        // ล็อกให้เข้าได้เฉพาะ 'it' เท่านั้น
         if (currentRole !== 'it') {
             alert('ไม่อนุญาตให้เข้าถึง: พื้นที่นี้สงวนไว้สำหรับฝ่าย IT เท่านั้น');
             window.location.replace('home.html'); 
@@ -16,7 +17,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Theme Colors (Match with Home) */
+            /* Theme Colors */
             --theme-purple: #311B5E; 
             --theme-purple-light: #4A2B8C;
             --theme-orange: #FF8F00; 
@@ -27,6 +28,7 @@
             --danger: #F1416C;
             --success: #50CD89;
             --border-color: #E4E6EF;
+            --input-bg: #ffffff;
             --border-radius: 12px;
             --box-shadow: 0px 10px 30px 0px rgba(49, 27, 94, 0.05);
         }
@@ -60,6 +62,7 @@
         .icon-orange { background: #FFF8E1; } .icon-orange svg { fill: var(--theme-orange); }
         .icon-dark { background: #ECEFF1; } .icon-dark svg { fill: #455A64; }
         .icon-blue { background: #E3F2FD; } .icon-blue svg { fill: #1976D2; }
+        .icon-red { background: #FFEBEE; } .icon-red svg { fill: var(--danger); }
         
         .section-title-text { font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0;}
 
@@ -79,6 +82,10 @@
         .label-content label { font-size: 1.1rem; font-weight: 700; color: var(--theme-purple); cursor: pointer; margin: 0;}
         .desc { font-size: 0.95rem; color: var(--text-muted); margin-top: 5px; line-height: 1.5; }
 
+        /* Maint Mode Highlight */
+        .radio-group.active-danger { border: 2px solid var(--danger); background: #FFF5F8; box-shadow: 0 4px 10px rgba(241, 65, 108, 0.1);}
+        .radio-group.active-success { border: 2px solid var(--success); background: #E8FFF3; box-shadow: 0 4px 10px rgba(80, 205, 137, 0.1);}
+
         /* Admin Management Table */
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;}
         .admin-table th { background: var(--bg-light); color: var(--text-muted); padding: 12px; text-align: left; font-size: 0.9rem; font-weight: 600; border-bottom: 1px solid var(--border-color);}
@@ -95,12 +102,6 @@
         .add-admin-input:focus { border-color: var(--theme-orange); }
         .btn-add { background: var(--theme-purple); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-family: 'Sarabun'; font-weight: 600; transition: 0.3s;}
         .btn-add:hover { background: var(--theme-orange); }
-
-        @media (max-width: 768px) {
-            .add-admin-form { grid-template-columns: 1fr; }
-            .setting-box { flex-direction: column; align-items: flex-start; }
-            .setting-box label { width: 100%; margin-bottom: 10px;}
-        }
 
         /* Submit Button */
         .btn-save-master { width: 100%; padding: 18px; background: var(--theme-orange); color: white; border: none; border-radius: 50px; font-size: 1.2rem; font-weight: 700; cursor: pointer; margin-top: 40px; transition: 0.3s; font-family: 'Sarabun'; box-shadow: 0 5px 15px rgba(255, 143, 0, 0.3); display: flex; justify-content: center; align-items: center; gap: 10px;}
@@ -119,6 +120,12 @@
         .btn-submit-edit:hover { background: var(--theme-orange); }
         .btn-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5rem; color: #A1A5B7; cursor: pointer; transition: 0.2s; line-height: 1;}
         .btn-close:hover { color: var(--danger); }
+
+        @media (max-width: 768px) {
+            .add-admin-form { grid-template-columns: 1fr; }
+            .setting-box { flex-direction: column; align-items: flex-start; }
+            .setting-box label { width: 100%; margin-bottom: 10px;}
+        }
 
     </style>
 </head>
@@ -145,6 +152,30 @@
             <div class="page-title">
                 <h2>ตั้งค่าระบบศูนย์สอบ (IT Control Panel)</h2>
                 <p class="subtitle">จัดการข้อมูลพื้นฐานและควบคุมการแสดงผลของเว็บไซต์</p>
+            </div>
+
+            <div class="section-header" style="margin-top: 0;">
+                <div class="section-icon icon-red">
+                    <svg viewBox="0 0 24 24"><path d="M22.7,19L13.6,9.9C14.5,7.6 14,4.9 12.1,3C10.1,1 7.1,0.6 4.7,1.7L9,6L6,9L1.6,4.7C0.4,7.1 0.9,10.1 2.9,12.1C4.8,14 7.5,14.5 9.8,13.6L18.9,22.7C19.3,23.1 19.9,23.1 20.3,22.7L22.6,20.4C23.1,20 23.1,19.3 22.7,19Z" /></svg>
+                </div>
+                <h3 class="section-title-text">สถานะเว็บไซต์ (Maintenance Mode)</h3>
+            </div>
+            <p style="font-size: 0.95rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 15px;">ควบคุมการเปิด-ปิดเว็บไซต์ หากเปิดโหมดปรับปรุง ผู้สมัครจะไม่สามารถเข้าใช้งานหน้าใดๆ ได้เลย</p>
+
+            <div class="radio-group" id="maint_off" onclick="selectMaint('off')">
+                <input type="radio" id="maintOff" name="maintenanceMode" value="off">
+                <div class="label-content">
+                    <label for="maintOff" style="color: var(--success);">🟢 ระบบเปิดใช้งานปกติ (Online)</label>
+                    <div class="desc">ผู้สมัครและเจ้าหน้าที่สามารถเข้าใช้งานระบบได้ตามปกติ</div>
+                </div>
+            </div>
+
+            <div class="radio-group" id="maint_on" onclick="selectMaint('on')">
+                <input type="radio" id="maintOn" name="maintenanceMode" value="on">
+                <div class="label-content">
+                    <label for="maintOn" style="color: var(--danger);">🔴 ปิดปรับปรุงระบบชั่วคราว (Offline)</label>
+                    <div class="desc">ระงับการเข้าถึงชั่วคราว (เฉพาะบัญชี IT เท่านั้นที่ยังเข้าหน้านี้ได้)</div>
+                </div>
             </div>
             
             <div class="section-header">
@@ -250,12 +281,13 @@
     </div>
 
     <script>
-        // ⚠️ วาง Web App URL ที่นี่ให้ตรงกัน
+        // ⚠️ วาง Web App URL ที่นี่
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec";
         
         let adminUsers = [];
 
         window.onload = function() {
+            // โหลดตั้งค่าเดิมทั้งหมดจาก LocalStorage
             let savedYear = localStorage.getItem('activeYear') || '2569';
             document.getElementById('activeYear').value = savedYear;
 
@@ -266,18 +298,39 @@
             document.getElementById('phase' + currentPhase).checked = true;
             updateBoxHighlight(currentPhase);
 
+            let currentMaint = localStorage.getItem('maintenanceMode') || 'off';
+            document.getElementById('maint' + (currentMaint === 'on' ? 'On' : 'Off')).checked = true;
+            updateMaintHighlight(currentMaint);
+
             // ดึงรายชื่อ Admin
             fetchAdmins();
         }
 
+        // ฟังก์ชัน UI ของ Radio Button
         function selectRadio(id) {
             document.getElementById(id).checked = true;
             updateBoxHighlight(id.replace('phase', ''));
         }
-
         function updateBoxHighlight(phaseNumber) {
-            document.querySelectorAll('.radio-group').forEach(el => el.classList.remove('active'));
+            document.getElementById('box1').className = "radio-group";
+            document.getElementById('box2').className = "radio-group";
+            document.getElementById('box3').className = "radio-group";
             document.getElementById('box' + phaseNumber).classList.add('active');
+        }
+
+        function selectMaint(status) {
+            document.getElementById('maint' + (status === 'on' ? 'On' : 'Off')).checked = true;
+            updateMaintHighlight(status);
+        }
+        function updateMaintHighlight(status) {
+            document.getElementById('maint_off').className = "radio-group";
+            document.getElementById('maint_on').className = "radio-group";
+            
+            if (status === 'on') {
+                document.getElementById('maint_on').classList.add('active-danger');
+            } else {
+                document.getElementById('maint_off').classList.add('active-success');
+            }
         }
 
         // =====================================
@@ -418,10 +471,11 @@
         }
 
         // =====================================
-        // บันทึกการตั้งค่าระบบอื่นๆ
+        // บันทึกการตั้งค่าระบบ
         // =====================================
         function saveSettings() {
             const selectedPhase = document.querySelector('input[name="systemPhase"]:checked').value;
+            const maintMode = document.querySelector('input[name="maintenanceMode"]:checked').value;
             const activeYear = document.getElementById('activeYear').value;
             const regDeadline = document.getElementById('regDeadline').value;
 
@@ -429,6 +483,7 @@
             if(!regDeadline) return alert('กรุณาระบุวัน-เวลาปิดรับสมัคร');
 
             localStorage.setItem('systemPhase', selectedPhase); 
+            localStorage.setItem('maintenanceMode', maintMode); 
             localStorage.setItem('activeYear', activeYear); 
             localStorage.setItem('regDeadline', regDeadline); 
 
