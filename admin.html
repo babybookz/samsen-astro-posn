@@ -276,17 +276,33 @@
             });
         }
 
+        // เปิด Modal พร้อมดึงข้อมูลใส่ฟอร์ม
         function openReviewModal(idCard) {
-            currentReviewIdCard = idCard;
-            const app = dbApplicants.find(a => a.idCard === idCard);
+            currentReviewIdCard = String(idCard); // บังคับให้เป็น String
+            
+            // หาข้อมูลโดยแปลง idCard จากฐานข้อมูลให้เป็น String ก่อนเทียบ
+            const app = dbApplicants.find(a => String(a.idCard) === currentReviewIdCard);
+            
+            // ดักจับ error เผื่อหาข้อมูลไม่เจอ
+            if (!app) {
+                alert('❌ ไม่พบข้อมูลผู้สมัคร รหัส: ' + currentReviewIdCard);
+                return;
+            }
             
             document.getElementById('modalTitle').innerText = "พิจารณาใบสมัครลำดับที่ " + app.no + " (" + app.applyLevel + ")";
             
+            // แปลงรูปแบบวันที่เกิด (ถ้า Google Sheets ส่งมาเป็นก้อนยาวๆ)
+            let dobText = app.dob;
+            if(typeof dobText === 'string' && dobText.includes('T')) {
+                let d = new Date(dobText);
+                dobText = d.toLocaleDateString('th-TH', { day:'2-digit', month:'2-digit', year:'numeric' });
+            }
+
             document.getElementById('v_no').innerText = app.no;
             document.getElementById('v_time').innerText = app.time;
             document.getElementById('v_idCard').innerText = app.idCard;
             document.getElementById('v_fullname').innerText = `${app.prefix}${app.fname} ${app.lname}`;
-            document.getElementById('v_dob').innerText = app.dob;
+            document.getElementById('v_dob').innerText = dobText;
             document.getElementById('v_applyLevel').innerText = app.applyLevel;
             document.getElementById('v_grade').innerText = app.grade;
             document.getElementById('v_school').innerText = `${app.school} (${app.province})`;
@@ -308,15 +324,6 @@
             document.getElementById('reviewModal').style.display = 'flex';
         }
 
-        function closeModal() {
-            document.getElementById('reviewModal').style.display = 'none';
-        }
-
-        function toggleReasonField() {
-            const status = document.getElementById('statusSelect').value;
-            document.getElementById('reasonReq').style.display = (status === 'fail') ? 'inline' : 'none';
-        }
-
         // บันทึกและอัปเดตลง Google Sheets ของจริง
         function submitReview() {
             const status = document.getElementById('statusSelect').value;
@@ -328,7 +335,14 @@
                 return;
             }
 
-            const appIndex = dbApplicants.findIndex(a => a.idCard === currentReviewIdCard);
+            // หา Index โดยแปลง idCard ให้เป็น String ก่อนเทียบ
+            const appIndex = dbApplicants.findIndex(a => String(a.idCard) === currentReviewIdCard);
+            
+            if(appIndex === -1) {
+                alert('❌ เกิดข้อผิดพลาด หาข้อมูลอ้างอิงไม่พบ');
+                return;
+            }
+
             let app = dbApplicants[appIndex];
             
             app.status = status;
@@ -336,7 +350,7 @@
 
             // รันรหัสใหม่ (เช่น 69 + 1 + 0001)
             if(status === 'pass' && !app.examId) {
-                const yearPrefix = activeYear.toString().substring(2); // ดึงเลข 69 จาก 2569
+                const yearPrefix = activeYear.toString().substring(2); 
                 const levelCode = (app.applyLevel.includes("ต้น")) ? "1" : "2";
                 const sequence = String(app.no).padStart(4, '0');
                 app.examId = yearPrefix + levelCode + sequence; 
@@ -347,14 +361,13 @@
             btn.innerHTML = "กำลังบันทึก... ⏳";
             btn.disabled = true;
 
-            // ยิงข้อมูลกลับไปเซฟที่ Sheet
             fetch(GAS_URL, {
                 method: 'POST',
                 body: JSON.stringify({
                     action: 'updateStatus',
                     activeYear: activeYear,
                     level: currentLevel,
-                    rowIndex: app.rowIndex, // บ่งบอกว่าแก้บรรทัดไหนในชีต
+                    rowIndex: app.rowIndex,
                     status: app.status,
                     note: app.note,
                     examId: app.examId
@@ -364,7 +377,7 @@
             .then(result => {
                 if (result.status === 'success') {
                     alert(`✅ บันทึกข้อมูลสำเร็จ!\nสถานะ: ${status === 'pass' ? 'ผ่านเกณฑ์ (ได้เลขสอบ: '+app.examId+')' : (status === 'fail' ? 'ไม่ผ่านเกณฑ์' : 'รอตรวจสอบ')}`);
-                    dbApplicants[appIndex] = app; // อัปเดตข้อมูลบนหน้าจอ
+                    dbApplicants[appIndex] = app; 
                     closeModal();
                     renderTable(); 
                 }
