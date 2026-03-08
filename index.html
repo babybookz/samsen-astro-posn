@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ยินดีต้อนรับ | Samsen Astro POSN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --kt-primary: #009EF7;
+            --kt-primary-active: #008BD9;
+            --kt-text-white: #FFFFFF;
+            --kt-text-muted: #9DA0B6; /* สีเทาอมม่วงสำหรับข้อความรองในโหมดมืด */
+            --kt-border-radius: 1.25rem;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            /* ปรับพื้นหลังให้ดูเป็นอวกาศแนวดาร์กโหมดที่พรีเมียมขึ้น */
+            background: radial-gradient(circle at 50% 0%, #1c253c 0%, #0d111c 100%);
+            color: var(--kt-text-white);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+
+        .hero-box {
+            /* ปรับเอฟเฟกต์กระจก (Glassmorphism) ให้เนียนแบบ Metronic */
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 3.5rem 2.5rem;
+            border-radius: var(--kt-border-radius);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            max-width: 550px;
+            width: 90%;
+            box-sizing: border-box;
+        }
+
+        /* วงกลมล้อมรอบไอคอนแบบมีแสงสว่างวาบ (Glow effect) */
+        .icon-wrapper {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 90px;
+            height: 90px;
+            background: rgba(0, 158, 247, 0.1); 
+            border: 1px solid rgba(0, 158, 247, 0.2);
+            border-radius: 50%;
+            margin-bottom: 1.5rem;
+            font-size: 3rem;
+            box-shadow: 0 0 25px rgba(0, 158, 247, 0.2);
+        }
+
+        h1 { 
+            font-size: 2.25rem; 
+            margin: 0 0 1rem 0; 
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        p { 
+            font-size: 1.15rem; 
+            margin: 0 0 2.5rem 0; 
+            color: var(--kt-text-muted); 
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        .btn-enter {
+            display: inline-block;
+            padding: 1.1rem 2.5rem;
+            background: var(--kt-primary);
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 1.15rem;
+            font-weight: 600;
+            border-radius: 50px; /* ใช้ทรงแคปซูลให้ดูเป็นปุ่ม Call to Action */
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 158, 247, 0.3);
+        }
+
+        .btn-enter:hover {
+            transform: translateY(-3px);
+            background: var(--kt-primary-active);
+            box-shadow: 0 8px 25px rgba(0, 158, 247, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="hero-box">
+        <div class="icon-wrapper">🔭</div>
+        <h1>Samsen Astro POSN</h1>
+        <p>ระบบจัดการศูนย์สอบโอลิมปิกวิชาการ สอวน.<br>สาขาดาราศาสตร์ ศูนย์โรงเรียนสามเสนวิทยาลัย</p>
+        
+        <a href="home.html" class="btn-enter">เข้าสู่ระบบ ➡️</a>
+    </div>
+</body>
+</html>

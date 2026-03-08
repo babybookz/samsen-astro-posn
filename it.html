@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Control Panel | Samsen Astro POSN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --kt-body-bg: #F3F6F9; --kt-text-dark: #181C32; --kt-text-muted: #A1A5B7;
+            --kt-primary: #009EF7; --kt-primary-light: #F1FAFF;
+            --kt-success: #50CD89; --kt-border-color: #E4E6EF;
+            --kt-border-radius: 0.75rem; --kt-box-shadow: 0px 0px 20px 0px rgba(76, 87, 125, 0.1);
+        }
+        body { font-family: 'Sarabun', sans-serif; background: var(--kt-body-bg); padding: 40px 20px; margin: 0; display: flex; justify-content: center; }
+        .container { background: #ffffff; padding: 2.5rem; border-radius: var(--kt-border-radius); box-shadow: var(--kt-box-shadow); max-width: 600px; width: 100%; box-sizing: border-box; }
+        
+        .header-title { display: flex; align-items: center; gap: 15px; margin-bottom: 5px; }
+        .header-icon { display: flex; align-items: center; justify-content: center; width: 50px; height: 50px; background: #181C32; color: white; border-radius: 12px; font-size: 1.5rem; }
+        h2 { color: var(--kt-text-dark); margin: 0; font-size: 1.5rem; font-weight: 700; }
+        p.subtitle { color: var(--kt-text-muted); margin-bottom: 25px; font-size: 1rem; border-bottom: 1px dashed var(--kt-border-color); padding-bottom: 15px; }
+
+        .radio-group { display: flex; align-items: flex-start; background: #ffffff; padding: 20px; border-radius: var(--kt-border-radius); margin-bottom: 15px; cursor: pointer; transition: all 0.2s ease; border: 2px dashed var(--kt-border-color); }
+        .radio-group:hover { border-color: #B5B5C3; }
+        .radio-group.active { border: 2px solid var(--kt-primary); background: var(--kt-primary-light); }
+        
+        input[type="radio"] { transform: scale(1.3); margin-right: 15px; margin-top: 5px; cursor: pointer; accent-color: var(--kt-primary); }
+        .label-content { display: flex; flex-direction: column; }
+        label { font-size: 1.1rem; font-weight: 700; color: var(--kt-text-dark); cursor: pointer; }
+        .desc { font-size: 0.95rem; color: var(--kt-text-muted); margin-top: 5px; line-height: 1.5; }
+
+        .btn-save { width: 100%; padding: 1.1rem; background: #181C32; color: white; border: none; border-radius: var(--kt-border-radius); font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 20px; transition: 0.3s; }
+        .btn-save:hover { background: #2b3047; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(24, 28, 50, 0.2); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-title">
+            <div class="header-icon">💻</div>
+            <h2>IT Control Panel</h2>
+        </div>
+        <p class="subtitle">ระบบจัดการการแสดงผลหน้าเว็บไซต์ (System Phase Control)</p>
+
+        <div class="radio-group" id="box1" onclick="selectRadio('phase1')">
+            <input type="radio" id="phase1" name="systemPhase" value="1">
+            <div class="label-content">
+                <label for="phase1">เฟส 1: ช่วงรับสมัครสอบ</label>
+                <div class="desc">หน้าสถานะจะเปิดเผยเฉพาะ ข้อมูลการสมัคร<br>(ห้องสอบและคะแนนจะถูกล็อกเป็น "รอประกาศ")</div>
+            </div>
+        </div>
+
+        <div class="radio-group" id="box2" onclick="selectRadio('phase2')">
+            <input type="radio" id="phase2" name="systemPhase" value="2">
+            <div class="label-content">
+                <label for="phase2">เฟส 2: ช่วงประกาศห้องสอบ</label>
+                <div class="desc">หน้าสถานะจะเปิดเผย ข้อมูลการสมัคร + ที่นั่งสอบ<br>(คะแนนยังคงถูกล็อกเป็น "รอประกาศ")</div>
+            </div>
+        </div>
+
+        <div class="radio-group" id="box3" onclick="selectRadio('phase3')">
+            <input type="radio" id="phase3" name="systemPhase" value="3">
+            <div class="label-content">
+                <label for="phase3">เฟส 3: ช่วงประกาศผลคะแนน</label>
+                <div class="desc">หน้าสถานะจะเปิดเผย ข้อมูลทั้งหมด ให้นักเรียนตรวจสอบได้</div>
+            </div>
+        </div>
+
+        <button class="btn-save" onclick="saveSettings()">💾 บันทึกและอัปเดตระบบ</button>
+    </div>
+
+    <script>
+        window.onload = function() {
+            let currentPhase = localStorage.getItem('systemPhase') || '1';
+            document.getElementById('phase' + currentPhase).checked = true;
+            updateBoxHighlight(currentPhase);
+        }
+
+        function selectRadio(id) {
+            document.getElementById(id).checked = true;
+            updateBoxHighlight(id.replace('phase', ''));
+        }
+
+        function updateBoxHighlight(phaseNumber) {
+            document.querySelectorAll('.radio-group').forEach(el => el.classList.remove('active'));
+            document.getElementById('box' + phaseNumber).classList.add('active');
+        }
+
+        function saveSettings() {
+            const selectedPhase = document.querySelector('input[name="systemPhase"]:checked').value;
+            localStorage.setItem('systemPhase', selectedPhase); 
+            alert("✅ ระบบได้ทำการบันทึกและเปลี่ยนเฟสการทำงานเป็น 'เฟส " + selectedPhase + "' เรียบร้อยแล้ว");
+        }
+    </script>
+</body>
+</html>

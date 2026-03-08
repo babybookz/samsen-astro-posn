@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รับสมัครสอบ | Samsen Astro POSN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --kt-body-bg: #F3F6F9;
+            --kt-text-dark: #181C32;
+            --kt-text-muted: #A1A5B7;
+            --kt-primary: #009EF7;
+            --kt-primary-light: #F1FAFF;
+            --kt-success: #50CD89;
+            --kt-danger: #F1416C;
+            --kt-border-color: #E4E6EF;
+            --kt-input-bg: #ffffff;
+            --kt-border-radius: 0.75rem;
+            --kt-input-radius: 0.475rem;
+            --kt-box-shadow: 0px 0px 20px 0px rgba(76, 87, 125, 0.1);
+        }
+
+        body { 
+            font-family: 'Sarabun', sans-serif; 
+            background: var(--kt-body-bg); 
+            display: flex; 
+            justify-content: center; 
+            padding: 40px 20px; 
+            margin: 0; 
+        }
+
+        .container { 
+            background: #ffffff; 
+            padding: 40px; 
+            border-radius: var(--kt-border-radius); 
+            box-shadow: var(--kt-box-shadow); 
+            max-width: 700px; 
+            width: 100%; 
+            box-sizing: border-box;
+        }
+
+        .header-title {
+            text-align: center;
+            border-bottom: 1px dashed var(--kt-border-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        h2 { 
+            color: var(--kt-text-dark); 
+            margin: 0 0 10px 0; 
+            font-weight: 700;
+            font-size: 1.6rem;
+        }
+
+        .header-desc {
+            color: var(--kt-text-muted);
+            font-size: 1rem;
+            font-weight: 500;
+            margin: 0;
+        }
+        
+        /* สไตล์ของหัวข้อแต่ละส่วน */
+        .section-title { 
+            font-size: 1.15rem; 
+            color: var(--kt-primary); 
+            margin-top: 35px; 
+            margin-bottom: 20px; 
+            font-weight: 700; 
+            background: var(--kt-primary-light);
+            padding: 12px 15px;
+            border-radius: var(--kt-input-radius);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .input-group { margin-bottom: 20px; }
+        
+        .grid-2 { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 0 20px; 
+        }
+        
+        /* สลับเป็น 1 คอลัมน์เมื่อจอมือถือ */
+        @media (max-width: 600px) {
+            .grid-2 { grid-template-columns: 1fr; gap: 0; }
+        }
+        
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 600; 
+            color: var(--kt-text-dark); 
+            font-size: 1rem; 
+        }
+
+        .req { color: var(--kt-danger); font-weight: bold; } 
+        .hint { font-size: 0.85rem; color: var(--kt-text-muted); margin-bottom: 8px; display: block; font-weight: 500;}
+        
+        /* ดีไซน์ช่องกรอกข้อมูล */
+        input[type="text"], input[type="tel"], input[type="date"], input[type="file"], select { 
+            width: 100%; 
+            padding: 12px 15px; 
+            border: 1px solid var(--kt-border-color); 
+            border-radius: var(--kt-input-radius); 
+            box-sizing: border-box; 
+            font-family: 'Sarabun', sans-serif; 
+            font-size: 1rem;
+            color: var(--kt-text-dark);
+            background-color: var(--kt-input-bg);
+            transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--kt-primary);
+            box-shadow: 0 0 0 3px rgba(0, 158, 247, 0.15); /* เรืองแสงสีฟ้าอ่อนๆ */
+            outline: none;
+        }
+        
+        .radio-group { 
+            display: flex;
+            gap: 20px;
+            background: #F5F8FA; 
+            padding: 15px 20px; 
+            border-radius: var(--kt-input-radius); 
+            border: 1px dashed var(--kt-border-color); 
+            margin-bottom: 10px; 
+        }
+
+        .radio-group label { 
+            font-weight: 500; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            margin: 0;
+        }
+
+        .radio-group input[type="radio"] { 
+            margin-right: 8px; 
+            transform: scale(1.3); 
+            cursor: pointer; 
+            accent-color: var(--kt-primary);
+        }
+
+        /* ปุ่ม Submit */
+        button { 
+            width: 100%; 
+            padding: 16px; 
+            background: var(--kt-success); 
+            color: white; 
+            border: none; 
+            border-radius: var(--kt-input-radius); 
+            font-size: 1.15rem; 
+            cursor: pointer; 
+            font-weight: 700; 
+            margin-top: 30px; 
+            transition: all 0.3s ease; 
+            box-shadow: 0 4px 14px 0 rgba(80, 205, 137, 0.2);
+        }
+
+        button:hover:not(:disabled) { 
+            background: #47BE7D; 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px 0 rgba(80, 205, 137, 0.3);
+        }
+
+        button:disabled { 
+            background: var(--kt-text-muted); 
+            box-shadow: none;
+            cursor: not-allowed; 
+        }
+        
+        .baxck-link { 
+            display: block; 
+            text-align: center; 
+            margin-top: 25px; 
+            color: var(--kt-text-muted); 
+            text-decoration: none; 
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+        .back-link:hover {
+            color: var(--kt-primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-title">
+            <h2>📝 ฟอร์มรับสมัครสอบคัดเลือก</h2>
+            <p class="header-desc">ศูนย์สอบโอลิมปิกวิชาการ สอวน. วิชาดาราศาสตร์</p>
+        </div>
+        
+        <form id="registerForm">
+            
+            <div class="section-title">👤 ส่วนที่ 1: ข้อมูลผู้สมัคร</div>
+            
+            <div class="grid-2">
+                <div class="input-group">
+                    <label>คำนำหน้าชื่อ <span class="req">*</span></label>
+                    <select id="prefix" required>
+                        <option value="">-- เลือกคำนำหน้า --</option>
+                        <option value="เด็กชาย">เด็กชาย</option>
+                        <option value="เด็กหญิง">เด็กหญิง</option>
+                        <option value="นาย">นาย</option>
+                        <option value="นางสาว">นางสาว</option>
+                        <option value="นาง">นาง</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="input-group">
+                    <label>ชื่อ <span class="req">*</span></label>
+                    <input type="text" id="firstName" placeholder="ไม่ต้องใส่คำนำหน้า" required>
+                </div>
+                <div class="input-group">
+                    <label>นามสกุล <span class="req">*</span></label>
+                    <input type="text" id="lastName" placeholder="ตรวจสอบการสะกด" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>เลขประจำตัวประชาชน <span class="req">*</span></label>
+                <span class="hint">ใช้ในการตรวจสอบสถานะการสมัคร (13 หลักติดกัน)</span>
+                <input type="text" id="idCard" maxlength="13" placeholder="ตัวอย่าง: 1100012345678" required>
+            </div>
+
+            <div class="input-group">
+                <label>วัน / เดือน / ปีเกิด <span class="req">*</span></label>
+                <span class="hint">กรอกปี ค.ศ. เท่านั้น หากกรอกเป็น พ.ศ. ระบบจะนับเป็นกลุ่มอายุไม่ถึงเกณฑ์</span>
+                <input type="date" id="birthDate" required>
+            </div>
+
+            <div class="grid-2">
+                <div class="input-group">
+                    <label>เบอร์โทรนักเรียน <span class="req">*</span></label>
+                    <input type="tel" id="studentPhone" maxlength="10" placeholder="08xxxxxxxx" required>
+                </div>
+                <div class="input-group">
+                    <label>เบอร์โทรผู้ปกครอง <span class="req">*</span></label>
+                    <input type="tel" id="parentPhone" maxlength="10" placeholder="08xxxxxxxx" required>
+                </div>
+            </div>
+
+            <div class="section-title">🏫 ส่วนที่ 2: ข้อมูลการศึกษา</div>
+
+            <div class="grid-2">
+                <div class="input-group">
+                    <label>ระดับการศึกษาปัจจุบัน <span class="req">*</span></label>
+                    <select id="grade" required>
+                        <option value="">-- เลือกระดับชั้น --</option>
+                        <option value="ม.1">ม.1</option>
+                        <option value="ม.2">ม.2</option>
+                        <option value="ม.3">ม.3</option>
+                        <option value="ม.4">ม.4</option>
+                        <option value="ม.5">ม.5</option>
+                        <option value="ม.6">ม.6</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>จังหวัด <span class="req">*</span></label>
+                    <select id="province" required>
+                        <option value="">-- เลือกจังหวัด --</option>
+                        <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
+                        <option value="ปทุมธานี">ปทุมธานี</option>
+                        <option value="นนทบุรี">นนทบุรี</option>
+                        <option value="นครนายก">นครนายก</option>
+                        <option value="พระนครศรีอยุธยา">พระนครศรีอยุธยา</option>
+                        <option value="ชัยนาท">ชัยนาท</option>
+                        <option value="สระบุรี">สระบุรี</option>
+                        <option value="สิงห์บุรี">สิงห์บุรี</option>
+                        <option value="อ่างทอง">อ่างทอง</option>
+                        <option value="อุทัยธานี">อุทัยธานี</option>
+                        <option value="ลพบุรี">ลพบุรี</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>โรงเรียน <span class="req">*</span></label>
+                <span class="hint">ไม่ต้องใส่คำว่าโรงเรียน (เช่น พิมพ์แค่ สามเสนวิทยาลัย)</span>
+                <input type="text" id="school" required>
+            </div>
+
+            <div class="input-group">
+                <label>ชื่อครูดาราศาสตร์/วิทยาศาสตร์ในโรงเรียน</label>
+                <input type="text" id="teacherName" placeholder="ถ้ามีให้ระบุ">
+            </div>
+
+            <div class="section-title">📋 ส่วนที่ 3: ข้อมูลการสมัครสอบ</div>
+
+            <div class="input-group">
+                <label>สมัครสอบในระดับ <span class="req">*</span></label>
+                <div class="radio-group">
+                    <label><input type="radio" name="applyLevel" value="มัธยมศึกษาตอนต้น" required> ม.ต้น</label>
+                    <label><input type="radio" name="applyLevel" value="มัธยมศึกษาตอนปลาย"> ม.ปลาย</label>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>หลักฐานการชำระค่าสมัครสอบ <span class="req">*</span></label>
+                <span class="hint">อัปโหลดสลิปโอนเงิน (รองรับไฟล์รูปภาพ .jpg, .png)</span>
+                <input type="file" id="paymentSlip" accept="image/*" required>
+            </div>
+
+            <button type="submit" id="submitBtn">✓ ยืนยันการส่งข้อมูลสมัครสอบ</button>
+        </form>
+        <a href="home.html" class="back-link">⬅️ กลับหน้าเมนูหลัก</a>
+    </div>
+
+    <script>
+        // ⚠️ อย่าลืมนำ Web App URL (ที่เพิ่ง Deploy ใหม่) มาใส่ตรงนี้นะครับ
+        const GAS_URL = "ใส่_WEB_APP_URL_ของคุณที่นี่"; 
+
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.innerHTML = "กำลังแปลงไฟล์รูปและส่งข้อมูล... ⏳";
+            btn.disabled = true;
+
+            const fileInput = document.getElementById('paymentSlip');
+            const file = fileInput.files[0];
+
+            // 1. กระบวนการอ่านไฟล์รูปภาพและแปลงเป็นรหัส (Base64)
+            if (file) {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = function () {
+                    const base64String = reader.result.split(',')[1]; 
+                    sendData(base64String, file.type, file.name);
+                };
+                reader.onerror = function (error) {
+                    alert("❌ เกิดข้อผิดพลาดในการอ่านไฟล์รูปภาพ");
+                    btn.innerHTML = "✓ ยืนยันการส่งข้อมูลสมัครสอบ";
+                    btn.disabled = false;
+                };
+            } else {
+                // กรณีไม่มีไฟล์
+                sendData("", "", "");
+            }
+
+            // 2. ฟังก์ชันรวบรวมข้อมูลทั้งหมด + รหัสรูปภาพ ส่งไปให้ Google Apps Script
+            function sendData(base64Str, mimeType, fileName) {
+                const data = {
+                    prefix: document.getElementById('prefix').value,
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    idCard: document.getElementById('idCard').value,
+                    birthDate: document.getElementById('birthDate').value,
+                    studentPhone: document.getElementById('studentPhone').value,
+                    parentPhone: document.getElementById('parentPhone').value,
+                    grade: document.getElementById('grade').value,
+                    province: document.getElementById('province').value,
+                    school: document.getElementById('school').value,
+                    teacherName: document.getElementById('teacherName').value,
+                    applyLevel: document.querySelector('input[name="applyLevel"]:checked').value,
+                    
+                    // ข้อมูลไฟล์ภาพที่จะส่งไปแปลงกลับเป็นไฟล์รูปลง Google Drive
+                    slipFileBase64: base64Str,
+                    slipMimeType: mimeType,
+                    slipFileName: fileName
+                };
+
+                fetch(GAS_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    alert("✅ สมัครสอบสำเร็จ! ข้อมูลและสลิปถูกส่งเข้าระบบเรียบร้อยแล้ว");
+                    document.getElementById('registerForm').reset();
+                    window.location.href = "status.html"; // ส่งสำเร็จแล้วพาไปหน้าเช็คสถานะ
+                })
+                .catch(error => {
+                    alert("❌ เกิดข้อผิดพลาด ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้");
+                    console.error(error);
+                    btn.innerHTML = "✓ ยืนยันการส่งข้อมูลสมัครสอบ";
+                    btn.disabled = false;
+                });
+            }
+        });
+    </script>
+</body>
+</html>
