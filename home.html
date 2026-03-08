@@ -7,22 +7,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --sidebar-bg: #1A1C29;
-            --sidebar-hover: rgba(255, 255, 255, 0.08);
-            --main-bg: #F4F6F9;
-            --text-dark: #181C32;
-            --text-muted: #7E8299;
-            --kt-primary: #009EF7;
-            --kt-success: #50CD89;
-            --kt-warning: #FFC700;
-            --card-shadow: 0px 0px 20px 0px rgba(76, 87, 125, 0.05);
+            --sidebar-bg: #1A1C29; --sidebar-hover: rgba(255, 255, 255, 0.08); --main-bg: #F4F6F9;
+            --text-dark: #181C32; --text-muted: #7E8299; --kt-primary: #009EF7;
+            --kt-success: #50CD89; --kt-warning: #FFC700; --card-shadow: 0px 0px 20px 0px rgba(76, 87, 125, 0.05);
         }
 
         body { font-family: 'Sarabun', sans-serif; margin: 0; display: flex; min-height: 100vh; background-color: var(--main-bg); overflow-x: hidden; }
 
         /* ================= SIDEBAR ================= */
         .sidebar { width: 260px; background-color: var(--sidebar-bg); color: white; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 2px 0 10px rgba(0,0,0,0.05); transition: 0.3s; z-index: 100; }
-        
         .sidebar-header { padding: 30px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px dashed rgba(255,255,255,0.1); margin-bottom: 20px; }
         .sidebar-icon { background: #ffffff; color: var(--sidebar-bg); width: 45px; height: 45px; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; }
         .sidebar-title { font-weight: 700; font-size: 1.15rem; line-height: 1.2; }
@@ -34,25 +27,19 @@
         .menu-item:hover { background: var(--sidebar-hover); color: white; }
         .menu-item.active { background: var(--kt-primary); color: white; font-weight: 600; }
 
-        /* ซ่อนเมนูตามสิทธิ์ (ค่าเริ่มต้นซ่อนของแอดมินไว้) */
         .role-admin, .role-it { display: none; }
 
-        /* ================= LOGIN BOX (SIDEBAR) ================= */
+        /* ================= SIDEBAR AUTH ================= */
         .sidebar-auth { padding: 20px; background: rgba(0,0,0,0.2); border-top: 1px solid rgba(255,255,255,0.05); }
-        .auth-title { font-size: 0.9rem; font-weight: 600; color: white; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-        
-        .login-input { width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: white; font-family: 'Sarabun'; margin-bottom: 10px; box-sizing: border-box; }
-        .login-input:focus { outline: none; border-color: var(--kt-primary); background: rgba(255,255,255,0.1); }
-        .btn-login { width: 100%; padding: 10px; background: var(--kt-primary); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .btn-login:hover { background: #008BD9; }
-        
-        /* User Profile Box (โชว์เมื่อล็อกอินแล้ว) */
+        .btn-sidebar-login { width: 100%; padding: 12px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s; font-family: 'Sarabun'; }
+        .btn-sidebar-login:hover { background: var(--kt-primary); border-color: var(--kt-primary); }
+
         .profile-box { display: none; align-items: center; gap: 15px; }
         .avatar { width: 40px; height: 40px; background: var(--kt-success); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 1.2rem; }
         .user-info { flex: 1; }
         .user-name { font-weight: 600; font-size: 0.95rem; color: white; margin: 0; }
         .user-role { font-size: 0.75rem; color: var(--kt-success); margin: 0; }
-        .btn-logout { background: none; border: none; color: #F1416C; cursor: pointer; font-size: 0.85rem; padding: 0; margin-top: 5px; text-decoration: underline; }
+        .btn-logout { background: none; border: none; color: #F1416C; cursor: pointer; font-size: 0.85rem; padding: 0; margin-top: 5px; text-decoration: underline; font-family: 'Sarabun'; }
 
         /* ================= MAIN CONTENT ================= */
         .main-content { flex: 1; padding: 40px; display: flex; flex-direction: column; }
@@ -61,26 +48,35 @@
         .page-desc { color: var(--text-muted); font-size: 1rem; margin-top: 5px; }
 
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
-        
         .card { background: white; border-radius: 12px; padding: 25px; box-shadow: var(--card-shadow); text-decoration: none; transition: 0.3s; display: block; border: 1px solid var(--kt-border-color); }
         .card:hover { transform: translateY(-5px); box-shadow: 0px 10px 30px 0px rgba(76, 87, 125, 0.1); border-color: var(--kt-primary); }
-        
         .card-icon { width: 50px; height: 50px; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; margin-bottom: 15px; }
         .icon-blue { background: #F1FAFF; color: var(--kt-primary); }
         .icon-green { background: #E8FFF3; color: var(--kt-success); }
         .icon-warning { background: #FFF8DD; color: var(--kt-warning); }
-
         .card-title { font-size: 1.2rem; font-weight: 700; color: var(--text-dark); margin: 0 0 5px 0; }
         .card-desc { font-size: 0.95rem; color: var(--text-muted); margin: 0; }
 
-        /* Mobile Responsive */
-        .menu-toggle { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-dark); }
+        /* ================= MODAL LOGIN (POPUP) ================= */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-box { background: white; padding: 35px 30px; border-radius: 20px; width: 350px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); text-align: center; animation: slideDown 0.3s ease-out; position: relative; }
+        @keyframes slideDown { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .modal-title { font-size: 1.4rem; font-weight: 700; color: var(--text-dark); margin: 0 0 20px 0; }
+        .form-control { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid #E4E6EF; border-radius: 10px; font-family: 'Sarabun'; font-size: 1rem; box-sizing: border-box; background: #F9F9F9; transition: 0.2s; }
+        .form-control:focus { border-color: var(--kt-primary); outline: none; background: white; }
+        .btn-login { width: 100%; padding: 14px; background: var(--kt-primary); color: white; border: none; border-radius: 10px; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: 0.2s; font-family: 'Sarabun'; }
+        .btn-login:hover { background: #008BD9; }
+        .btn-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5rem; color: #A1A5B7; cursor: pointer; transition: 0.2s; }
+        .btn-close:hover { color: #F1416C; }
+
         @media (max-width: 768px) {
-            .menu-toggle { display: block; margin-bottom: 20px; }
+            .menu-toggle { display: block; margin-bottom: 20px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-dark); }
             .sidebar { position: fixed; left: -260px; height: 100vh; }
             .sidebar.show { left: 0; }
             .main-content { padding: 20px; width: 100%; box-sizing: border-box; }
         }
+        @media (min-width: 769px) { .menu-toggle { display: none; } }
     </style>
 </head>
 <body>
@@ -96,8 +92,8 @@
                 <div class="menu-label">เมนูหลัก</div>
                 <a href="home.html" class="menu-item active">🏠 หน้าแรก (Dashboard)</a>
                 
-                <a href="register.html" class="menu-item role-user">📝 สมัครสอบคัดเลือก</a>
-                <a href="status.html" class="menu-item role-user">🔍 ตรวจสอบสถานะ</a>
+                <a href="register.html" class="menu-item">📝 สมัครสอบคัดเลือก</a>
+                <a href="status.html" class="menu-item">🔍 ตรวจสอบสถานะ</a>
 
                 <div class="menu-label role-admin role-it">ระบบหลังบ้าน</div>
                 <a href="admin.html" class="menu-item role-admin">📋 ตรวจสอบสิทธิ์ (Admin)</a>
@@ -106,13 +102,9 @@
         </div>
 
         <div class="sidebar-auth" id="authSection">
-            <div id="loginForm">
-                <div class="auth-title">🔒 เข้าสู่ระบบเจ้าหน้าที่</div>
-                <input type="text" id="username" class="login-input" placeholder="ชื่อผู้ใช้งาน (Username)">
-                <input type="password" id="password" class="login-input" placeholder="รหัสผ่าน (Password)">
-                <button class="btn-login" onclick="handleLogin()">เข้าสู่ระบบ</button>
+            <div id="loginBtnContainer">
+                <button class="btn-sidebar-login" onclick="openLoginModal()">🔒 เข้าสู่ระบบเจ้าหน้าที่</button>
             </div>
-
             <div id="profileForm" class="profile-box">
                 <div class="avatar" id="userAvatar">A</div>
                 <div class="user-info">
@@ -133,98 +125,133 @@
         </div>
 
         <div class="dashboard-grid">
-            <a href="register.html" class="card role-user">
+            <a href="register.html" class="card">
                 <div class="card-icon icon-blue">📝</div>
                 <h3 class="card-title">กรอกใบสมัครสอบ</h3>
-                <p class="card-desc">สำหรับนักเรียนที่ต้องการสมัครเข้าร่วมโครงการ สอวน. ดาราศาสตร์</p>
+                <p class="card-desc">สำหรับนักเรียนที่ต้องการสมัครเข้าร่วมโครงการ</p>
             </a>
-
-            <a href="status.html" class="card role-user">
+            <a href="status.html" class="card">
                 <div class="card-icon icon-warning">🔍</div>
-                <h3 class="card-title">ตรวจสอบสถานะ / ประกาศผล</h3>
-                <p class="card-desc">เช็คสถานะใบสมัคร, ดูเลขที่นั่งสอบ และตรวจสอบผลคะแนน</p>
+                <h3 class="card-title">ตรวจสอบสถานะ / ผลสอบ</h3>
+                <p class="card-desc">เช็คสถานะใบสมัคร, ที่นั่งสอบ และผลคะแนน</p>
             </a>
-
             <a href="admin.html" class="card role-admin" style="display: none;">
                 <div class="card-icon icon-green">📋</div>
                 <h3 class="card-title">จัดการใบสมัคร (Admin)</h3>
-                <p class="card-desc">ตรวจสอบหลักฐานและอนุมัติสิทธิ์การสอบของนักเรียน</p>
+                <p class="card-desc">ตรวจสอบและอนุมัติสิทธิ์การสอบของนักเรียน</p>
             </a>
-
             <a href="it.html" class="card role-it" style="display: none;">
                 <div class="card-icon icon-dark" style="background: #181C32; color: white;">💻</div>
                 <h3 class="card-title">ตั้งค่าระบบ (IT)</h3>
-                <p class="card-desc">ควบคุมการแสดงผลของหน้าประกาศผลสอบ</p>
+                <p class="card-desc">ควบคุมการแสดงผลของระบบประกาศผลสอบ</p>
             </a>
         </div>
     </div>
 
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-box">
+            <button class="btn-close" onclick="closeLoginModal()">&times;</button>
+            <h3 class="modal-title">เข้าสู่ระบบเจ้าหน้าที่</h3>
+            
+            <input type="text" id="loginId" class="form-control" placeholder="ชื่อผู้ใช้งาน (Username)">
+            <input type="password" id="loginPass" class="form-control" placeholder="รหัสผ่าน (Password)">
+            <button class="btn-login" id="loginSubmitBtn" onclick="loginWithPassword()">ลงชื่อเข้าใช้</button>
+        </div>
+    </div>
+
     <script>
-        // ระบบจำลองการเข้าสู่ระบบ (Mockup Login System)
-        // บัญชีทดสอบ: admin/admin และ it/it
-        
+        // ⚠️ นำ Web App URL ของคุณที่ Deploy ใหม่มาใส่ตรงนี้
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec";
+
+        function openLoginModal() { document.getElementById('loginModal').style.display = 'flex'; }
+        function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; }
+
         function updateUI() {
             const currentRole = localStorage.getItem('userRole') || 'guest';
             
-            // 1. จัดการฟอร์ม Login ด้านล่าง
             if (currentRole === 'guest') {
-                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('loginBtnContainer').style.display = 'block';
                 document.getElementById('profileForm').style.display = 'none';
             } else {
-                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('loginBtnContainer').style.display = 'none';
                 document.getElementById('profileForm').style.display = 'flex';
                 
                 if(currentRole === 'admin') {
                     document.getElementById('displayName').innerText = 'คุณครูผู้ดูแลระบบ';
                     document.getElementById('displayRole').innerText = 'Administrator';
                     document.getElementById('userAvatar').innerText = 'A';
+                    document.getElementById('userAvatar').style.background = '#50CD89';
                 } else if(currentRole === 'it') {
-                    document.getElementById('displayName').innerText = 'ฝ่ายเทคโนโลยีสารสนเทศ';
+                    document.getElementById('displayName').innerText = 'ฝ่ายไอที';
                     document.getElementById('displayRole').innerText = 'IT Support';
                     document.getElementById('userAvatar').innerText = 'IT';
                     document.getElementById('userAvatar').style.background = '#009EF7';
                 }
             }
 
-            // 2. จัดการเมนู Sidebar และ Card ตรงกลาง
-            document.querySelectorAll('.role-admin').forEach(el => el.style.display = (currentRole === 'admin') ? 'flex' : 'none');
-            document.querySelectorAll('.role-it').forEach(el => el.style.display = (currentRole === 'it') ? 'flex' : 'none');
-            // Card ตรงกลางถ้าเป็นลิงก์ (a tag) ต้องใช้ display: block
-            document.querySelectorAll('a.role-admin').forEach(el => el.style.display = (currentRole === 'admin') ? 'block' : 'none');
-            document.querySelectorAll('a.role-it').forEach(el => el.style.display = (currentRole === 'it') ? 'block' : 'none');
+            // จัดการสิทธิ์การมองเห็น (IT เห็นทั้ง Admin และ IT)
+            const showAdmin = (currentRole === 'admin' || currentRole === 'it');
+            const showIt = (currentRole === 'it');
+
+            document.querySelectorAll('.role-admin').forEach(el => {
+                // ถ้าเป็นแท็ก a ให้ใช้ block ถ้าเป็น div (ป้ายเมนู) ให้ใช้ flex
+                el.style.display = showAdmin ? (el.tagName.toLowerCase() === 'a' ? 'block' : 'flex') : 'none';
+            });
+            
+            document.querySelectorAll('.role-it').forEach(el => {
+                el.style.display = showIt ? (el.tagName.toLowerCase() === 'a' ? 'block' : 'flex') : 'none';
+            });
         }
 
-        function handleLogin() {
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
+        // ฟังก์ชันส่งข้อมูลล็อกอินไปให้ GAS ตรวจสอบ
+        function loginWithPassword() {
+            const user = document.getElementById('loginId').value;
+            const pass = document.getElementById('loginPass').value;
+            const btn = document.getElementById('loginSubmitBtn');
 
-            if (user === 'admin' && pass === 'admin') {
-                localStorage.setItem('userRole', 'admin');
-                alert('✅ เข้าสู่ระบบในฐานะ Admin สำเร็จ');
-            } else if (user === 'it' && pass === 'it') {
-                localStorage.setItem('userRole', 'it');
-                alert('✅ เข้าสู่ระบบในฐานะ IT สำเร็จ');
-            } else {
-                alert('❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง\n(ทดสอบพิมพ์: admin/admin หรือ it/it)');
+            if (!user || !pass) {
+                alert('⚠️ กรุณากรอกชื่อผู้ใช้งานและรหัสผ่าน');
                 return;
             }
-            
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-            updateUI();
+
+            btn.innerHTML = "กำลังตรวจสอบ... ⏳";
+            btn.disabled = true;
+
+            // ส่ง Request แบบเจาะจงว่าเป็น action: 'login'
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'login',
+                    username: user,
+                    password: pass
+                })
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.status === 'success') {
+                    // เซฟสิทธิ์ที่เซิร์ฟเวอร์ตอบกลับมา (admin หรือ it)
+                    localStorage.setItem('userRole', result.role);
+                    alert('✅ ' + result.message);
+                    closeLoginModal(); 
+                    updateUI();
+                } else {
+                    alert('❌ ' + result.message);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert('❌ เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
+            })
+            .finally(() => {
+                btn.innerHTML = "ลงชื่อเข้าใช้";
+                btn.disabled = false;
+                document.getElementById('loginPass').value = ''; 
+            });
         }
 
-        function handleLogout() {
-            localStorage.removeItem('userRole');
-            updateUI();
-        }
+        function handleLogout() { localStorage.removeItem('userRole'); updateUI(); }
+        function toggleMenu() { document.getElementById('sidebar').classList.toggle('show'); }
 
-        // ฟังก์ชันเปิด/ปิดเมนูบนมือถือ
-        function toggleMenu() {
-            document.getElementById('sidebar').classList.toggle('show');
-        }
-
-        // รันฟังก์ชันนี้ทันทีที่เปิดหน้าเว็บ เพื่อเช็คว่าล็อกอินค้างไว้ไหม
         window.onload = updateUI;
     </script>
 </body>
