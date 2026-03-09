@@ -6,65 +6,279 @@
     <title>บันทึกคะแนนสอบ | Samsen Astro POSN</title>
     
     <script>
+        const maintState = localStorage.getItem('maintenanceMode');
         const currentRole = localStorage.getItem('userRole');
-        const currentUserName = localStorage.getItem('userName') || 'Admin';
+        
+        // ถ้าโหมดซ่อมบำรุงเปิดอยู่ และคนเข้าไม่ใช่ IT ให้เด้งออก
+        if (maintState === 'on' && currentRole !== 'it') {
+            document.write('<div style="display:flex; justify-content:center; align-items:center; height:100vh; background:#F8F9FA; font-family:sans-serif; text-align:center;"><div style="background:white; padding:40px; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.1); border-top: 5px solid #F1416C;"><h2>🔴 ปิดปรับปรุงระบบชั่วคราว</h2><p style="color:#7E8299; margin-top:10px;">ระบบกำลังอยู่ระหว่างการบำรุงรักษาโดยเจ้าหน้าที่<br>กรุณากลับมาใช้งานใหม่อีกครั้งในภายหลังครับ</p></div></div>');
+            document.close();
+            window.stop();
+        }
+        
+        // ล็อกให้เข้าได้เฉพาะ Admin และ IT
         if (currentRole !== 'admin' && currentRole !== 'it') {
-            alert('ไม่อนุญาตให้เข้าถึง'); window.location.replace('home.html');
+            alert('ไม่อนุญาตให้เข้าถึง: คุณไม่มีสิทธิ์เข้าใช้งานหน้านี้');
+            window.location.replace('home.html');
         }
     </script>
 
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* สไตล์หลักเหมือนหน้าอื่นๆ */
-        body { font-family: 'Sarabun', sans-serif; background: #F8F9FA; margin: 0; color: #181C32; }
-        .navbar { background-color: #311B5E; padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; }
-        .nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: white;}
-        .nav-brand img { height: 45px; background: white; padding: 3px; border-radius: 8px;}
-        .nav-links { display: flex; gap: 25px; align-items: center; }
-        .nav-links a { color: white; text-decoration: none; font-weight: 500; font-size: 1rem; }
-        .nav-links a:hover { color: #FF8F00; }
-        
-        .container { background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0px 10px 30px rgba(0,0,0,0.05); max-width: 1200px; margin: 40px auto; border-top: 5px solid #50CD89;}
-        .header-title { border-bottom: 2px solid #E4E6EF; padding-bottom: 20px; margin-bottom: 30px; }
-        h2 { color: #311B5E; margin: 0; font-size: 1.8rem; font-weight: 700; }
-        .subtitle { color: #7E8299; font-size: 1.05rem; margin: 5px 0 0 0; }
-        
-        .tabs { display: flex; justify-content: space-between; margin-bottom: 25px; }
-        .tab-btn { padding: 12px 30px; border: 1px solid #E4E6EF; background: #F8F9FA; color: #7E8299; font-size: 1.1rem; font-weight: 700; border-radius: 50px; cursor: pointer; font-family: 'Sarabun'; }
-        .tab-btn.active { background: #311B5E; color: white; border-color: #311B5E; }
-        
-        .btn-save-all { padding: 14px 30px; background: #50CD89; color: white; border: none; border-radius: 50px; font-size: 1.1rem; font-weight: 700; cursor: pointer; font-family: 'Sarabun';}
-        .btn-save-all:hover { background: #47BE7D; }
+        :root {
+            /* Theme Colors */
+            --theme-purple: #311B5E; 
+            --theme-purple-light: #4A2B8C;
+            --theme-orange: #FF8F00; 
+            --theme-orange-hover: #E68100;
+            --bg-light: #F8F9FA;
+            --text-dark: #181C32;
+            --text-muted: #7E8299;
+            --danger: #F1416C;
+            --success: #50CD89;
+            --border-color: #E4E6EF;
+        }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 20px;}
-        th { background: #311B5E; color: white; padding: 15px; text-align: left; }
-        td { padding: 15px; border-bottom: 1px dashed #E4E6EF; vertical-align: middle; }
+        body { 
+            font-family: 'Sarabun', sans-serif; 
+            background: var(--bg-light); 
+            margin: 0; 
+            color: var(--text-dark); 
+            overflow-x: hidden; 
+        }
+
+        /* ================= TOP ADMIN BAR ================= */
+        .top-admin-bar { 
+            background-color: #181C32; 
+            color: var(--success); 
+            text-align: center; 
+            padding: 8px; 
+            font-size: 0.85rem; 
+            font-weight: 600; 
+            letter-spacing: 0.5px; 
+            display: block; 
+        }
+        .top-admin-bar span { 
+            color: white; 
+            font-weight: 400; 
+            margin-right: 10px; 
+        }
+
+        /* ================= HEADER & NAVIGATION ================= */
+        .navbar { 
+            background-color: var(--theme-purple); 
+            padding: 15px 50px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+        }
+        .nav-brand { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            text-decoration: none; 
+            color: white;
+        }
+        .nav-brand img { 
+            height: 45px; 
+            width: auto; 
+            background: white; 
+            padding: 3px; 
+            border-radius: 8px;
+        }
+        .nav-brand div { line-height: 1.1; }
+        .brand-title { font-weight: 700; font-size: 1.2rem; }
+        .brand-sub { font-size: 0.8rem; color: #D1C4E9; }
+
+        .nav-links { 
+            display: flex; 
+            gap: 25px; 
+            align-items: center; 
+        }
+        .nav-links a { 
+            color: white; 
+            text-decoration: none; 
+            font-weight: 500; 
+            font-size: 1rem; 
+            transition: color 0.3s; 
+        }
+        .nav-links a:hover { color: var(--theme-orange); }
+
+        /* ================= PROFILE BOX ================= */
+        .nav-profile { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            background: rgba(255,255,255,0.1); 
+            padding: 5px 15px 5px 5px; 
+            border-radius: 50px;
+        }
+        .profile-avatar { 
+            width: 35px; 
+            height: 35px; 
+            background: var(--success); 
+            color: white; 
+            border-radius: 50%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-weight: bold; 
+        }
+        .profile-info { color: white; font-size: 0.9rem; line-height: 1.2; }
+        .profile-name { font-weight: 600; }
+        .profile-role { font-size: 0.75rem; color: #D1C4E9; }
+        .btn-logout-icon { 
+            background: none; 
+            border: none; 
+            color: var(--theme-orange); 
+            font-size: 1.2rem; 
+            cursor: pointer; 
+            padding: 5px; 
+            transition: 0.3s; 
+            margin-left: 5px; 
+            display: flex; 
+            align-items: center;
+        }
+        .btn-logout-icon:hover { color: var(--danger); }
+
+        /* ================= MAIN CONTAINER ================= */
+        .container { 
+            background: #ffffff; 
+            padding: 40px; 
+            border-radius: 12px; 
+            box-shadow: 0px 10px 30px rgba(0,0,0,0.05); 
+            max-width: 1200px; 
+            margin: 40px auto; 
+            border-top: 5px solid var(--success);
+        }
         
-        .inline-input { width: 120px; padding: 12px; border: 2px solid #E4E6EF; border-radius: 8px; font-family: 'Sarabun'; font-size: 1.2rem; font-weight: 700; color: #311B5E; text-align: center; background: #F8F9FA;}
-        .inline-input:focus { border-color: #50CD89; outline: none; background: white;}
-        .exam-id-badge { background: #F8F9FA; color: #311B5E; font-family: monospace; font-size: 1.2rem; padding: 5px 10px; border-radius: 6px; font-weight: 700; }
-        .recorder-name { font-size: 0.85rem; color: #A1A5B7; display: block; margin-top: 5px; font-weight: 600;}
+        .header-title { 
+            border-bottom: 2px solid var(--border-color); 
+            padding-bottom: 20px; 
+            margin-bottom: 30px; 
+        }
+        h2 { color: var(--theme-purple); margin: 0; font-size: 1.8rem; font-weight: 700; }
+        .subtitle { color: var(--text-muted); font-size: 1.05rem; margin: 5px 0 0 0; }
+        
+        .tabs { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-bottom: 25px; 
+        }
+        .tab-btn { 
+            padding: 12px 30px; 
+            border: 1px solid var(--border-color); 
+            background: var(--bg-light); 
+            color: var(--text-muted); 
+            font-size: 1.1rem; 
+            font-weight: 700; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            font-family: 'Sarabun'; 
+            transition: 0.3s;
+        }
+        .tab-btn.active { 
+            background: var(--theme-purple); 
+            color: white; 
+            border-color: var(--theme-purple); 
+            box-shadow: 0 4px 15px rgba(49, 27, 94, 0.2);
+        }
+        
+        .btn-save-all { 
+            padding: 14px 30px; 
+            background: var(--success); 
+            color: white; 
+            border: none; 
+            border-radius: 50px; 
+            font-size: 1.1rem; 
+            font-weight: 700; 
+            cursor: pointer; 
+            font-family: 'Sarabun';
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(80, 205, 137, 0.3);
+        }
+        .btn-save-all:hover { 
+            background: #47BE7D; 
+            transform: translateY(-2px);
+        }
+        .btn-save-all:disabled { 
+            background: var(--text-muted); 
+            cursor: not-allowed; 
+            box-shadow: none; 
+            transform: none; 
+        }
+
+        /* TABLE */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px;}
+        th { background: var(--theme-purple); color: white; padding: 15px; text-align: left; }
+        td { padding: 15px; border-bottom: 1px dashed var(--border-color); vertical-align: middle; }
+        tr:hover { background-color: #F9FAFC; }
+        
+        .inline-input { 
+            width: 120px; 
+            padding: 12px; 
+            border: 2px solid var(--border-color); 
+            border-radius: 8px; 
+            font-family: 'Sarabun'; 
+            font-size: 1.2rem; 
+            font-weight: 700; 
+            color: var(--theme-purple); 
+            text-align: center; 
+            background: var(--bg-light);
+            transition: 0.3s;
+        }
+        .inline-input:focus { border-color: var(--success); outline: none; background: white;}
+        .exam-id-badge { background: var(--bg-light); color: var(--theme-purple); font-family: monospace; font-size: 1.2rem; padding: 5px 10px; border-radius: 6px; font-weight: 700; border: 1px solid var(--border-color);}
+        .recorder-name { font-size: 0.85rem; color: var(--text-muted); display: block; margin-top: 5px; font-weight: 600;}
+
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; gap: 15px; padding: 15px; }
+            .tabs { flex-direction: column; gap: 15px; align-items: stretch; }
+            .btn-save-all { width: 100%; }
+        }
     </style>
 </head>
 <body>
 
+    <div id="adminTopBar" class="top-admin-bar">
+        <span><svg style="width:14px;height:14px;vertical-align:middle;fill:white;margin-top:-2px;" viewBox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 17.96,13.82 17.96,15.47C17.75,16 17.46,16.5 17.13,17Z" /></svg> โหมดผู้ดูแลระบบ:</span> คุณกำลังเข้าสู่ระบบในฐานะเจ้าหน้าที่ศูนย์สอบ
+    </div>
+
     <nav class="navbar">
         <a href="home.html" class="nav-brand">
             <img src="assets/samsen-emblem.png" alt="Samsen Logo">
-            <div><div style="font-weight: 700; font-size: 1.2rem;">SAMSEN ASTRO</div><div style="font-size: 0.8rem; color: #D1C4E9;">POSN System</div></div>
+            <div>
+                <div class="brand-title">SAMSEN ASTRO</div>
+                <div class="brand-sub">POSN System</div>
+            </div>
         </a>
         <div class="nav-links">
             <a href="home.html">หน้าแรก</a>
             <a href="manage_applicants.html">จัดการผู้สมัคร</a>
             <a href="manage_exam.html">จัดห้องสอบ</a>
-            <a href="manage_score.html" style="color: #FF8F00; font-weight: 700;">บันทึกคะแนน</a>
+            <a href="manage_score.html" style="color: var(--theme-orange); font-weight: 700;">บันทึกคะแนน</a>
+        </div>
+
+        <div class="nav-profile" id="profileForm">
+            <div class="profile-avatar" id="userAvatar">A</div>
+            <div class="profile-info">
+                <div class="profile-name" id="displayName">ชื่อผู้ใช้</div>
+                <div class="profile-role" id="displayRole">ตำแหน่ง</div>
+            </div>
+            <button class="btn-logout-icon" onclick="handleLogout()" title="ออกจากระบบ">
+                <svg viewBox="0 0 24 24" style="width:20px;height:20px;"><path d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z" /></svg>
+            </button>
         </div>
     </nav>
 
     <div class="container">
         <div class="header-title">
             <h2>ระบบบันทึกคะแนนสอบคัดเลือก</h2>
-            <p class="subtitle">ระบบจะแสดงรายชื่อเฉพาะนักเรียนที่มีสถานะ "✅ มาสอบ" เท่านั้น</p>
+            <p class="subtitle">ระบบจะแสดงรายชื่อเฉพาะนักเรียนที่มีสถานะ "มาสอบ" เท่านั้น</p>
         </div>
 
         <div class="tabs">
@@ -75,29 +289,59 @@
             <button class="btn-save-all" id="btnSaveAll" onclick="saveScoreData()">บันทึกคะแนนทั้งหมด</button>
         </div>
 
-        <table id="scoreTable">
-            <thead>
-                <tr>
-                    <th style="width: 150px;">เลขประจำตัวสอบ</th>
-                    <th>ชื่อ - นามสกุล</th>
-                    <th>ที่นั่งสอบ</th>
-                    <th style="width: 150px; text-align: center;">คะแนนที่ได้</th>
-                    <th style="width: 180px;">ผู้บันทึกคะแนน</th>
-                </tr>
-            </thead>
-            <tbody id="scoreTableBody">
-                <tr><td colspan="5" style="text-align: center; padding: 40px;">กำลังโหลดข้อมูล... ⏳</td></tr>
-            </tbody>
-        </table>
+        <div style="overflow-x: auto;">
+            <table id="scoreTable">
+                <thead>
+                    <tr>
+                        <th style="width: 150px;">เลขประจำตัวสอบ</th>
+                        <th>ชื่อ - นามสกุล</th>
+                        <th>ที่นั่งสอบ</th>
+                        <th style="width: 150px; text-align: center;">คะแนนที่ได้</th>
+                        <th style="width: 180px;">ผู้บันทึกคะแนน</th>
+                    </tr>
+                </thead>
+                <tbody id="scoreTableBody">
+                    <tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--theme-purple); font-weight: 700;">กำลังโหลดข้อมูล... ⏳</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script>
+        // ⚠️ วาง Web App URL ที่นี่
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec";
+        
         let filteredData = []; 
         let currentLevel = 'ม.ต้น'; 
         let activeYear = localStorage.getItem('activeYear') || new Date().getFullYear() + 543;
+        const currentUserName = localStorage.getItem('userName') || 'Admin ไม่ระบุชื่อ';
 
-        window.onload = function() { fetchDataFromSheet(); };
+        window.onload = function() { 
+            updateProfileUI();
+            fetchDataFromSheet(); 
+        };
+
+        // ฟังก์ชันสำหรับอัปเดตชื่อผู้ใช้งานมุมขวาบน
+        function updateProfileUI() {
+            const role = localStorage.getItem('userRole');
+            document.getElementById('displayName').innerText = currentUserName;
+            document.getElementById('userAvatar').innerText = currentUserName ? currentUserName.charAt(0) : 'A';
+
+            if(role === 'admin') {
+                document.getElementById('displayRole').innerText = 'Administrator';
+                document.getElementById('userAvatar').style.background = '#50CD89'; 
+            } else if(role === 'it') {
+                document.getElementById('displayRole').innerText = 'IT Support';
+                document.getElementById('userAvatar').style.background = '#F1416C'; 
+            }
+        }
+
+        // ฟังก์ชันสำหรับออกจากระบบ
+        function handleLogout() { 
+            localStorage.removeItem('userRole'); 
+            localStorage.removeItem('userName'); 
+            window.location.replace('home.html'); 
+        }
 
         function switchTab(level) {
             currentLevel = level;
@@ -108,7 +352,8 @@
         }
 
         function fetchDataFromSheet() {
-            document.getElementById('scoreTableBody').innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px;">กำลังโหลดข้อมูล... ⏳</td></tr>`;
+            document.getElementById('scoreTableBody').innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--theme-purple); font-weight: 700;">กำลังโหลดข้อมูล... ⏳</td></tr>`;
+            
             fetch(GAS_URL, {
                 method: 'POST',
                 body: JSON.stringify({ action: 'getAdminData', activeYear: activeYear, level: currentLevel })
@@ -120,7 +365,13 @@
                     filteredData = result.data.filter(app => app.status === 'pass' && app.attendance === 'present');
                     filteredData.sort((a, b) => parseInt(a.examId) - parseInt(b.examId));
                     renderTable();
+                } else {
+                    alert('เกิดข้อผิดพลาดในการโหลดข้อมูล');
                 }
+            })
+            .catch(error => {
+                console.error(error);
+                document.getElementById('scoreTableBody').innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--danger);">เชื่อมต่อล้มเหลว กรุณาลองใหม่</td></tr>`;
             });
         }
 
@@ -128,13 +379,16 @@
             // เมื่อมีการพิมพ์คะแนน ให้ขึ้นชื่อคนล็อกอินรอไว้เลย
             const displaySpan = document.getElementById(`recorder_${idCard}`);
             displaySpan.innerText = `บันทึกโดย: ${currentUserName} (รอเซฟ)`;
-            displaySpan.style.color = "#FF8F00";
+            displaySpan.style.color = "var(--theme-orange)";
         }
 
         function renderTable() {
             const tbody = document.getElementById('scoreTableBody');
             tbody.innerHTML = '';
-            if (filteredData.length === 0) return tbody.innerHTML = `<tr><td colspan="5" style="text-align: center;">ไม่มีผู้เข้าระบบสอบ หรือ ยังไม่ได้เช็คชื่อผู้เข้าสอบ</td></tr>`;
+            
+            if (filteredData.length === 0) {
+                return tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted);">ไม่มีผู้เข้าระบบสอบ หรือ ยังไม่ได้เช็คชื่อผู้เข้าสอบในหน้าจัดห้องสอบ</td></tr>`;
+            }
 
             filteredData.forEach(app => {
                 let recorderHtml = app.scoreRecorder ? `บันทึกโดย: ${app.scoreRecorder}` : '-';
@@ -142,7 +396,7 @@
                 let row = `<tr>
                     <td><span class="exam-id-badge">${app.examId}</span></td>
                     <td style="font-weight: 600;">${app.prefix}${app.fname} ${app.lname}</td>
-                    <td style="color: #7E8299;">ห้อง: ${app.room || '-'} / เลขที่: ${app.seat || '-'}</td>
+                    <td style="color: var(--text-muted);">ห้อง: ${app.room || '-'} / เลขที่: ${app.seat || '-'}</td>
                     <td style="text-align: center;">
                         <input type="number" id="score_${app.idCard}" class="inline-input" value="${app.score}" oninput="markScoreChanged('${app.idCard}')">
                     </td>
@@ -154,7 +408,8 @@
 
         function saveScoreData() {
             const btn = document.getElementById('btnSaveAll');
-            btn.innerHTML = "กำลังบันทึก... ⏳"; btn.disabled = true;
+            btn.innerHTML = "กำลังบันทึก... ⏳"; 
+            btn.disabled = true;
 
             let updatesPayload = [];
             filteredData.forEach(app => {
@@ -163,7 +418,7 @@
                     rowIndex: app.rowIndex, 
                     score: newScore,
                     // ส่งชื่อ currentUserName ไปบันทึกด้วย ถ้าช่องคะแนนไม่ว่างเปล่า
-                    scoreRecorder: newScore ? currentUserName : '' 
+                    scoreRecorder: newScore !== '' ? currentUserName : '' 
                 });
             });
 
@@ -174,11 +429,20 @@
             .then(res => res.json())
             .then(result => {
                 if (result.status === 'success') {
-                    alert(`บันทึกคะแนนสำเร็จ!`);
+                    alert(`บันทึกคะแนนสำเร็จ! จำนวน ${updatesPayload.length} รายการ`);
                     fetchDataFromSheet(); // โหลดใหม่เพื่อให้แสดงชื่อสีเทาปกติ
+                } else {
+                    alert('เกิดข้อผิดพลาดในการบันทึก');
                 }
             })
-            .finally(() => { btn.innerHTML = "บันทึกคะแนนทั้งหมด"; btn.disabled = false; });
+            .catch(error => {
+                alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+                console.error(error);
+            })
+            .finally(() => { 
+                btn.innerHTML = "บันทึกคะแนนทั้งหมด"; 
+                btn.disabled = false; 
+            });
         }
     </script>
 </body>

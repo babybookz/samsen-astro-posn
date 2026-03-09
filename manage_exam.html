@@ -7,6 +7,7 @@
     
     <script>
         const currentRole = localStorage.getItem('userRole');
+        const currentUserName = localStorage.getItem('userName') || 'Admin ไม่ระบุชื่อ';
         if (currentRole !== 'admin' && currentRole !== 'it') {
             alert('ไม่อนุญาตให้เข้าถึง: คุณไม่มีสิทธิ์เข้าใช้งานหน้านี้');
             window.location.replace('home.html');
@@ -32,6 +33,23 @@
         }
         body { font-family: 'Sarabun', sans-serif; background: var(--bg-light); margin: 0; color: var(--text-dark); overflow-x: hidden; }
         
+        /* ================= TOP ADMIN BAR ================= */
+        .top-admin-bar { 
+            background-color: #181C32; 
+            color: var(--success); 
+            text-align: center; 
+            padding: 8px; 
+            font-size: 0.85rem; 
+            font-weight: 600; 
+            letter-spacing: 0.5px; 
+            display: block; 
+        }
+        .top-admin-bar span { 
+            color: white; 
+            font-weight: 400; 
+            margin-right: 10px; 
+        }
+
         /* ================= HEADER & NAVIGATION ================= */
         .navbar { background-color: var(--theme-purple); padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
         .nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: white;}
@@ -43,6 +61,43 @@
         .nav-links { display: flex; gap: 25px; align-items: center; }
         .nav-links a { color: white; text-decoration: none; font-weight: 500; font-size: 1rem; transition: color 0.3s; }
         .nav-links a:hover { color: var(--theme-orange); }
+
+        /* ================= PROFILE BOX ================= */
+        .nav-profile { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            background: rgba(255,255,255,0.1); 
+            padding: 5px 15px 5px 5px; 
+            border-radius: 50px;
+        }
+        .profile-avatar { 
+            width: 35px; 
+            height: 35px; 
+            background: var(--success); 
+            color: white; 
+            border-radius: 50%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-weight: bold; 
+        }
+        .profile-info { color: white; font-size: 0.9rem; line-height: 1.2; }
+        .profile-name { font-weight: 600; }
+        .profile-role { font-size: 0.75rem; color: #D1C4E9; }
+        .btn-logout-icon { 
+            background: none; 
+            border: none; 
+            color: var(--theme-orange); 
+            font-size: 1.2rem; 
+            cursor: pointer; 
+            padding: 5px; 
+            transition: 0.3s; 
+            margin-left: 5px; 
+            display: flex; 
+            align-items: center;
+        }
+        .btn-logout-icon:hover { color: var(--danger); }
 
         /* ================= MAIN CONTAINER ================= */
         .page-wrapper { padding: 40px 20px; display: flex; justify-content: center; }
@@ -102,6 +157,10 @@
 </head>
 <body>
 
+    <div id="adminTopBar" class="top-admin-bar">
+        <span><svg style="width:14px;height:14px;vertical-align:middle;fill:white;margin-top:-2px;" viewBox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 17.96,13.82 17.96,15.47C17.75,16 17.46,16.5 17.13,17Z" /></svg> โหมดผู้ดูแลระบบ:</span> คุณกำลังเข้าสู่ระบบในฐานะเจ้าหน้าที่ศูนย์สอบ
+    </div>
+
     <nav class="navbar">
         <a href="home.html" class="nav-brand">
             <img src="assets/samsen-emblem.png" alt="Samsen Logo">
@@ -115,6 +174,17 @@
             <a href="manage_applicants.html">จัดการผู้สมัคร</a>
             <a href="manage_exam.html" style="color: var(--theme-orange); font-weight: 700;">จัดห้องสอบ</a>
             <a href="manage_score.html">บันทึกคะแนน</a>
+        </div>
+
+        <div class="nav-profile" id="profileForm" style="display: flex;">
+            <div class="profile-avatar" id="userAvatar">A</div>
+            <div class="profile-info">
+                <div class="profile-name" id="displayName">ชื่อผู้ใช้</div>
+                <div class="profile-role" id="displayRole">ตำแหน่ง</div>
+            </div>
+            <button class="btn-logout-icon" onclick="handleLogout()" title="ออกจากระบบ">
+                <svg viewBox="0 0 24 24" style="width:20px;height:20px;"><path d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z" /></svg>
+            </button>
         </div>
     </nav>
 
@@ -184,9 +254,32 @@
         let rowsPerPage = 50;
 
         window.onload = function() {
+            updateProfileUI();
             document.getElementById('pageSubtitle').innerText = `บันทึกข้อมูลอาคาร ห้องสอบ และสถานะการมาสอบ (ปีการศึกษา ${activeYear})`;
             fetchDataFromSheet();
         };
+
+        // ฟังก์ชันสำหรับอัปเดตชื่อผู้ใช้งานมุมขวาบน
+        function updateProfileUI() {
+            const role = localStorage.getItem('userRole');
+            document.getElementById('displayName').innerText = currentUserName;
+            document.getElementById('userAvatar').innerText = currentUserName ? currentUserName.charAt(0) : 'A';
+
+            if(role === 'admin') {
+                document.getElementById('displayRole').innerText = 'Administrator';
+                document.getElementById('userAvatar').style.background = '#50CD89'; 
+            } else if(role === 'it') {
+                document.getElementById('displayRole').innerText = 'IT Support';
+                document.getElementById('userAvatar').style.background = '#F1416C'; 
+            }
+        }
+
+        // ฟังก์ชันสำหรับออกจากระบบ
+        function handleLogout() { 
+            localStorage.removeItem('userRole'); 
+            localStorage.removeItem('userName'); 
+            window.location.replace('home.html'); 
+        }
 
         function switchTab(level) {
             currentLevel = level;

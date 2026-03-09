@@ -7,97 +7,143 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --kt-primary: #009EF7;
-            --kt-primary-active: #008BD9;
-            --kt-text-white: #FFFFFF;
-            --kt-text-muted: #9DA0B6; /* สีเทาอมม่วงสำหรับข้อความรองในโหมดมืด */
-            --kt-border-radius: 1.25rem;
+            /* --- เปลี่ยนสีพื้นหลังให้ดู Premium ขึ้นเล็กน้อย --- */
+            --main-bg: #FAFAFA; /* Off-white */
+            --text-dark: #181C32;
+            --text-muted: #7E8299;
+
+            /* --- NEW THEME: PURPLE & ORANGE (ELEGANT) --- */
+            --theme-purple: #4A148C; /* ม่วงเข้ม สวยสง่า (Primary) */
+            --theme-orange: #FF8F00; /* ส้มทอง หรูหรา (Accent/Hover) */
+            --theme-purple-light: rgba(74, 20, 140, 0.1);
         }
 
         body {
             font-family: 'Sarabun', sans-serif;
-            /* ปรับพื้นหลังให้ดูเป็นอวกาศแนวดาร์กโหมดที่พรีเมียมขึ้น */
-            background: radial-gradient(circle at 50% 0%, #1c253c 0%, #0d111c 100%);
-            color: var(--kt-text-white);
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
-            text-align: center;
-        }
-
-        .hero-box {
-            /* ปรับเอฟเฟกต์กระจก (Glassmorphism) ให้เนียนแบบ Metronic */
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 3.5rem 2.5rem;
-            border-radius: var(--kt-border-radius);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            max-width: 550px;
-            width: 90%;
+            background-color: var(--main-bg);
+            padding: 20px;
             box-sizing: border-box;
+            /* เพิ่ม Gradient พื้นหลังบางๆ เพื่อความสวยงาม */
+            background-image: radial-gradient(var(--theme-purple-light) 1px, transparent 1px);
+            background-size: 20px 20px;
         }
 
-        /* วงกลมล้อมรอบไอคอนแบบมีแสงสว่างวาบ (Glow effect) */
-        .icon-wrapper {
+        .content-wrapper {
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            background: transparent;
+        }
+
+        /* 🌟 ส่วนควบคุมขนาดและระยะห่างของโลโก้คู่ 🌟 */
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 38px; /* ขยายระยะห่างอีก 50% (จาก 25px) */
+            margin-bottom: 40px; /* เพิ่มระยะห่างด้านล่างเล็กน้อย */
+        }
+
+        .logo-img {
+            max-height: 165px; /* ขยายความสูงเพิ่มขึ้น 50% (จาก 110px) */
+            width: auto; /* รักษาอัตราส่วนรูปภาพ */
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.08));
+            transition: transform 0.3s ease;
+        }
+
+        /* ลูกเล่นเวลาเอาเมาส์วางที่รูปโลโก้ */
+        .logo-img:hover {
+            transform: scale(1.05);
+        }
+
+        /* สไตล์เฉพาะตัวของแต่ละโลโก้ (ไม่ต้องแก้ก็ได้ แต่ผมปรับให้สมดุล) */
+        .logo-samsen {
+            max-height: 165px; /* ขยายเพิ่มขึ้น 50% */
+        }
+        .logo-astro {
+            max-height: 170px; /* ขยายเพิ่มขึ้น 50% (จาก 115px) */
+        }
+
+        h1 {
+            color: var(--text-dark);
+            font-size: 2.5rem; /* ขยายขนาดหัวข้อเล็กน้อย */
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            letter-spacing: -1px;
+        }
+
+        /* เพิ่มเส้นใต้หัวข้อเล็กน้อย */
+        h1::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: var(--theme-orange); /* สีส้มทอง */
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+        p {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin: 25px 0 50px 0;
+        }
+
+        /* --- สไตล์ปุ่มในธีมใหม่ --- */
+        .btn-enter {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 90px;
-            height: 90px;
-            background: rgba(0, 158, 247, 0.1); 
-            border: 1px solid rgba(0, 158, 247, 0.2);
-            border-radius: 50%;
-            margin-bottom: 1.5rem;
-            font-size: 3rem;
-            box-shadow: 0 0 25px rgba(0, 158, 247, 0.2);
-        }
-
-        h1 { 
-            font-size: 2.25rem; 
-            margin: 0 0 1rem 0; 
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        p { 
-            font-size: 1.15rem; 
-            margin: 0 0 2.5rem 0; 
-            color: var(--kt-text-muted); 
-            line-height: 1.6;
-            font-weight: 400;
-        }
-
-        .btn-enter {
-            display: inline-block;
-            padding: 1.1rem 2.5rem;
-            background: var(--kt-primary);
-            color: #ffffff;
-            text-decoration: none;
-            font-size: 1.15rem;
+            gap: 12px;
+            background: var(--theme-purple); /* สีม่วงเข้ม */
+            color: white;
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-size: 1.2rem;
             font-weight: 600;
-            border-radius: 50px; /* ใช้ทรงแคปซูลให้ดูเป็นปุ่ม Call to Action */
+            text-decoration: none;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 158, 247, 0.3);
+            /* เงาปุ่มเป็นสีม่วงอ่อนๆ */
+            box-shadow: 0 5px 20px rgba(74, 20, 140, 0.25);
         }
 
         .btn-enter:hover {
+            background: var(--theme-orange); /* เปลี่ยนเป็นสีส้มทองเวลา hover */
             transform: translateY(-3px);
-            background: var(--kt-primary-active);
-            box-shadow: 0 8px 25px rgba(0, 158, 247, 0.5);
+            /* เงาเวลา hover เป็นสีส้มทอง */
+            box-shadow: 0 10px 30px rgba(255, 143, 0, 0.4);
+            color: #fff;
+        }
+
+        /* เพิ่มลูกเล่นลูกศรเล็กน้อย */
+        .btn-enter .arrow {
+            transition: transform 0.3s ease;
+        }
+        .btn-enter:hover .arrow {
+            transform: translateX(5px);
         }
     </style>
 </head>
 <body>
-    <div class="hero-box">
-        <div class="icon-wrapper">🔭</div>
+    
+    <div class="content-wrapper">
+        <div class="logo-container">
+            <img src="assets/samsen-emblem.png" alt="Samsen Logo" class="logo-img">
+            <img src="assets/posn-emblem.png" alt="Astro Logo" class="logo-img">
+        </div>
         <h1>Samsen Astro POSN</h1>
-        <p>ระบบจัดการศูนย์โอลิมปิกวิชาการ สอวน.<br>วิชาดาราศาสตร์ โรงเรียนสามเสนวิทยาลัย</p>
+        <p>ระบบจัดการศูนย์สอบโอลิมปิกวิชาการ สอวน.<br>วิชาดาราศาสตร์ โรงเรียนสามเสนวิทยาลัย</p>
         
-        <a href="home.html" class="btn-enter">เข้าสู่ระบบ ➡️</a>
+        <a href="home.html" class="btn-enter">
+            เข้าสู่เว็บไซต์ <span class="arrow">&rarr;</span>
+        </a>
     </div>
+
 </body>
 </html>

@@ -3,133 +3,436 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>หน้าหลัก | Samsen Astro POSN</title>
+    <title>หน้าแรก | Samsen Astro POSN</title>
+
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* กำหนดตัวแปรสีสไตล์ Metronic */
         :root {
-            --kt-body-bg: #F3F6F9;          /* สีพื้นหลังสีเทาอมฟ้าสว่าง */
-            --kt-text-dark: #181C32;        /* สีตัวหนังสือหลัก ดำอมน้ำเงิน */
-            --kt-text-muted: #A1A5B7;       /* สีตัวหนังสือรอง เทา */
-            --kt-primary: #009EF7;          /* สีฟ้า Primary */
-            --kt-primary-active: #008BD9;   /* สีฟ้าเมื่อกด Hover */
-            --kt-success: #50CD89;          /* สีเขียว Success */
-            --kt-success-active: #47BE7D;   /* สีเขียวเมื่อกด Hover */
-            --kt-border-radius: 0.75rem;    /* ความโค้งของกล่อง (12px) */
-            --kt-btn-radius: 0.475rem;      /* ความโค้งของปุ่ม */
-            --kt-box-shadow: 0px 0px 20px 0px rgba(76, 87, 125, 0.1); /* เงานุ่มๆ */
+            /* Theme Colors */
+            --theme-purple: #311B5E; 
+            --theme-purple-light: #4A2B8C;
+            --theme-orange: #FF8F00; 
+            --theme-orange-hover: #E68100;
+            --bg-light: #F8F9FA;
+            --text-dark: #181C32;
+            --text-muted: #7E8299;
+            --danger: #F1416C;
+            --success: #50CD89;
         }
 
-        body { 
-            font-family: 'Sarabun', sans-serif; 
-            background-color: var(--kt-body-bg); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
-            margin: 0; 
-        }
+        body { font-family: 'Sarabun', sans-serif; margin: 0; background-color: var(--bg-light); color: var(--text-dark); overflow-x: hidden;}
 
-        .container { 
-            background: #ffffff; 
-            padding: 3rem 2.5rem; 
-            border-radius: var(--kt-border-radius); 
-            box-shadow: var(--kt-box-shadow); 
-            text-align: center; 
-            max-width: 450px; 
-            width: 90%; 
-            box-sizing: border-box;
-        }
+        /* ================= 1. TOP ADMIN BAR ================= */
+        .top-admin-bar { background-color: #181C32; color: var(--success); text-align: center; padding: 8px; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px; display: none; }
+        .top-admin-bar span { color: white; font-weight: 400; margin-right: 10px; }
 
-        /* วงกลมล้อมรอบไอคอนด้านบน */
-        .icon-wrapper {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 80px;
-            height: 80px;
-            background-color: #F1FAFF; /* พื้นหลังสีฟ้าอ่อนมากๆ */
-            border-radius: 50%;
-            margin-bottom: 1.5rem;
-            font-size: 2.5rem;
-        }
+        /* ================= 2. HEADER & NAVIGATION ================= */
+        .navbar { background-color: var(--theme-purple); padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        .nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: white;}
+        .nav-brand img { height: 45px; width: auto; background: white; padding: 3px; border-radius: 8px;}
+        .nav-brand div { line-height: 1.1; }
+        .brand-title { font-weight: 700; font-size: 1.2rem; }
+        .brand-sub { font-size: 0.8rem; color: #D1C4E9; }
 
-        h1 { 
-            color: var(--kt-text-dark); 
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin: 0 0 0.5rem 0; 
-        }
+        .nav-links { display: flex; gap: 25px; align-items: center; }
+        .nav-links a { color: white; text-decoration: none; font-weight: 500; font-size: 1rem; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--theme-orange); }
 
-        p { 
-            color: var(--kt-text-muted); 
-            font-size: 1.05rem;
-            font-weight: 500;
-            margin: 0 0 2.5rem 0; 
-            line-height: 1.5;
-        }
-
-        .btn-menu { 
-            display: flex; 
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%; 
-            padding: 1.1rem 1.5rem; 
-            margin-bottom: 1rem; 
-            border-radius: var(--kt-btn-radius); 
-            text-decoration: none; 
-            font-weight: 600; 
-            font-size: 1.1rem; 
-            transition: all 0.3s ease; 
-            box-sizing: border-box; 
-        }
-
-        /* ปุ่มรับสมัคร (สีเขียวแบบ Metronic) */
-        .btn-register { 
-            background-color: var(--kt-success); 
-            color: #ffffff; 
-            box-shadow: 0 4px 14px 0 rgba(80, 205, 137, 0.2); /* เงาสีเขียวเรืองแสงอ่อนๆ */
-        } 
+        .nav-auth .btn-login { background: var(--theme-orange); color: white; padding: 10px 25px; border-radius: 50px; font-weight: 600; font-family: 'Sarabun'; font-size: 1rem; border: none; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(255, 143, 0, 0.3); }
+        .nav-auth .btn-login:hover { background: var(--theme-orange-hover); transform: translateY(-2px); }
         
-        .btn-register:hover { 
-            background-color: var(--kt-success-active); 
-            transform: translateY(-2px); /* เอฟเฟกต์ยกตัวขึ้นนิดๆ */
-            box-shadow: 0 6px 20px 0 rgba(80, 205, 137, 0.3);
-        }
+        .nav-profile { display: none; align-items: center; gap: 12px; background: rgba(255,255,255,0.1); padding: 5px 15px 5px 5px; border-radius: 50px;}
+        .profile-avatar { width: 35px; height: 35px; background: var(--success); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+        .profile-info { color: white; font-size: 0.9rem; line-height: 1.2; }
+        .profile-name { font-weight: 600; }
+        .profile-role { font-size: 0.75rem; color: #D1C4E9; }
+        .btn-logout-icon { background: none; border: none; color: var(--theme-orange); font-size: 1.2rem; cursor: pointer; padding: 5px; transition: 0.3s; margin-left: 5px; display: flex; align-items: center;}
+        .btn-logout-icon:hover { color: var(--danger); }
 
-        /* ปุ่มตรวจสอบสถานะ (สีฟ้าแบบ Metronic) */
-        .btn-status { 
-            background-color: var(--kt-primary); 
-            color: #ffffff; 
-            box-shadow: 0 4px 14px 0 rgba(0, 158, 247, 0.2); /* เงาสีฟ้าเรืองแสงอ่อนๆ */
-        } 
+        /* ================= 3. HERO SECTION ================= */
+        .hero { background: linear-gradient(135deg, #F3E5F5 0%, #FFF3E0 100%); padding: 80px 20px; text-align: center; border-bottom: 1px solid #E4E6EF; position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,143,0,0.05) 0%, transparent 50%); z-index: 0; }
         
-        .btn-status:hover { 
-            background-color: var(--kt-primary-active); 
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px 0 rgba(0, 158, 247, 0.3);
-        }
+        .hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+        .hero-badge { display: inline-block; background: var(--theme-purple-light); color: white; padding: 6px 15px; border-radius: 50px; font-size: 0.85rem; font-weight: 600; margin-bottom: 20px; letter-spacing: 1px;}
+        .hero h1 { color: var(--theme-purple); font-size: 3rem; font-weight: 700; margin: 0 0 15px 0; letter-spacing: -1px; }
+        .hero p { color: var(--text-muted); font-size: 1.2rem; line-height: 1.6; margin: 0 0 30px 0; }
+        
+        .countdown-box { background: white; display: inline-block; padding: 15px 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 35px; border: 1px solid #E4E6EF;}
+        .countdown-title { display: block; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin-bottom: 5px;}
+        .countdown-timer { font-size: 1.5rem; font-weight: 700; color: var(--theme-orange); font-family: monospace;}
 
-        .btn-icon {
-            font-size: 1.25rem;
+        .btn-cta { background: var(--theme-orange); color: white; padding: 18px 40px; border-radius: 50px; font-size: 1.25rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; transition: 0.3s; box-shadow: 0 10px 25px rgba(255, 143, 0, 0.3); }
+        .btn-cta:hover { background: var(--theme-orange-hover); transform: translateY(-3px); box-shadow: 0 15px 35px rgba(255, 143, 0, 0.4); }
+        .btn-cta svg { fill: currentColor; }
+
+        /* ================= 4. QUICK ACTIONS GRID ================= */
+        .container { max-width: 1200px; margin: 60px auto; padding: 0 20px; }
+        .section-title { font-size: 1.5rem; color: var(--theme-purple); font-weight: 700; margin-bottom: 25px; display: flex; align-items: center; gap: 10px;}
+        .section-title::before { content: ''; display: block; width: 6px; height: 25px; background: var(--theme-orange); border-radius: 10px;}
+
+        .action-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 50px; }
+        .card { background: white; border-radius: 15px; padding: 35px 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.03); text-decoration: none; transition: 0.3s; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: flex-start;}
+        .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(49, 27, 94, 0.08); border-color: var(--theme-purple-light); }
+        
+        .card-icon { width: 60px; height: 60px; border-radius: 15px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
+        .card-icon svg { width: 32px; height: 32px; }
+        .bg-blue { background: #E3F2FD; color: #1976D2; }
+        .bg-blue svg { fill: #1976D2; }
+        .bg-warning { background: #FFF8E1; color: #F57C00; }
+        .bg-warning svg { fill: #F57C00; }
+        
+        .card-title { font-size: 1.25rem; font-weight: 700; color: var(--text-dark); margin: 0 0 10px 0; }
+        .card-desc { font-size: 0.95rem; color: var(--text-muted); margin: 0; line-height: 1.5;}
+
+        /* ================= 5. ADMIN ZONE ================= */
+        .admin-zone { background: rgba(74, 20, 140, 0.02); border: 2px dashed rgba(74, 20, 140, 0.2); padding: 40px; border-radius: 20px; margin-bottom: 60px; display: none; }
+        .admin-zone .section-title { color: var(--theme-purple); }
+        .admin-zone .section-title::before { background: var(--theme-purple); }
+        
+        .bg-green { background: #E8F5E9; color: #388E3C; }
+        .bg-green svg { fill: #388E3C; }
+        .bg-red { background: #FFEBEE; color: #D32F2F; }
+        .bg-red svg { fill: #D32F2F; }
+        .bg-dark { background: #ECEFF1; color: #455A64; }
+        .bg-dark svg { fill: #455A64; }
+        .bg-purple { background: #F3E5F5; color: #8E24AA; }
+        .bg-purple svg { fill: #8E24AA; }
+
+        /* ================= MODAL LOGIN ================= */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-box { background: white; padding: 40px 30px; border-radius: 20px; width: 350px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); text-align: center; position: relative; }
+        .modal-title { font-size: 1.4rem; font-weight: 700; color: var(--theme-purple); margin: 0 0 25px 0; }
+        .form-control { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid #E4E6EF; border-radius: 10px; font-family: 'Sarabun'; font-size: 1rem; box-sizing: border-box; background: #F9F9F9; transition: 0.2s; text-align: center;}
+        .form-control:focus { border-color: var(--theme-purple); outline: none; background: white; }
+        .btn-submit-login { width: 100%; padding: 14px; background: var(--theme-purple); color: white; border: none; border-radius: 10px; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: 'Sarabun'; }
+        .btn-submit-login:hover { background: var(--theme-purple-light); }
+        .btn-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5rem; color: #A1A5B7; cursor: pointer; transition: 0.2s; line-height: 1;}
+        .btn-close:hover { color: var(--danger); }
+
+        /* Footer */
+        footer { text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid #E4E6EF;}
+
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; padding: 15px; gap: 15px; }
+            .nav-links { flex-wrap: wrap; justify-content: center; gap: 15px; }
+            .hero h1 { font-size: 2.2rem; }
+            .admin-zone { padding: 20px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="icon-wrapper">
-            🔭
-        </div>
-        <h1>Samsen Astro POSN</h1>
-        <p>ระบบจัดการศูนย์สอบโอลิมปิกวิชาการ<br>สาขาดาราศาสตร์</p>
-        
-        <a href="register.html" class="btn-menu btn-register">
-            <span class="btn-icon">📝</span> 1. รับสมัครสอบ
-        </a>
-        <a href="status.html" class="btn-menu btn-status">
-            <span class="btn-icon">🔍</span> 2. ตรวจสอบสถานะ (ทั้งหมด)
-        </a>
+
+    <div id="adminTopBar" class="top-admin-bar">
+        <span><svg style="width:14px;height:14px;vertical-align:middle;fill:white;margin-top:-2px;" viewBox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 17.96,13.82 17.96,15.47C17.75,16 17.46,16.5 17.13,17Z" /></svg> โหมดผู้ดูแลระบบ:</span> คุณกำลังเข้าสู่ระบบในฐานะเจ้าหน้าที่ศูนย์สอบ
     </div>
+
+    <nav class="navbar">
+        <a href="home.html" class="nav-brand">
+            <img src="assets/samsen-emblem.png" alt="Samsen Logo">
+            <div>
+                <div class="brand-title">SAMSEN ASTRO</div>
+                <div class="brand-sub">POSN System</div>
+            </div>
+        </a>
+
+        <div class="nav-links">
+            <a href="home.html" style="color: var(--theme-orange); font-weight: 700;">หน้าแรก</a>
+            <a href="#">ระเบียบการสอบ</a>
+            <a href="register.html">ขั้นตอนการสมัคร</a>
+            <a href="#">ติดต่อเรา</a>
+
+            <a href="manage_applicants.html" class="role-admin role-it" style="display: none; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 20px; color: var(--success);">จัดการผู้สมัคร</a>
+            <a href="manage_exam.html" class="role-admin role-it" style="display: none; color: var(--success);">จัดห้องสอบ</a>
+            <a href="manage_score.html" class="role-admin role-it" style="display: none; color: var(--success);">บันทึกคะแนน</a>
+        </div>
+
+        <div class="nav-auth" id="loginBtnContainer">
+            <button class="btn-login" onclick="openLoginModal()">เข้าสู่ระบบเจ้าหน้าที่</button>
+        </div>
+
+        <div class="nav-profile" id="profileForm">
+            <div class="profile-avatar" id="userAvatar">A</div>
+            <div class="profile-info">
+                <div class="profile-name" id="displayName">ชื่อผู้ใช้</div>
+                <div class="profile-role" id="displayRole">ตำแหน่ง</div>
+            </div>
+            <button class="btn-logout-icon" onclick="handleLogout()" title="ออกจากระบบ">
+                <svg viewBox="0 0 24 24" style="width:20px;height:20px;"><path d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z" /></svg>
+            </button>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <div class="hero-badge" id="displayYearBadge">ปีการศึกษา ...</div>
+            <h1>รับสมัครสอบคัดเลือก สอวน. ดาราศาสตร์</h1>
+            <p id="displayYearDesc">ศูนย์สอบโรงเรียนสามเสนวิทยาลัย เปิดรับสมัครนักเรียนเพื่อสอบคัดเลือกเข้าค่ายโอลิมปิกวิชาการ <br>ประจำปีการศึกษา ...</p>
+            
+            <div class="countdown-box">
+                <span class="countdown-title">เหลือเวลาเปิดรับสมัครอีก</span>
+                <span class="countdown-timer" id="countdown">กำลังคำนวณ...</span>
+            </div>
+
+            <br>
+            <a href="register.html" class="btn-cta" id="ctaBtn">
+                <svg style="width:24px;height:24px" viewBox="0 0 24 24"><path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" /></svg>
+                สมัครสอบคลิกที่นี่
+            </a>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <div class="section-title">เมนูสำหรับผู้สมัครสอบ</div>
+        <div class="action-grid">
+            <a href="register.html" class="card" id="cardRegister">
+                <div class="card-icon bg-blue">
+                    <svg viewBox="0 0 24 24"><path d="M14,10H2V12H14V10M14,6H2V8H14V6M2,16H10V14H2V16M21.5,11.5L23,13L16,20L11.5,15.5L13,14L16,17L21.5,11.5Z" /></svg>
+                </div>
+                <h3 class="card-title">กรอกใบสมัครสอบ</h3>
+                <p class="card-desc">สำหรับนักเรียนที่ต้องการสมัครเข้าร่วมโครงการ กรุณาเตรียมไฟล์รูปภาพสลิปโอนเงินให้พร้อม</p>
+            </a>
+            <a href="status.html" class="card">
+                <div class="card-icon bg-warning">
+                    <svg viewBox="0 0 24 24"><path d="M15.5,12C18,12 20,14 20,16.5C20,17.38 19.75,18.21 19.31,18.9L22.39,22L21,23.39L17.88,20.32C17.19,20.75 16.37,21 15.5,21C13,21 11,19 11,16.5C11,14 13,12 15.5,12M15.5,14A2.5,2.5 0 0,0 13,16.5A2.5,2.5 0 0,0 15.5,19A2.5,2.5 0 0,0 18,16.5A2.5,2.5 0 0,0 15.5,14M10,4A4,4 0 0,1 14,8C14,8.91 13.69,9.75 13.18,10.43C12.32,10.75 11.55,11.26 10.91,11.9L10,12A4,4 0 0,1 6,8A4,4 0 0,1 10,4M2,20V18C2,15.88 6.31,14.14 10.5,14.05C10.15,14.81 9.94,15.64 9.91,16.52C8.36,16.71 6.54,17.32 5,18.1V19.9H10.18C10.43,20.67 10.87,21.38 11.45,22H2V20Z" /></svg>
+                </div>
+                <h3 class="card-title">ตรวจสอบสถานะ / ผลสอบ</h3>
+                <p class="card-desc">เช็คสถานะการอนุมัติใบสมัคร, ค้นหาที่นั่งสอบ และตรวจสอบผลคะแนนสอบของคุณ</p>
+            </a>
+        </div>
+
+        <div class="admin-zone" id="adminZone">
+            <div class="section-title">พื้นที่เฉพาะผู้ดูแลระบบ (Admin Control Panel)</div>
+            <div class="action-grid">
+                
+                <a href="manage_applicants.html" class="card role-admin" style="display: none;">
+                    <div class="card-icon bg-green">
+                        <svg viewBox="0 0 24 24"><path d="M19,3H14.82C14.4,1.84 13.3,1 12,1C10.7,1 9.6,1.84 9.18,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M12,3A1,1 0 0,1 13,4A1,1 0 0,1 12,5A1,1 0 0,1 11,4A1,1 0 0,1 12,3M10,17L5,12L6.41,10.59L10,14.17L17.59,6.58L19,8L10,17Z" /></svg>
+                    </div>
+                    <h3 class="card-title">ระบบตรวจสอบสิทธิ์</h3>
+                    <p class="card-desc">ตรวจสอบข้อมูลผู้สมัคร อนุมัติหลักฐานการชำระเงิน และออกเลขประจำตัวสอบ</p>
+                </a>
+                
+                <a href="manage_exam.html" class="card role-admin" style="display: none;">
+                    <div class="card-icon bg-red">
+                        <svg viewBox="0 0 24 24"><path d="M16.5,4.5C16.5,4.5 15,4.5 15,6.5C15,8.5 16.5,8.5 16.5,8.5C16.5,8.5 18,8.5 18,6.5C18,4.5 16.5,4.5 16.5,4.5M12.44,11C13.25,12.16 13.92,13.43 14.41,14.79C16.43,14.39 18.06,12.87 18.5,10.82C18.17,10.93 17.81,11 17.44,11H12.44M6,4V10L10,7L6,4M15,19V17H19V19H15M15,15V13H21V15H15M23,8H19V6H23V8M13.46,16C12.83,18.05 11.29,19.67 9.24,20.25C9.4,20.67 9.5,21.1 9.5,21.5C9.5,22.33 9.16,23.08 8.6,23.63L7.19,22.21C7.38,21.94 7.5,21.6 7.5,21.25C7.5,20.28 6.72,19.5 5.75,19.5C5.4,19.5 5.06,19.62 4.79,19.81L3.37,18.4C3.92,17.84 4.67,17.5 5.5,17.5C5.9,17.5 6.33,17.6 6.75,17.76C6.17,15.71 7.71,14.05 9.76,13.46C9.17,12.28 8.27,11.28 7.15,10.53C5.73,9.66 4.1,9.25 2.5,9.25V7.25C4.5,7.25 6.46,7.77 8.21,8.88C9.59,9.8 10.74,11.08 11.53,12.5C12,13.56 12.35,14.67 12.55,15.82C12.8,15.93 13.12,16 13.46,16Z" /></svg>
+                    </div>
+                    <h3 class="card-title">จัดห้องสอบ / เช็คชื่อ</h3>
+                    <p class="card-desc">กรอกข้อมูลผังที่นั่งสอบ และระบุสถานะ มาสอบ/ขาดสอบ</p>
+                </a>
+
+                <a href="manage_score.html" class="card role-admin" style="display: none;">
+                    <div class="card-icon bg-purple">
+                        <svg viewBox="0 0 24 24"><path d="M12,15.39L8.24,17.66L9.23,13.38L5.91,10.5L10.29,10.13L12,6.09L13.71,10.13L18.09,10.5L14.77,13.38L15.76,17.66M22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27L18.18,21L16.54,13.97L22,9.24Z" /></svg>
+                    </div>
+                    <h3 class="card-title">ระบบบันทึกคะแนน</h3>
+                    <p class="card-desc">กรอกคะแนนสอบสำหรับผู้มีสิทธิ์และเข้าสอบเท่านั้น</p>
+                </a>
+
+                <a href="it.html" class="card role-it" style="display: none;">
+                    <div class="card-icon bg-dark">
+                        <svg viewBox="0 0 24 24"><path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" /></svg>
+                    </div>
+                    <h3 class="card-title">ตั้งค่าระบบ (IT)</h3>
+                    <p class="card-desc">ควบคุมการแสดงผล (Phase) ของหน้าตรวจสอบสถานะ และกำหนดปีการศึกษา</p>
+                </a>
+
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        © 2026 กมลภพ เตชะวันสกุล - Samsen Astro POSN System
+    </footer>
+
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-box">
+            <button class="btn-close" onclick="closeLoginModal()">&times;</button>
+            <h3 class="modal-title">เข้าสู่ระบบเจ้าหน้าที่</h3>
+            <input type="text" id="loginId" class="form-control" placeholder="ชื่อผู้ใช้งาน (Username)">
+            <input type="password" id="loginPass" class="form-control" placeholder="รหัสผ่าน (Password)">
+            <button class="btn-submit-login" id="loginSubmitBtn" onclick="loginWithPassword()">ลงชื่อเข้าใช้</button>
+        </div>
+    </div>
+
+    <script>
+        // ⚠️ Web App URL 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec";
+
+        // ==================== ระบบนับถอยหลัง & ตรวจสอบสถานะรับสมัคร ====================
+        let countdownInterval;
+
+        function startCountdown() {
+            const regStatus = localStorage.getItem('regStatus') || 'open';
+            const timerEl = document.getElementById("countdown");
+            const ctaBtn = document.getElementById("ctaBtn");
+            const cardRegister = document.getElementById("cardRegister");
+
+            // 🌟 กรณีผู้ดูแลระบบสั่ง "ปิดรับสมัคร"
+            if (regStatus === 'closed') {
+                if(timerEl) {
+                    timerEl.innerHTML = "ระบบปิดรับสมัครแล้ว";
+                    timerEl.style.color = "#F1416C";
+                }
+                if(ctaBtn) {
+                    ctaBtn.style.background = "#A1A5B7"; 
+                    ctaBtn.style.cursor = "not-allowed";
+                    ctaBtn.innerHTML = '<svg style="width:24px;height:24px" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12C4,13.85 4.63,15.55 5.68,16.91L16.91,5.68C15.55,4.63 13.85,4 12,4M12,20A8,8 0 0,0 20,12C20,10.15 19.37,8.45 18.32,7.09L7.09,18.32C8.45,19.37 10.15,20 12,20Z"/></svg> ปิดรับสมัครแล้ว';
+                    ctaBtn.onclick = function(e) { e.preventDefault(); alert("ขณะนี้ระบบปิดรับสมัครแล้วครับ"); };
+                }
+                if(cardRegister) {
+                    cardRegister.style.opacity = "0.6";
+                    cardRegister.style.cursor = "not-allowed";
+                    cardRegister.onclick = function(e) { e.preventDefault(); alert("ขณะนี้ระบบปิดรับสมัครแล้วครับ"); };
+                }
+                return;
+            }
+
+            // 🌟 กรณีเปิดรับสมัคร ให้เริ่มนับถอยหลัง
+            let savedDeadline = localStorage.getItem('regDeadline');
+            let countDownDate = savedDeadline ? new Date(savedDeadline).getTime() : new Date("May 31, 2026 23:59:59").getTime();
+
+            if (countdownInterval) clearInterval(countdownInterval);
+
+            countdownInterval = setInterval(function() {
+                const now = new Date().getTime();
+                const distance = countDownDate - now;
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                if(timerEl) {
+                    if (distance > 0) {
+                        timerEl.innerHTML = `${days} วัน ${hours} ชม. ${minutes} นาที ${seconds} วิ`;
+                    } else {
+                        clearInterval(countdownInterval);
+                        timerEl.innerHTML = "หมดเขตรับสมัครแล้ว";
+                        timerEl.style.color = "#F1416C";
+                        
+                        if(ctaBtn) {
+                            ctaBtn.style.background = "#A1A5B7"; 
+                            ctaBtn.style.cursor = "not-allowed";
+                            ctaBtn.innerHTML = '<svg style="width:24px;height:24px" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12C4,13.85 4.63,15.55 5.68,16.91L16.91,5.68C15.55,4.63 13.85,4 12,4M12,20A8,8 0 0,0 20,12C20,10.15 19.37,8.45 18.32,7.09L7.09,18.32C8.45,19.37 10.15,20 12,20Z"/></svg> ปิดรับสมัครแล้ว';
+                            ctaBtn.onclick = function(e) { e.preventDefault(); alert("หมดเวลาในการรับสมัครแล้วครับ"); };
+                        }
+                        if(cardRegister) {
+                            cardRegister.style.opacity = "0.6";
+                            cardRegister.style.cursor = "not-allowed";
+                            cardRegister.onclick = function(e) { e.preventDefault(); alert("หมดเวลาในการรับสมัครแล้วครับ"); };
+                        }
+                    }
+                }
+            }, 1000);
+        }
+
+        // ==================== ระบบจัดการ UI และปีการศึกษา ====================
+        function openLoginModal() { document.getElementById('loginModal').style.display = 'flex'; }
+        function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; }
+
+        function updateUI() {
+            let activeYear = localStorage.getItem('activeYear') || new Date().getFullYear() + 543;
+            document.getElementById('displayYearBadge').innerText = `ปีการศึกษา ${activeYear}`;
+            document.getElementById('displayYearDesc').innerHTML = `ศูนย์สอบโรงเรียนสามเสนวิทยาลัย เปิดรับสมัครนักเรียนเพื่อสอบคัดเลือกเข้าค่ายโอลิมปิกวิชาการ <br>ประจำปีการศึกษา ${activeYear}`;
+
+            const currentRole = localStorage.getItem('userRole') || 'guest';
+            const currentName = localStorage.getItem('userName') || '';
+            
+            const loginBtn = document.getElementById('loginBtnContainer');
+            const profileForm = document.getElementById('profileForm');
+            const adminTopBar = document.getElementById('adminTopBar');
+            const adminZone = document.getElementById('adminZone');
+
+            if (currentRole === 'guest') {
+                loginBtn.style.display = 'block';
+                profileForm.style.display = 'none';
+                adminTopBar.style.display = 'none';
+                adminZone.style.display = 'none';
+            } else {
+                loginBtn.style.display = 'none';
+                profileForm.style.display = 'flex';
+                adminTopBar.style.display = 'block';
+                adminZone.style.display = 'block';
+                
+                document.getElementById('displayName').innerText = currentName;
+                document.getElementById('userAvatar').innerText = currentName ? currentName.charAt(0) : 'A';
+
+                if(currentRole === 'admin') {
+                    document.getElementById('displayRole').innerText = 'Administrator';
+                    document.getElementById('userAvatar').style.background = '#50CD89';
+                } else if(currentRole === 'it') {
+                    document.getElementById('displayRole').innerText = 'IT Support';
+                    document.getElementById('userAvatar').style.background = '#F1416C';
+                }
+            }
+
+            const showAdmin = (currentRole === 'admin' || currentRole === 'it');
+            const showIt = (currentRole === 'it');
+
+            // แสดงปุ่ม Navbar ของแอดมินด้วย
+            document.querySelectorAll('.role-admin').forEach(el => {
+                el.style.display = showAdmin ? 'flex' : 'none';
+                if(el.tagName.toLowerCase() === 'a') el.style.display = showAdmin ? 'inline-block' : 'none';
+            });
+            document.querySelectorAll('.role-it').forEach(el => {
+                el.style.display = showIt ? 'flex' : 'none';
+                if(el.tagName.toLowerCase() === 'a') el.style.display = showIt ? 'inline-block' : 'none';
+            });
+        }
+
+        // ==================== ระบบล็อกอิน ====================
+        function loginWithPassword() {
+            const user = document.getElementById('loginId').value;
+            const pass = document.getElementById('loginPass').value;
+            const btn = document.getElementById('loginSubmitBtn');
+
+            if (!user || !pass) {
+                alert('กรุณากรอกชื่อผู้ใช้งานและรหัสผ่าน');
+                return;
+            }
+
+            btn.innerHTML = "กำลังตรวจสอบ... ⏳";
+            btn.disabled = true;
+
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'login', username: user, password: pass })
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.status === 'success') {
+                    localStorage.setItem('userRole', result.role);
+                    localStorage.setItem('userName', result.name); 
+                    closeLoginModal(); 
+                    updateUI();
+                } else {
+                    alert(result.message);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
+            })
+            .finally(() => {
+                btn.innerHTML = "ลงชื่อเข้าใช้";
+                btn.disabled = false;
+                document.getElementById('loginPass').value = ''; 
+            });
+        }
+
+        function handleLogout() { 
+            localStorage.removeItem('userRole'); 
+            localStorage.removeItem('userName'); 
+            updateUI(); 
+        }
+
+        window.onload = function() {
+            updateUI();
+            startCountdown();
+        };
+    </script>
 </body>
 </html>

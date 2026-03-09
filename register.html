@@ -4,439 +4,683 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>รับสมัครสอบ | Samsen Astro POSN</title>
+    
+    <script>
+        const maintState = localStorage.getItem('maintenanceMode');
+        const usrRole = localStorage.getItem('userRole');
+        
+        if (maintState === 'on' && usrRole !== 'it') {
+            document.write(`
+            <div style="display:flex; justify-content:center; align-items:center; height:100vh; background:#F8F9FA; font-family:'Sarabun', sans-serif; text-align:center;">
+                <div style="background:white; padding:50px; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.1); border-top: 5px solid #F1416C;">
+                    <h2 style="color:#311B5E; margin-top:0;">🔴 ปิดปรับปรุงระบบชั่วคราว</h2>
+                    <p style="color:#7E8299; margin-top:10px; font-size:1.1rem;">ระบบกำลังอยู่ระหว่างการบำรุงรักษาโดยเจ้าหน้าที่<br>กรุณากลับมาใช้งานใหม่อีกครั้งในภายหลังครับ</p>
+                    
+                    <div style="margin-top: 40px;">
+                        <a href="#" onclick="emergencyUnlock()" style="color: #E4E6EF; font-size: 0.8rem; text-decoration: none;">IT Access</a>
+                    </div>
+                </div>
+            </div>
+            <script>
+                function emergencyUnlock() {
+                    const pass = prompt("🔒 ปลดล็อกฉุกเฉิน (ระบุรหัสลับ):");
+                    if(pass === "1234") { 
+                        localStorage.setItem('maintenanceMode', 'off');
+                        alert("✅ ปลดล็อกสำเร็จ! กำลังโหลดหน้าเว็บใหม่...");
+                        window.location.reload();
+                    } else if(pass) {
+                        alert("❌ รหัสลับไม่ถูกต้อง");
+                    }
+                }
+            <\/script>
+            `);
+            document.close();
+            window.stop();
+        }
+    </script>
+
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --kt-body-bg: #F3F6F9;
-            --kt-text-dark: #181C32;
-            --kt-text-muted: #A1A5B7;
-            --kt-primary: #009EF7;
-            --kt-primary-light: #F1FAFF;
-            --kt-success: #50CD89;
-            --kt-danger: #F1416C;
-            --kt-border-color: #E4E6EF;
-            --kt-input-bg: #ffffff;
-            --kt-border-radius: 0.75rem;
-            --kt-input-radius: 0.475rem;
-            --kt-box-shadow: 0px 0px 20px 0px rgba(76, 87, 125, 0.1);
+            --theme-purple: #311B5E; 
+            --theme-purple-light: #4A2B8C;
+            --theme-orange: #FF8F00; 
+            --theme-orange-hover: #E68100;
+            --bg-light: #F8F9FA;
+            --text-dark: #181C32;
+            --text-muted: #7E8299;
+            --danger: #F1416C;
+            --success: #50CD89;
+            --border-color: #E4E6EF;
+            --input-bg: #ffffff;
+            --border-radius: 12px;
+            --input-radius: 8px;
+            --box-shadow: 0px 10px 30px 0px rgba(49, 27, 94, 0.05);
         }
 
         body { 
             font-family: 'Sarabun', sans-serif; 
-            background: var(--kt-body-bg); 
+            background: var(--bg-light); 
+            margin: 0; 
+            color: var(--text-dark); 
+            overflow-x: hidden; 
+        }
+
+        /* ================= 1. TOP ADMIN BAR ================= */
+        .top-admin-bar { 
+            background-color: #181C32; 
+            color: var(--success); 
+            text-align: center; 
+            padding: 8px; 
+            font-size: 0.85rem; 
+            font-weight: 600; 
+            letter-spacing: 0.5px; 
+            display: none; 
+        }
+        .top-admin-bar span { 
+            color: white; 
+            font-weight: 400; 
+            margin-right: 10px; 
+        }
+
+        /* ================= HEADER & NAVIGATION ================= */
+        .navbar { 
+            background-color: var(--theme-purple); 
+            padding: 15px 50px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+        }
+        .nav-brand { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            text-decoration: none; 
+            color: white;
+        }
+        .nav-brand img { 
+            height: 45px; 
+            width: auto; 
+            background: white; 
+            padding: 3px; 
+            border-radius: 8px;
+        }
+        .nav-brand div { line-height: 1.1; }
+        .brand-title { font-weight: 700; font-size: 1.2rem; }
+        .brand-sub { font-size: 0.8rem; color: #D1C4E9; }
+
+        .nav-links { 
+            display: flex; 
+            gap: 25px; 
+            align-items: center; 
+        }
+        .nav-links a { 
+            color: white; 
+            text-decoration: none; 
+            font-weight: 500; 
+            font-size: 1rem; 
+            transition: color 0.3s; 
+        }
+        .nav-links a:hover { color: var(--theme-orange); }
+
+        .nav-profile { 
+            display: none; 
+            align-items: center; 
+            gap: 12px; 
+            background: rgba(255,255,255,0.1); 
+            padding: 5px 15px 5px 5px; 
+            border-radius: 50px;
+        }
+        .profile-avatar { 
+            width: 35px; 
+            height: 35px; 
+            background: var(--success); 
+            color: white; 
+            border-radius: 50%; 
             display: flex; 
             justify-content: center; 
-            padding: 40px 20px; 
-            margin: 0; 
+            align-items: center; 
+            font-weight: bold; 
+        }
+        .profile-info { 
+            color: white; 
+            font-size: 0.9rem; 
+            line-height: 1.2; 
+        }
+        .profile-name { font-weight: 600; }
+        .profile-role { font-size: 0.75rem; color: #D1C4E9; }
+        .btn-logout-icon { 
+            background: none; 
+            border: none; 
+            color: var(--theme-orange); 
+            font-size: 1.2rem; 
+            cursor: pointer; 
+            padding: 5px; 
+            transition: 0.3s; 
+            margin-left: 5px; 
+            display: flex; 
+            align-items: center;
+        }
+        .btn-logout-icon:hover { color: var(--danger); }
+
+        /* ================= MAIN CONTAINER ================= */
+        .page-wrapper { 
+            display: flex; 
+            justify-content: center; 
+            padding: 50px 20px; 
         }
 
         .container { 
             background: #ffffff; 
-            padding: 40px; 
-            border-radius: var(--kt-border-radius); 
-            box-shadow: var(--kt-box-shadow); 
-            max-width: 700px; 
+            padding: 50px; 
+            border-radius: var(--border-radius); 
+            box-shadow: var(--box-shadow); 
+            max-width: 900px; 
             width: 100%; 
-            box-sizing: border-box;
+            box-sizing: border-box; 
+            border-top: 5px solid var(--theme-purple); 
         }
 
-        .header-title {
-            text-align: center;
-            border-bottom: 1px dashed var(--kt-border-color);
-            padding-bottom: 20px;
-            margin-bottom: 30px;
+        .header-title { 
+            text-align: center; 
+            border-bottom: 1px dashed var(--border-color); 
+            padding-bottom: 25px; 
+            margin-bottom: 40px; 
         }
-
         h2 { 
-            color: var(--kt-text-dark); 
+            color: var(--theme-purple); 
             margin: 0 0 10px 0; 
-            font-weight: 700;
-            font-size: 1.6rem;
-        }
-
-        .header-desc {
-            color: var(--kt-text-muted);
-            font-size: 1rem;
-            font-weight: 500;
-            margin: 0;
-        }
-        
-        /* สไตล์ของหัวข้อแต่ละส่วน */
-        .section-title { 
-            font-size: 1.15rem; 
-            color: var(--kt-primary); 
-            margin-top: 35px; 
-            margin-bottom: 20px; 
             font-weight: 700; 
-            background: var(--kt-primary-light);
-            padding: 12px 15px;
-            border-radius: var(--kt-input-radius);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            font-size: 1.8rem; 
+            letter-spacing: -0.5px; 
+        }
+        .header-desc { 
+            color: var(--text-muted); 
+            font-size: 1.1rem; 
+            font-weight: 500; 
+            margin: 0; 
+        }
+        .year-badge { 
+            display: inline-block; 
+            background: var(--theme-orange); 
+            color: white; 
+            padding: 4px 12px; 
+            border-radius: 50px; 
+            font-size: 0.9rem; 
+            font-weight: 600; 
+            margin-top: 10px; 
         }
         
+        /* ================= FORM STYLES ================= */
+        .section-title { 
+            font-size: 1.2rem; 
+            color: var(--theme-purple); 
+            margin-top: 40px; 
+            margin-bottom: 25px; 
+            font-weight: 700; 
+            border-bottom: 2px solid var(--theme-orange); 
+            padding-bottom: 10px; 
+            display: inline-block; 
+        }
         .input-group { margin-bottom: 20px; }
-        
-        .grid-2 { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 0 20px; 
-        }
-        
-        /* สลับเป็น 1 คอลัมน์เมื่อจอมือถือ */
-        @media (max-width: 600px) {
-            .grid-2 { grid-template-columns: 1fr; gap: 0; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 25px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 25px; }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; gap: 0; }
+            .navbar { flex-direction: column; gap: 15px; padding: 15px;}
+            .container { padding: 30px 20px; }
         }
         
         label { 
             display: block; 
             margin-bottom: 8px; 
             font-weight: 600; 
-            color: var(--kt-text-dark); 
+            color: var(--text-dark); 
             font-size: 1rem; 
         }
-
-        .req { color: var(--kt-danger); font-weight: bold; } 
-        .hint { font-size: 0.85rem; color: var(--kt-text-muted); margin-bottom: 8px; display: block; font-weight: 500;}
+        .req { color: var(--danger); font-weight: bold; } 
+        .hint { 
+            font-size: 0.85rem; 
+            color: var(--text-muted); 
+            margin-bottom: 8px; 
+            display: block; 
+            font-weight: 500;
+        }
         
-        /* ดีไซน์ช่องกรอกข้อมูล */
-        input[type="text"], input[type="tel"], input[type="date"], input[type="file"], select { 
+        input[type="text"], 
+        input[type="tel"], 
+        input[type="date"], 
+        input[type="file"], 
+        select { 
             width: 100%; 
-            padding: 12px 15px; 
-            border: 1px solid var(--kt-border-color); 
-            border-radius: var(--kt-input-radius); 
+            padding: 14px 15px; 
+            border: 1px solid var(--border-color); 
+            border-radius: var(--input-radius); 
             box-sizing: border-box; 
             font-family: 'Sarabun', sans-serif; 
-            font-size: 1rem;
-            color: var(--kt-text-dark);
-            background-color: var(--kt-input-bg);
-            transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            font-size: 1rem; 
+            color: var(--text-dark); 
+            background-color: var(--input-bg); 
+            transition: all 0.3s ease; 
         }
-
-        input:focus, select:focus {
-            border-color: var(--kt-primary);
-            box-shadow: 0 0 0 3px rgba(0, 158, 247, 0.15); /* เรืองแสงสีฟ้าอ่อนๆ */
-            outline: none;
+        
+        input:focus, 
+        select:focus { 
+            border-color: var(--theme-purple); 
+            box-shadow: 0 0 0 3px rgba(49, 27, 94, 0.1); 
+            outline: none; 
         }
         
         .radio-group { 
-            display: flex;
-            gap: 20px;
-            background: #F5F8FA; 
+            display: flex; 
+            gap: 30px; 
+            background: var(--bg-light); 
             padding: 15px 20px; 
-            border-radius: var(--kt-input-radius); 
-            border: 1px dashed var(--kt-border-color); 
-            margin-bottom: 10px; 
+            border-radius: var(--input-radius); 
+            border: 1px dashed var(--border-color); 
         }
-
         .radio-group label { 
-            font-weight: 500; 
+            font-weight: 600; 
             cursor: pointer; 
             display: flex; 
             align-items: center; 
-            margin: 0;
+            margin: 0; 
+            color: var(--theme-purple); 
         }
-
         .radio-group input[type="radio"] { 
-            margin-right: 8px; 
+            margin-right: 10px; 
             transform: scale(1.3); 
             cursor: pointer; 
-            accent-color: var(--kt-primary);
+            accent-color: var(--theme-orange); 
         }
 
         /* ปุ่ม Submit */
-        button { 
+        button[type="submit"] { 
             width: 100%; 
-            padding: 16px; 
-            background: var(--kt-success); 
+            padding: 18px; 
+            background: var(--theme-orange); 
             color: white; 
             border: none; 
-            border-radius: var(--kt-input-radius); 
-            font-size: 1.15rem; 
+            border-radius: 50px; 
+            font-size: 1.2rem; 
             cursor: pointer; 
             font-weight: 700; 
-            margin-top: 30px; 
+            margin-top: 40px; 
             transition: all 0.3s ease; 
-            box-shadow: 0 4px 14px 0 rgba(80, 205, 137, 0.2);
+            box-shadow: 0 5px 15px rgba(255, 143, 0, 0.3); 
+            font-family: 'Sarabun'; 
         }
-
-        button:hover:not(:disabled) { 
-            background: #47BE7D; 
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px 0 rgba(80, 205, 137, 0.3);
+        button[type="submit"]:hover:not(:disabled) { 
+            background: var(--theme-orange-hover); 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 20px rgba(255, 143, 0, 0.4); 
         }
-
         button:disabled { 
-            background: var(--kt-text-muted); 
-            box-shadow: none;
+            background: var(--text-muted); 
+            box-shadow: none; 
             cursor: not-allowed; 
-        }
-        
-        .back-link { 
-            display: block; 
-            text-align: center; 
-            margin-top: 25px; 
-            color: var(--kt-text-muted); 
-            text-decoration: none; 
-            font-weight: 600;
-            transition: color 0.2s ease;
-        }
-        .back-link:hover {
-            color: var(--kt-primary);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header-title">
-            <h2>📝 ฟอร์มรับสมัครสอบคัดเลือก</h2>
-            <p class="header-desc">ศูนย์สอบโอลิมปิกวิชาการ สอวน. วิชาดาราศาสตร์</p>
+
+    <div id="adminTopBar" class="top-admin-bar">
+        <span><svg style="width:14px;height:14px;vertical-align:middle;fill:white;margin-top:-2px;" viewBox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 17.96,13.82 17.96,15.47C17.75,16 17.46,16.5 17.13,17Z" /></svg> โหมดผู้ดูแลระบบ:</span> คุณกำลังเข้าสู่ระบบในฐานะเจ้าหน้าที่ศูนย์สอบ
+    </div>
+
+    <nav class="navbar">
+        <a href="home.html" class="nav-brand">
+            <img src="assets/samsen-emblem.png" alt="Samsen Logo">
+            <div>
+                <div class="brand-title">SAMSEN ASTRO</div>
+                <div class="brand-sub">POSN System</div>
+            </div>
+        </a>
+        <div class="nav-links">
+            <a href="home.html">หน้าแรก</a>
+            <a href="register.html" style="color: var(--theme-orange); font-weight: 700;">สมัครสอบ</a>
+            <a href="status.html">ตรวจสอบสถานะ</a>
+            
+            <a href="manage_applicants.html" class="role-admin role-it" style="display: none; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 20px; color: var(--success);">จัดการผู้สมัคร</a>
+            <a href="manage_exam.html" class="role-admin role-it" style="display: none; color: var(--success);">จัดห้องสอบ</a>
+            <a href="manage_score.html" class="role-admin role-it" style="display: none; color: var(--success);">บันทึกคะแนน</a>
         </div>
-        
-        <form id="registerForm">
+
+        <div class="nav-profile" id="profileForm">
+            <div class="profile-avatar" id="userAvatar">A</div>
+            <div class="profile-info">
+                <div class="profile-name" id="displayName">ชื่อผู้ใช้</div>
+                <div class="profile-role" id="displayRole">ตำแหน่ง</div>
+            </div>
+            <button class="btn-logout-icon" onclick="handleLogout()" title="ออกจากระบบ">
+                <svg viewBox="0 0 24 24" style="width:20px;height:20px;"><path d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z" /></svg>
+            </button>
+        </div>
+    </nav>
+
+    <div class="page-wrapper">
+        <div class="container">
+            <div class="header-title">
+                <h2>แบบฟอร์มรับสมัครสอบคัดเลือก</h2>
+                <p class="header-desc">ศูนย์สอบโอลิมปิกวิชาการ สอวน. วิชาดาราศาสตร์ โรงเรียนสามเสนวิทยาลัย</p>
+                <div class="year-badge" id="displayYearBadge">ปีการศึกษา ...</div>
+            </div>
             
-            <div class="section-title">👤 ส่วนที่ 1: ข้อมูลผู้สมัคร</div>
-            
-            <div class="grid-2">
+            <form id="registerForm">
+                
+                <div class="section-title">ส่วนที่ 1: ข้อมูลผู้สมัคร</div>
+                
+                <div class="grid-3">
+                    <div class="input-group">
+                        <label>คำนำหน้าชื่อ <span class="req">*</span></label>
+                        <select id="prefix" required>
+                            <option value="">-- เลือก --</option>
+                            <option value="เด็กชาย">เด็กชาย</option>
+                            <option value="เด็กหญิง">เด็กหญิง</option>
+                            <option value="นาย">นาย</option>
+                            <option value="นางสาว">นางสาว</option>
+                            <option value="นาง">นาง</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>ชื่อ <span class="req">*</span></label>
+                        <input type="text" id="firstName" placeholder="ไม่ต้องใส่คำนำหน้า" required>
+                    </div>
+                    <div class="input-group">
+                        <label>นามสกุล <span class="req">*</span></label>
+                        <input type="text" id="lastName" placeholder="ตรวจสอบการสะกด" required>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label>เลขประจำตัวประชาชน <span class="req">*</span></label>
+                        <span class="hint">ใช้ในการตรวจสอบสถานะการสมัคร (13 หลักติดกัน)</span>
+                        <input type="text" id="idCard" maxlength="13" placeholder="ตัวอย่าง: 1100012345678" required>
+                    </div>
+                    <div class="input-group">
+                        <label>วัน / เดือน / ปีเกิด <span class="req">*</span></label>
+                        <span class="hint">กรอกปี ค.ศ. เท่านั้น หากกรอกเป็น พ.ศ. ระบบจะนับอายุผิดพลาด</span>
+                        <input type="date" id="birthDate" required>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label>เบอร์โทรศัพท์นักเรียน <span class="req">*</span></label>
+                        <input type="tel" id="studentPhone" maxlength="12" placeholder="08x-xxx-xxxx" required oninput="formatPhoneNumber(this)">
+                    </div>
+                    <div class="input-group">
+                        <label>เบอร์โทรศัพท์ผู้ปกครอง <span class="req">*</span></label>
+                        <input type="tel" id="parentPhone" maxlength="12" placeholder="08x-xxx-xxxx" required oninput="formatPhoneNumber(this)">
+                    </div>
+                </div>
+
+                <div class="section-title">ส่วนที่ 2: ข้อมูลการศึกษา</div>
+
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label>ระดับการศึกษาปัจจุบัน <span class="req">*</span></label>
+                        <select id="grade" required>
+                            <option value="">-- เลือกระดับชั้น --</option>
+                            <option value="ม.1">มัธยมศึกษาปีที่ 1</option>
+                            <option value="ม.2">มัธยมศึกษาปีที่ 2</option>
+                            <option value="ม.3">มัธยมศึกษาปีที่ 3</option>
+                            <option value="ม.4">มัธยมศึกษาปีที่ 4</option>
+                            <option value="ม.5">มัธยมศึกษาปีที่ 5</option>
+                            <option value="ม.6">มัธยมศึกษาปีที่ 6</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>จังหวัด <span class="req">*</span></label>
+                        <select id="province" required>
+                            <option value="">-- เลือกจังหวัด --</option>
+                            <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
+                            <option value="กระบี่">กระบี่</option>
+                            <option value="กาญจนบุรี">กาญจนบุรี</option>
+                            <option value="กาฬสินธุ์">กาฬสินธุ์</option>
+                            <option value="กำแพงเพชร">กำแพงเพชร</option>
+                            <option value="ขอนแก่น">ขอนแก่น</option>
+                            <option value="จันทบุรี">จันทบุรี</option>
+                            <option value="ฉะเชิงเทรา">ฉะเชิงเทรา</option>
+                            <option value="ชลบุรี">ชลบุรี</option>
+                            <option value="ชัยนาท">ชัยนาท</option>
+                            <option value="ชัยภูมิ">ชัยภูมิ</option>
+                            <option value="ชุมพร">ชุมพร</option>
+                            <option value="เชียงราย">เชียงราย</option>
+                            <option value="เชียงใหม่">เชียงใหม่</option>
+                            <option value="ตรัง">ตรัง</option>
+                            <option value="ตราด">ตราด</option>
+                            <option value="ตาก">ตาก</option>
+                            <option value="นครนายก">นครนายก</option>
+                            <option value="นครปฐม">นครปฐม</option>
+                            <option value="นครพนม">นครพนม</option>
+                            <option value="นครราชสีมา">นครราชสีมา</option>
+                            <option value="นครศรีธรรมราช">นครศรีธรรมราช</option>
+                            <option value="นครสวรรค์">นครสวรรค์</option>
+                            <option value="นนทบุรี">นนทบุรี</option>
+                            <option value="นราธิวาส">นราธิวาส</option>
+                            <option value="น่าน">น่าน</option>
+                            <option value="บึงกาฬ">บึงกาฬ</option>
+                            <option value="บุรีรัมย์">บุรีรัมย์</option>
+                            <option value="ปทุมธานี">ปทุมธานี</option>
+                            <option value="ประจวบคีรีขันธ์">ประจวบคีรีขันธ์</option>
+                            <option value="ปราจีนบุรี">ปราจีนบุรี</option>
+                            <option value="ปัตตานี">ปัตตานี</option>
+                            <option value="พระนครศรีอยุธยา">พระนครศรีอยุธยา</option>
+                            <option value="พะเยา">พะเยา</option>
+                            <option value="พังงา">พังงา</option>
+                            <option value="พัทลุง">พัทลุง</option>
+                            <option value="พิจิตร">พิจิตร</option>
+                            <option value="พิษณุโลก">พิษณุโลก</option>
+                            <option value="เพชรบุรี">เพชรบุรี</option>
+                            <option value="เพชรบูรณ์">เพชรบูรณ์</option>
+                            <option value="แพร่">แพร่</option>
+                            <option value="ภูเก็ต">ภูเก็ต</option>
+                            <option value="มหาสารคาม">มหาสารคาม</option>
+                            <option value="มุกดาหาร">มุกดาหาร</option>
+                            <option value="แม่ฮ่องสอน">แม่ฮ่องสอน</option>
+                            <option value="ยโสธร">ยโสธร</option>
+                            <option value="ยะลา">ยะลา</option>
+                            <option value="ร้อยเอ็ด">ร้อยเอ็ด</option>
+                            <option value="ระนอง">ระนอง</option>
+                            <option value="ระยอง">ระยอง</option>
+                            <option value="ราชบุรี">ราชบุรี</option>
+                            <option value="ลพบุรี">ลพบุรี</option>
+                            <option value="ลำปาง">ลำปาง</option>
+                            <option value="ลำพูน">ลำพูน</option>
+                            <option value="เลย">เลย</option>
+                            <option value="ศรีสะเกษ">ศรีสะเกษ</option>
+                            <option value="สกลนคร">สกลนคร</option>
+                            <option value="สงขลา">สงขลา</option>
+                            <option value="สตูล">สตูล</option>
+                            <option value="สมุทรปราการ">สมุทรปราการ</option>
+                            <option value="สมุทรสงคราม">สมุทรสงคราม</option>
+                            <option value="สมุทรสาคร">สมุทรสาคร</option>
+                            <option value="สระแก้ว">สระแก้ว</option>
+                            <option value="สระบุรี">สระบุรี</option>
+                            <option value="สิงห์บุรี">สิงห์บุรี</option>
+                            <option value="สุโขทัย">สุโขทัย</option>
+                            <option value="สุพรรณบุรี">สุพรรณบุรี</option>
+                            <option value="สุราษฎร์ธานี">สุราษฎร์ธานี</option>
+                            <option value="สุรินทร์">สุรินทร์</option>
+                            <option value="หนองคาย">หนองคาย</option>
+                            <option value="หนองบัวลำภู">หนองบัวลำภู</option>
+                            <option value="อ่างทอง">อ่างทอง</option>
+                            <option value="อำนาจเจริญ">อำนาจเจริญ</option>
+                            <option value="อุดรธานี">อุดรธานี</option>
+                            <option value="อุตรดิตถ์">อุตรดิตถ์</option>
+                            <option value="อุทัยธานี">อุทัยธานี</option>
+                            <option value="อุบลราชธานี">อุบลราชธานี</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="input-group">
+                        <label>โรงเรียน <span class="req">*</span></label>
+                        <span class="hint">ไม่ต้องใส่คำว่าโรงเรียน (เช่น พิมพ์แค่ สามเสนวิทยาลัย)</span>
+                        <input type="text" id="school" required>
+                    </div>
+                    <div class="input-group">
+                        <label>ชื่อครูดาราศาสตร์ / วิทยาศาสตร์ในโรงเรียน</label>
+                        <span class="hint">เว้นว่างไว้ได้หากไม่มี</span>
+                        <input type="text" id="teacherName" placeholder="ระบุชื่อครูผู้สอน">
+                    </div>
+                </div>
+
+                <div class="section-title">ส่วนที่ 3: ข้อมูลการสมัครสอบและหลักฐาน</div>
+
                 <div class="input-group">
-                    <label>คำนำหน้าชื่อ <span class="req">*</span></label>
-                    <select id="prefix" required>
-                        <option value="">-- เลือกคำนำหน้า --</option>
-                        <option value="เด็กชาย">เด็กชาย</option>
-                        <option value="เด็กหญิง">เด็กหญิง</option>
-                        <option value="นาย">นาย</option>
-                        <option value="นางสาว">นางสาว</option>
-                        <option value="นาง">นาง</option>
-                    </select>
+                    <label>สมัครสอบในระดับชั้น <span class="req">*</span></label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="applyLevel" value="มัธยมศึกษาตอนต้น" required> ระดับมัธยมศึกษาตอนต้น</label>
+                        <label><input type="radio" name="applyLevel" value="มัธยมศึกษาตอนปลาย"> ระดับมัธยมศึกษาตอนปลาย</label>
+                    </div>
                 </div>
-            </div>
 
-            <div class="grid-2">
-                <div class="input-group">
-                    <label>ชื่อ <span class="req">*</span></label>
-                    <input type="text" id="firstName" placeholder="ไม่ต้องใส่คำนำหน้า" required>
+                <div class="input-group" style="margin-top: 30px;">
+                    <label>หลักฐานการชำระค่าสมัครสอบ <span class="req">*</span></label>
+                    <span class="hint">อัปโหลดสลิปโอนเงินที่เห็นข้อมูลชัดเจน (รองรับไฟล์รูปภาพ .jpg, .png)</span>
+                    <input type="file" id="paymentSlip" accept="image/*" required style="padding: 10px; background: #F9F9F9;">
                 </div>
-                <div class="input-group">
-                    <label>นามสกุล <span class="req">*</span></label>
-                    <input type="text" id="lastName" placeholder="ตรวจสอบการสะกด" required>
-                </div>
-            </div>
 
-            <div class="input-group">
-                <label>เลขประจำตัวประชาชน <span class="req">*</span></label>
-                <span class="hint">ใช้ในการตรวจสอบสถานะการสมัคร (13 หลักติดกัน)</span>
-                <input type="text" id="idCard" maxlength="13" placeholder="ตัวอย่าง: 1100012345678" required>
-            </div>
-
-            <div class="input-group">
-                <label>วัน / เดือน / ปีเกิด <span class="req">*</span></label>
-                <span class="hint">กรอกปี ค.ศ. เท่านั้น หากกรอกเป็น พ.ศ. ระบบจะนับเป็นกลุ่มอายุไม่ถึงเกณฑ์</span>
-                <input type="date" id="birthDate" required>
-            </div>
-
-            <div class="grid-2">
-                <div class="input-group">
-                    <label>เบอร์โทรนักเรียน <span class="req">*</span></label>
-                    <input type="tel" id="studentPhone" maxlength="10" placeholder="08xxxxxxxx" required>
-                </div>
-                <div class="input-group">
-                    <label>เบอร์โทรผู้ปกครอง <span class="req">*</span></label>
-                    <input type="tel" id="parentPhone" maxlength="10" placeholder="08xxxxxxxx" required>
-                </div>
-            </div>
-
-            <div class="section-title">🏫 ส่วนที่ 2: ข้อมูลการศึกษา</div>
-
-            <div class="grid-2">
-                <div class="input-group">
-                    <label>ระดับการศึกษาปัจจุบัน <span class="req">*</span></label>
-                    <select id="grade" required>
-                        <option value="">-- เลือกระดับชั้น --</option>
-                        <option value="ม.1">ม.1</option>
-                        <option value="ม.2">ม.2</option>
-                        <option value="ม.3">ม.3</option>
-                        <option value="ม.4">ม.4</option>
-                        <option value="ม.5">ม.5</option>
-                        <option value="ม.6">ม.6</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label>จังหวัด <span class="req">*</span></label>
-                    <select id="province" required>
-                        <option value="">-- เลือกจังหวัด --</option>
-                        <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
-                        <option value="กระบี่">กระบี่</option>
-                        <option value="กาญจนบุรี">กาญจนบุรี</option>
-                        <option value="กาฬสินธุ์">กาฬสินธุ์</option>
-                        <option value="กำแพงเพชร">กำแพงเพชร</option>
-                        <option value="ขอนแก่น">ขอนแก่น</option>
-                        <option value="จันทบุรี">จันทบุรี</option>
-                        <option value="ฉะเชิงเทรา">ฉะเชิงเทรา</option>
-                        <option value="ชลบุรี">ชลบุรี</option>
-                        <option value="ชัยนาท">ชัยนาท</option>
-                        <option value="ชัยภูมิ">ชัยภูมิ</option>
-                        <option value="ชุมพร">ชุมพร</option>
-                        <option value="เชียงราย">เชียงราย</option>
-                        <option value="เชียงใหม่">เชียงใหม่</option>
-                        <option value="ตรัง">ตรัง</option>
-                        <option value="ตราด">ตราด</option>
-                        <option value="ตาก">ตาก</option>
-                        <option value="นครนายก">นครนายก</option>
-                        <option value="นครปฐม">นครปฐม</option>
-                        <option value="นครพนม">นครพนม</option>
-                        <option value="นครราชสีมา">นครราชสีมา</option>
-                        <option value="นครศรีธรรมราช">นครศรีธรรมราช</option>
-                        <option value="นครสวรรค์">นครสวรรค์</option>
-                        <option value="นนทบุรี">นนทบุรี</option>
-                        <option value="นราธิวาส">นราธิวาส</option>
-                        <option value="น่าน">น่าน</option>
-                        <option value="บึงกาฬ">บึงกาฬ</option>
-                        <option value="บุรีรัมย์">บุรีรัมย์</option>
-                        <option value="ปทุมธานี">ปทุมธานี</option>
-                        <option value="ประจวบคีรีขันธ์">ประจวบคีรีขันธ์</option>
-                        <option value="ปราจีนบุรี">ปราจีนบุรี</option>
-                        <option value="ปัตตานี">ปัตตานี</option>
-                        <option value="พระนครศรีอยุธยา">พระนครศรีอยุธยา</option>
-                        <option value="พะเยา">พะเยา</option>
-                        <option value="พังงา">พังงา</option>
-                        <option value="พัทลุง">พัทลุง</option>
-                        <option value="พิจิตร">พิจิตร</option>
-                        <option value="พิษณุโลก">พิษณุโลก</option>
-                        <option value="เพชรบุรี">เพชรบุรี</option>
-                        <option value="เพชรบูรณ์">เพชรบูรณ์</option>
-                        <option value="แพร่">แพร่</option>
-                        <option value="ภูเก็ต">ภูเก็ต</option>
-                        <option value="มหาสารคาม">มหาสารคาม</option>
-                        <option value="มุกดาหาร">มุกดาหาร</option>
-                        <option value="แม่ฮ่องสอน">แม่ฮ่องสอน</option>
-                        <option value="ยโสธร">ยโสธร</option>
-                        <option value="ยะลา">ยะลา</option>
-                        <option value="ร้อยเอ็ด">ร้อยเอ็ด</option>
-                        <option value="ระนอง">ระนอง</option>
-                        <option value="ระยอง">ระยอง</option>
-                        <option value="ราชบุรี">ราชบุรี</option>
-                        <option value="ลพบุรี">ลพบุรี</option>
-                        <option value="ลำปาง">ลำปาง</option>
-                        <option value="ลำพูน">ลำพูน</option>
-                        <option value="เลย">เลย</option>
-                        <option value="ศรีสะเกษ">ศรีสะเกษ</option>
-                        <option value="สกลนคร">สกลนคร</option>
-                        <option value="สงขลา">สงขลา</option>
-                        <option value="สตูล">สตูล</option>
-                        <option value="สมุทรปราการ">สมุทรปราการ</option>
-                        <option value="สมุทรสงคราม">สมุทรสงคราม</option>
-                        <option value="สมุทรสาคร">สมุทรสาคร</option>
-                        <option value="สระแก้ว">สระแก้ว</option>
-                        <option value="สระบุรี">สระบุรี</option>
-                        <option value="สิงห์บุรี">สิงห์บุรี</option>
-                        <option value="สุโขทัย">สุโขทัย</option>
-                        <option value="สุพรรณบุรี">สุพรรณบุรี</option>
-                        <option value="สุราษฎร์ธานี">สุราษฎร์ธานี</option>
-                        <option value="สุรินทร์">สุรินทร์</option>
-                        <option value="หนองคาย">หนองคาย</option>
-                        <option value="หนองบัวลำภู">หนองบัวลำภู</option>
-                        <option value="อ่างทอง">อ่างทอง</option>
-                        <option value="อำนาจเจริญ">อำนาจเจริญ</option>
-                        <option value="อุดรธานี">อุดรธานี</option>
-                        <option value="อุตรดิตถ์">อุตรดิตถ์</option>
-                        <option value="อุทัยธานี">อุทัยธานี</option>
-                        <option value="อุบลราชธานี">อุบลราชธานี</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>โรงเรียน <span class="req">*</span></label>
-                <span class="hint">ไม่ต้องใส่คำว่าโรงเรียน (เช่น พิมพ์แค่ สามเสนวิทยาลัย)</span>
-                <input type="text" id="school" required>
-            </div>
-
-            <div class="input-group">
-                <label>ชื่อครูดาราศาสตร์/วิทยาศาสตร์ในโรงเรียน</label>
-                <input type="text" id="teacherName" placeholder="ถ้ามีให้ระบุ">
-            </div>
-
-            <div class="section-title">📋 ส่วนที่ 3: ข้อมูลการสมัครสอบ</div>
-
-            <div class="input-group">
-                <label>สมัครสอบในระดับ <span class="req">*</span></label>
-                <div class="radio-group">
-                    <label><input type="radio" name="applyLevel" value="มัธยมศึกษาตอนต้น" required> ม.ต้น</label>
-                    <label><input type="radio" name="applyLevel" value="มัธยมศึกษาตอนปลาย"> ม.ปลาย</label>
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>หลักฐานการชำระค่าสมัครสอบ <span class="req">*</span></label>
-                <span class="hint">อัปโหลดสลิปโอนเงิน (รองรับไฟล์รูปภาพ .jpg, .png)</span>
-                <input type="file" id="paymentSlip" accept="image/*" required>
-            </div>
-
-            <button type="submit" id="submitBtn">✓ ยืนยันการส่งข้อมูลสมัครสอบ</button>
-        </form>
-        <a href="home.html" class="back-link">⬅️ กลับหน้าเมนูหลัก</a>
+                <button type="submit" id="submitBtn">ยืนยันการส่งข้อมูลสมัครสอบ</button>
+            </form>
+        </div>
     </div>
 
     <script>
-        // ลิงก์ Web App URL ของคุณ
+        // ⚠️ วาง Web App URL ของคุณที่นี่
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec"; 
+
+        // ดึงปีการศึกษาจาก LocalStorage (ค่าเริ่มต้น 2569) และนำไปแสดงผล
+        let activeYearTh = localStorage.getItem('activeYear') || '2569';
+        let activeYearEn = parseInt(activeYearTh) - 543; // แปลงเป็นปี ค.ศ. สำหรับใช้คำนวณอายุ
+
+        window.onload = function() {
+            document.getElementById('displayYearBadge').innerText = `ประจำปีการศึกษา ${activeYearTh}`;
+
+            // โชว์เมนูแอดมินถ้าคนที่ล็อกอินอยู่เป็นแอดมิน
+            const currentRole = localStorage.getItem('userRole') || 'guest';
+            const currentName = localStorage.getItem('userName') || '';
+            const showAdmin = (currentRole === 'admin' || currentRole === 'it');
+            
+            const profileForm = document.getElementById('profileForm');
+            const adminTopBar = document.getElementById('adminTopBar');
+
+            if (currentRole !== 'guest') {
+                profileForm.style.display = 'flex';
+                adminTopBar.style.display = 'block';
+                
+                document.getElementById('displayName').innerText = currentName;
+                document.getElementById('userAvatar').innerText = currentName ? currentName.charAt(0) : 'A';
+
+                if(currentRole === 'admin') {
+                    document.getElementById('displayRole').innerText = 'Administrator';
+                    document.getElementById('userAvatar').style.background = '#50CD89';
+                } else if(currentRole === 'it') {
+                    document.getElementById('displayRole').innerText = 'IT Support';
+                    document.getElementById('userAvatar').style.background = '#F1416C';
+                }
+            }
+
+            document.querySelectorAll('.role-admin').forEach(el => {
+                if(el.tagName.toLowerCase() === 'a') el.style.display = showAdmin ? 'inline-block' : 'none';
+            });
+        };
+
+        // ฟังก์ชันสำหรับปุ่มออกจากระบบ (Logout)
+        function handleLogout() { 
+            localStorage.removeItem('userRole'); 
+            localStorage.removeItem('userName'); 
+            window.location.reload(); 
+        }
+
+        // จัดการเบอร์โทรศัพท์ (ใส่ขีดอัตโนมัติ)
+        function formatPhoneNumber(input) {
+            let val = input.value.replace(/\D/g, '');
+            if (val.length > 3 && val.length <= 6) {
+                val = val.slice(0, 3) + '-' + val.slice(3);
+            } else if (val.length > 6) {
+                val = val.slice(0, 3) + '-' + val.slice(3, 6) + '-' + val.slice(6, 10);
+            }
+            input.value = val;
+        }
+
+        // ดักจับคำนำหน้าในช่อง "ชื่อ"
+        function checkPrefixInName(nameStr) {
+            const invalidPrefixes = ["เด็กชาย", "ด.ช.", "ดช", "เด็กหญิง", "ด.ญ.", "ดญ", "นาย", "นางสาว", "น.ส.", "นส", "นาง"];
+            for(let i=0; i<invalidPrefixes.length; i++){
+                if(nameStr.startsWith(invalidPrefixes[i])) {
+                    return invalidPrefixes[i]; 
+                }
+            }
+            return null; 
+        }
 
         document.getElementById('registerForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
-            btn.innerHTML = "กำลังตรวจสอบเงื่อนไข... ⏳";
+            btn.innerHTML = "กำลังตรวจสอบข้อมูล... ⏳";
             btn.disabled = true;
 
-            // ==========================================
-            // ส่วนตรวจสอบเงื่อนไขตามธรรมนูญการแข่งขัน สอวน.
-            // ==========================================
+            const firstNameStr = document.getElementById('firstName').value.trim();
+
+            const rejectApplication = (message) => {
+                alert(message);
+                btn.innerHTML = "ยืนยันการส่งข้อมูลสมัครสอบ";
+                btn.disabled = false;
+            };
+
+            // ดักจับการใส่คำนำหน้าในช่องชื่อ
+            const foundPrefix = checkPrefixInName(firstNameStr);
+            if(foundPrefix) {
+                return rejectApplication(`ข้อผิดพลาด: กรุณาลบคำว่า "${foundPrefix}" ออกจากช่อง "ชื่อ"\nเนื่องจากมีให้ระบุในช่อง "คำนำหน้าชื่อ" แล้ว`);
+            }
+
+            // คำนวณอายุโดยอิงตาม "ปีการศึกษา" ที่ตั้งไว้ (1 มกราคม ของปีที่จัดสอบ)
             const birthDateValue = document.getElementById('birthDate').value;
             const applyLevel = document.querySelector('input[name="applyLevel"]:checked').value;
             const grade = document.getElementById('grade').value;
 
-            // ตรวจสอบวันเกิดและคำนวณอายุโดยใช้วันที่ 1 ม.ค. ของปีที่จัดสอบเป็นเกณฑ์
             const bDate = new Date(birthDateValue);
-            const baseDate = new Date('2026-01-01'); // ปีที่จัดแข่งขันคือ 2026 (พ.ศ. 2569)
+            const baseDate = new Date(`${activeYearEn}-01-01`); 
 
             let age = baseDate.getFullYear() - bDate.getFullYear();
             const m = baseDate.getMonth() - bDate.getMonth();
             if (m < 0 || (m === 0 && baseDate.getDate() < bDate.getDate())) {
-                age--; // ลบอายุลง 1 ปีหากยังไม่ถึงวันเกิดในเดือน/วันนั้น
+                age--;
             }
 
-            // ฟังก์ชันคืนค่าปุ่มเมื่อตรวจสอบไม่ผ่าน
-            const rejectApplication = (message) => {
-                alert(message);
-                btn.innerHTML = "✓ ยืนยันการส่งข้อมูลสมัครสอบ";
-                btn.disabled = false;
-            };
-
-            // 1. กฎทั่วไป: อายุต้องไม่ต่ำกว่า 13 ปี
+            // ตรวจสอบเงื่อนไขตามธรรมนูญการแข่งขัน
             if (age < 13) {
-                return rejectApplication("❌ ไม่ผ่านเกณฑ์: ผู้เข้าแข่งขันต้องมีอายุไม่ต่ำกว่า 13 ปีบริบูรณ์\n(นับถึงวันที่ 1 ม.ค. 2026 อายุของคุณคือ " + Math.max(0, age) + " ปี)");
+                return rejectApplication(`คุณสมบัติไม่ผ่านเกณฑ์: ผู้เข้าแข่งขันต้องมีอายุไม่ต่ำกว่า 13 ปีบริบูรณ์\n(นับถึงวันที่ 1 ม.ค. ${activeYearEn} อายุของคุณคือ ${Math.max(0, age)} ปี)`);
             }
 
-            // 2. กฎแยกระดับชั้น
             if (applyLevel === "มัธยมศึกษาตอนต้น") {
                 if (age > 15) {
-                    return rejectApplication("❌ ไม่ผ่านเกณฑ์: ผู้เข้าแข่งขันระดับ ม.ต้น ต้องมีอายุไม่เกิน 15 ปี\n(นับถึงวันที่ 1 ม.ค. 2026 อายุของคุณคือ " + age + " ปี)");
+                    return rejectApplication(`คุณสมบัติไม่ผ่านเกณฑ์: ระดับ ม.ต้น ต้องมีอายุไม่เกิน 15 ปี\n(นับถึงวันที่ 1 ม.ค. ${activeYearEn} อายุของคุณคือ ${age} ปี)`);
                 }
                 if (!["ม.1", "ม.2", "ม.3"].includes(grade)) {
-                    return rejectApplication("❌ ไม่ผ่านเกณฑ์: ผู้เข้าแข่งขันระดับ ม.ต้น ต้องกำลังศึกษาอยู่ในชั้น ม.1 ถึง ม.3 เท่านั้น");
+                    return rejectApplication("คุณสมบัติไม่ผ่านเกณฑ์: ระดับ ม.ต้น ต้องกำลังศึกษาอยู่ในชั้น ม.1 - ม.3 เท่านั้น");
                 }
             } else if (applyLevel === "มัธยมศึกษาตอนปลาย") {
                 if (age > 19) {
-                    return rejectApplication("❌ ไม่ผ่านเกณฑ์: ผู้เข้าแข่งขันระดับ ม.ปลาย ต้องมีอายุไม่เกิน 19 ปี\n(นับถึงวันที่ 1 ม.ค. 2026 อายุของคุณคือ " + age + " ปี)");
+                    return rejectApplication(`คุณสมบัติไม่ผ่านเกณฑ์: ระดับ ม.ปลาย ต้องมีอายุไม่เกิน 19 ปี\n(นับถึงวันที่ 1 ม.ค. ${activeYearEn} อายุของคุณคือ ${age} ปี)`);
                 }
-                if (!["ม.3", "ม.4", "ม.5"].includes(grade)) {
-                    return rejectApplication("❌ ไม่ผ่านเกณฑ์: ผู้เข้าแข่งขันระดับ ม.ปลาย ต้องกำลังศึกษาอยู่ในชั้น ม.3 ถึง ม.5 เท่านั้น\n(ไม่อนุญาตให้นักเรียนชั้น ม.6 สมัครสอบตามธรรมนูญการแข่งขัน)");
+                if (!["ม.4", "ม.5"].includes(grade)) {
+                    return rejectApplication("คุณสมบัติไม่ผ่านเกณฑ์: ระดับ ม.ปลาย ต้องกำลังศึกษาอยู่ในชั้น ม.4 หรือ ม.5 เท่านั้น\n(ไม่อนุญาตให้นักเรียนชั้น ม.6 สมัครสอบ)");
                 }
             }
-            // ==========================================
 
-            // หากผ่านเงื่อนไขทั้งหมด ให้ทำการแปลงไฟล์และส่งข้อมูล
-            btn.innerHTML = "กำลังแปลงไฟล์รูปและส่งข้อมูล... ⏳";
+            // ดำเนินการแปลงไฟล์และส่งข้อมูล
+            btn.innerHTML = "กำลังแปลงไฟล์และอัปโหลดข้อมูล... ⏳";
             const fileInput = document.getElementById('paymentSlip');
             const file = fileInput.files[0];
 
@@ -448,7 +692,7 @@
                     sendData(base64String, file.type, file.name);
                 };
                 reader.onerror = function (error) {
-                    rejectApplication("❌ เกิดข้อผิดพลาดในการอ่านไฟล์รูปภาพ");
+                    rejectApplication("เกิดข้อผิดพลาดในการอ่านไฟล์รูปภาพ กรุณาลองใหม่อีกครั้ง");
                 };
             } else {
                 sendData("", "", "");
@@ -456,13 +700,14 @@
 
             function sendData(base64Str, mimeType, fileName) {
                 const data = {
+                    activeYear: activeYearTh, // ส่งปีการศึกษาไปด้วยเพื่อเซฟลงโฟลเดอร์ให้ถูกปี
                     prefix: document.getElementById('prefix').value,
                     firstName: document.getElementById('firstName').value,
                     lastName: document.getElementById('lastName').value,
                     idCard: document.getElementById('idCard').value,
                     birthDate: document.getElementById('birthDate').value,
-                    studentPhone: document.getElementById('studentPhone').value,
-                    parentPhone: document.getElementById('parentPhone').value,
+                    studentPhone: document.getElementById('studentPhone').value, 
+                    parentPhone: document.getElementById('parentPhone').value,   
                     grade: document.getElementById('grade').value,
                     province: document.getElementById('province').value,
                     school: document.getElementById('school').value,
@@ -479,13 +724,13 @@
                 })
                 .then(response => response.json())
                 .then(result => {
-                    alert("✅ สมัครสอบสำเร็จ! ข้อมูลและสลิปถูกส่งเข้าระบบเรียบร้อยแล้ว");
+                    alert("การส่งข้อมูลสำเร็จ! ใบสมัครและหลักฐานของคุณถูกบันทึกเข้าระบบเรียบร้อยแล้ว");
                     document.getElementById('registerForm').reset();
                     window.location.href = "status.html";
                 })
                 .catch(error => {
                     console.error(error);
-                    rejectApplication("❌ เกิดข้อผิดพลาด ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้\n(โปรดตรวจสอบว่าตั้งค่า 'ผู้มีสิทธิ์เข้าถึง' เป็น 'ทุกคน' ใน Google Apps Script แล้ว)");
+                    rejectApplication("เกิดข้อผิดพลาด: ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ในขณะนี้");
                 });
             }
         });
