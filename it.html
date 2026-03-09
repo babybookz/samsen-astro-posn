@@ -6,8 +6,8 @@
     <title>IT Control Panel | Samsen Astro POSN</title>
     
     <script>
-        // ล็อกให้เข้าได้เฉพาะ IT
         const currentRole = localStorage.getItem('userRole');
+        const currentUserName = localStorage.getItem('userName') || 'IT Support';
         if (currentRole !== 'it') {
             alert('ไม่อนุญาตให้เข้าถึง: พื้นที่นี้สงวนไว้สำหรับฝ่าย IT เท่านั้น');
             window.location.replace('home.html'); 
@@ -34,30 +34,11 @@
         body { font-family: 'Sarabun', sans-serif; background: var(--bg-light); margin: 0; color: var(--text-dark); overflow-x: hidden; }
 
         /* ================= 1. TOP ADMIN BAR ================= */
-        .top-admin-bar { 
-            background-color: #181C32; 
-            color: var(--success); 
-            text-align: center; 
-            padding: 8px; 
-            font-size: 0.85rem; 
-            font-weight: 600; 
-            letter-spacing: 0.5px; 
-            display: block; 
-        }
+        .top-admin-bar { background-color: #181C32; color: var(--success); text-align: center; padding: 8px; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px; display: block; }
         .top-admin-bar span { color: white; font-weight: 400; margin-right: 10px; }
 
         /* ================= HEADER & NAVIGATION ================= */
-        .navbar { 
-            background-color: var(--theme-purple); 
-            padding: 15px 50px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
-            position: sticky; 
-            top: 0; 
-            z-index: 100; 
-        }
+        .navbar { background-color: var(--theme-purple); padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
         .nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: white;}
         .nav-brand img { height: 45px; width: auto; background: white; padding: 3px; border-radius: 8px;}
         .nav-brand div { line-height: 1.1; }
@@ -78,27 +59,37 @@
 
         /* ================= MAIN CONTAINER ================= */
         .page-wrapper { padding: 40px 20px; display: flex; justify-content: center; }
-        .container { background: #ffffff; padding: 40px; border-radius: var(--border-radius); box-shadow: var(--box-shadow); max-width: 800px; width: 100%; box-sizing: border-box; border-top: 5px solid var(--theme-orange); }
+        .container { max-width: 900px; width: 100%; box-sizing: border-box; }
         
-        .page-title { text-align: center; margin-bottom: 40px; border-bottom: 1px dashed var(--border-color); padding-bottom: 20px;}
-        h2 { color: var(--theme-purple); margin: 0 0 10px 0; font-weight: 700; font-size: 1.8rem; letter-spacing: -0.5px;}
-        p.subtitle { color: var(--text-muted); font-size: 1.05rem; margin: 0; }
+        .page-title { text-align: center; margin-bottom: 40px;}
+        h2 { color: var(--theme-purple); margin: 0 0 10px 0; font-weight: 700; font-size: 2rem; letter-spacing: -0.5px;}
+        p.subtitle { color: var(--text-muted); font-size: 1.1rem; margin: 0; }
 
-        /* ================= SECTION STYLES ================= */
-        .section-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; margin-top: 40px;}
-        .section-icon { display: flex; justify-content: center; align-items: center; width: 45px; height: 45px; border-radius: 12px; }
-        .section-icon svg { width: 24px; height: 24px; }
+        /* ================= SETTING CARDS ================= */
+        .setting-card { background: white; padding: 35px; border-radius: var(--border-radius); box-shadow: var(--box-shadow); margin-bottom: 30px; border-top: 4px solid var(--theme-purple); }
+        .setting-card.card-orange { border-color: var(--theme-orange); }
+        .setting-card.card-blue { border-color: #1976D2; }
+        .setting-card.card-green { border-color: var(--success); }
+        .setting-card.card-dark { border-color: #455A64; }
+
+        .card-header-flex { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border-color); padding-bottom: 15px; margin-bottom: 20px; }
+        .card-title-box { display: flex; align-items: center; gap: 15px; }
+        .card-icon { display: flex; justify-content: center; align-items: center; width: 45px; height: 45px; border-radius: 12px; }
+        .card-icon svg { width: 24px; height: 24px; }
         .icon-purple { background: #F3E5F5; } .icon-purple svg { fill: var(--theme-purple); }
         .icon-orange { background: #FFF8E1; } .icon-orange svg { fill: var(--theme-orange); }
         .icon-dark { background: #ECEFF1; } .icon-dark svg { fill: #455A64; }
         .icon-blue { background: #E3F2FD; } .icon-blue svg { fill: #1976D2; }
-        .icon-red { background: #FFEBEE; } .icon-red svg { fill: var(--danger); }
         .icon-green { background: #E8F5E9; } .icon-green svg { fill: var(--success); }
         
-        .section-title-text { font-size: 1.3rem; font-weight: 700; color: var(--text-dark); margin: 0;}
+        .card-title-text { font-size: 1.25rem; font-weight: 700; color: var(--text-dark); margin: 0;}
+        
+        .btn-save-inline { padding: 10px 20px; background: #F3F6F9; color: var(--theme-purple); border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: 'Sarabun'; display: flex; align-items: center; gap: 8px;}
+        .btn-save-inline:hover { background: var(--theme-purple); color: white; border-color: var(--theme-purple);}
+        .btn-save-inline svg { width: 18px; height: 18px; fill: currentColor; }
 
         /* Input Boxes */
-        .setting-box { display: flex; align-items: center; gap: 15px; background: var(--bg-light); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid var(--border-color); transition: 0.3s;}
+        .setting-box { display: flex; align-items: center; gap: 15px; background: var(--bg-light); padding: 20px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border-color); transition: 0.3s;}
         .setting-box:focus-within { border-color: var(--theme-purple); box-shadow: 0 0 0 3px rgba(49, 27, 94, 0.1); background: white;}
         .setting-box label { font-size: 1.05rem; font-weight: 600; color: var(--text-dark); margin: 0; width: 180px; }
         .setting-input { flex: 1; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Sarabun'; font-size: 1.1rem; color: var(--theme-purple); font-weight: 600; outline: none; transition: 0.3s; }
@@ -117,36 +108,37 @@
         .desc { font-size: 0.95rem; color: var(--text-muted); margin-top: 5px; line-height: 1.5; }
 
         /* Admin Management Table */
-        .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;}
+        .admin-table { width: 100%; border-collapse: collapse; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; margin-bottom: 15px;}
         .admin-table th { background: var(--bg-light); color: var(--text-muted); padding: 12px; text-align: left; font-size: 0.9rem; font-weight: 600; border-bottom: 1px solid var(--border-color);}
-        .admin-table td { padding: 12px; border-bottom: 1px dashed var(--border-color); font-size: 0.95rem;}
+        .admin-table td { padding: 12px; border-bottom: 1px dashed var(--border-color); font-size: 0.95rem; vertical-align: middle;}
         
+        .role-badge { padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: 700; display: inline-block; text-transform: uppercase;}
+        .role-it-badge { background: #FFEBEE; color: var(--danger); }
+        .role-admin-badge { background: #E8F5E9; color: var(--success); }
+
         .action-btns { display: flex; justify-content: center; gap: 8px; }
         .btn-edit { background: #FFF3E0; color: var(--theme-orange); border: 1px solid #FFE0B2; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-family: 'Sarabun'; font-weight: 600; transition: 0.3s;}
         .btn-edit:hover { background: var(--theme-orange); color: white; }
         .btn-delete { background: #FFEBEE; color: var(--danger); border: 1px solid #FFCDD2; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-family: 'Sarabun'; font-weight: 600; transition: 0.3s;}
         .btn-delete:hover { background: var(--danger); color: white; }
 
-        .add-admin-form { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; margin-top: 15px; background: var(--bg-light); padding: 15px; border-radius: 8px; border: 1px dashed var(--border-color);}
-        .add-admin-input { padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-family: 'Sarabun'; outline: none;}
-        .add-admin-input:focus { border-color: var(--theme-orange); }
+        .add-admin-form { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr auto; gap: 10px; background: var(--bg-light); padding: 15px; border-radius: 8px; border: 1px dashed var(--border-color);}
+        .add-admin-input, .add-admin-select { padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-family: 'Sarabun'; outline: none;}
+        .add-admin-input:focus, .add-admin-select:focus { border-color: var(--theme-orange); }
         .btn-add { background: var(--theme-purple); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-family: 'Sarabun'; font-weight: 600; transition: 0.3s;}
         .btn-add:hover { background: var(--theme-orange); }
-
-        /* Submit Button */
-        .btn-save-master { width: 100%; padding: 18px; background: var(--theme-orange); color: white; border: none; border-radius: 50px; font-size: 1.2rem; font-weight: 700; cursor: pointer; margin-top: 40px; transition: 0.3s; font-family: 'Sarabun'; box-shadow: 0 5px 15px rgba(255, 143, 0, 0.3); display: flex; justify-content: center; align-items: center; gap: 10px;}
-        .btn-save-master:hover { background: var(--theme-orange-hover); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 143, 0, 0.4); }
-        .btn-save-master svg { fill: currentColor; width: 24px; height: 24px;}
 
         .loading-text { text-align: center; color: var(--theme-purple); font-weight: bold; padding: 20px; }
 
         /* ================= MODAL EDIT ADMIN ================= */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-box { background: white; padding: 30px; border-radius: 20px; width: 350px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); text-align: center; position: relative; }
-        .modal-title { font-size: 1.4rem; font-weight: 700; color: var(--theme-purple); margin: 0 0 25px 0; }
-        .form-control { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid #E4E6EF; border-radius: 10px; font-family: 'Sarabun'; font-size: 1rem; box-sizing: border-box; background: #F9F9F9; transition: 0.2s; text-align: center;}
+        .modal-box { background: white; padding: 30px; border-radius: 20px; width: 400px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); position: relative; }
+        .modal-title { font-size: 1.4rem; font-weight: 700; color: var(--theme-purple); margin: 0 0 25px 0; text-align: center; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.95rem; font-weight: 600; margin-bottom: 5px; color: var(--text-dark); }
+        .form-control { width: 100%; padding: 12px; border: 1px solid #E4E6EF; border-radius: 8px; font-family: 'Sarabun'; font-size: 1rem; box-sizing: border-box; background: #F9F9F9; transition: 0.2s;}
         .form-control:focus { border-color: var(--theme-purple); outline: none; background: white; }
-        .btn-submit-edit { width: 100%; padding: 14px; background: var(--theme-purple); color: white; border: none; border-radius: 10px; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: 'Sarabun'; }
+        .btn-submit-edit { width: 100%; padding: 14px; background: var(--theme-purple); color: white; border: none; border-radius: 8px; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: 'Sarabun'; margin-top: 10px;}
         .btn-submit-edit:hover { background: var(--theme-orange); }
         .btn-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5rem; color: #A1A5B7; cursor: pointer; transition: 0.2s; line-height: 1;}
         .btn-close:hover { color: var(--danger); }
@@ -162,7 +154,7 @@
 <body>
 
     <div id="adminTopBar" class="top-admin-bar">
-        <span><svg style="width:14px;height:14px;vertical-align:middle;fill:white;margin-top:-2px;" viewBox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 17.96,13.82 17.96,15.47C17.75,16 17.46,16.5 17.13,17Z" /></svg> โหมดผู้ดูแลระบบ:</span> คุณกำลังเข้าสู่ระบบในฐานะเจ้าหน้าที่ศูนย์สอบ
+        <span><svg style="width:14px;height:14px;vertical-align:middle;fill:white;margin-top:-2px;" viewBox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 17.96,13.82 17.96,15.47C17.75,16 17.46,16.5 17.13,17Z" /></svg> โหมดผู้ดูแลระบบ:</span> คุณกำลังเข้าสู่ระบบในฐานะเจ้าหน้าที่ศูนย์สอบ (IT Support)
     </div>
 
     <nav class="navbar">
@@ -182,7 +174,7 @@
         </div>
 
         <div class="nav-profile" id="profileForm">
-            <div class="profile-avatar" id="userAvatar">A</div>
+            <div class="profile-avatar" id="userAvatar">I</div>
             <div class="profile-info">
                 <div class="profile-name" id="displayName">ชื่อผู้ใช้</div>
                 <div class="profile-role" id="displayRole">ตำแหน่ง</div>
@@ -201,109 +193,120 @@
                 <p class="subtitle">จัดการข้อมูลพื้นฐานและควบคุมการแสดงผลของเว็บไซต์</p>
             </div>
             
-            <div class="section-header" style="margin-top: 0;">
-                <div class="section-icon icon-purple">
-                    <svg viewBox="0 0 24 24"><path d="M19,4H18V2H16V4H8V2H6V4H5C3.89,4 3,4.9 3,6V20A2,2 0 0,0 5,22H19A2,2 0 0,0 21,20V6A2,2 0 0,0 19,4M19,20H5V10H19V20M19,8H5V6H19V8Z" /></svg>
+            <div class="setting-card">
+                <div class="card-header-flex">
+                    <div class="card-title-box">
+                        <div class="card-icon icon-purple"><svg viewBox="0 0 24 24"><path d="M19,4H18V2H16V4H8V2H6V4H5C3.89,4 3,4.9 3,6V20A2,2 0 0,0 5,22H19A2,2 0 0,0 21,20V6A2,2 0 0,0 19,4M19,20H5V10H19V20M19,8H5V6H19V8Z" /></svg></div>
+                        <h3 class="card-title-text">ปีการศึกษา (Active Year)</h3>
+                    </div>
+                    <button class="btn-save-inline" onclick="saveSettingField('year')"><svg viewBox="0 0 24 24"><path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" /></svg> บันทึก</button>
                 </div>
-                <h3 class="section-title-text">ปีการศึกษา (Active Year)</h3>
-            </div>
-            
-            <div class="setting-box">
-                <label>ปีการศึกษาปัจจุบัน</label>
-                <input type="number" id="activeYear" class="setting-input" value="2569" style="text-align: center; font-size: 1.25rem;">
-            </div>
-
-            <div class="section-header">
-                <div class="section-icon icon-green">
-                    <svg viewBox="0 0 24 24"><path d="M17,7H22V17H17V19A1,1 0 0,0 18,20H20V22H17.5C16.95,22 16,21.55 16,21C16,21.55 15.05,22 14.5,22H12V20H14A1,1 0 0,0 15,19V5A1,1 0 0,0 14,4H12V2H14.5C15.05,2 16,2.45 16,3C16,2.45 16.95,2 17.5,2H20V4H18A1,1 0 0,0 17,5V7M2,7H13V9H4V15H13V17H2V7M20,15V9H17V15H20Z" /></svg>
-                </div>
-                <h3 class="section-title-text">สถานะการรับสมัครสอบ</h3>
-            </div>
-            
-            <div class="radio-group" id="regStatus_open" onclick="selectRegStatus('open')">
-                <input type="radio" id="regOpen" name="regStatus" value="open">
-                <div class="label-content">
-                    <label for="regOpen" style="color: var(--success);">🟢 เปิดรับสมัคร (ระบบนับถอยหลังทำงาน)</label>
-                    <div class="desc">ผู้ใช้สามารถเข้าสู่เมนู "กรอกใบสมัครสอบ" ได้ตามปกติ จนกว่าจะถึงเวลาปิดรับสมัคร</div>
+                <div class="setting-box">
+                    <label>ปีการศึกษาปัจจุบัน</label>
+                    <input type="number" id="activeYear" class="setting-input" value="2569" style="text-align: center; font-size: 1.25rem;">
                 </div>
             </div>
 
-            <div class="radio-group" id="regStatus_closed" onclick="selectRegStatus('closed')">
-                <input type="radio" id="regClosed" name="regStatus" value="closed">
-                <div class="label-content">
-                    <label for="regClosed" style="color: var(--danger);">🔴 ปิดรับสมัคร</label>
-                    <div class="desc">ระงับการเข้าถึงหน้ากรอกใบสมัคร (ผู้ที่กำลังกรอกอยู่จะไม่สามารถส่งข้อมูลได้)</div>
+            <div class="setting-card card-green">
+                <div class="card-header-flex">
+                    <div class="card-title-box">
+                        <div class="card-icon icon-green"><svg viewBox="0 0 24 24"><path d="M17,7H22V17H17V19A1,1 0 0,0 18,20H20V22H17.5C16.95,22 16,21.55 16,21C16,21.55 15.05,22 14.5,22H12V20H14A1,1 0 0,0 15,19V5A1,1 0 0,0 14,4H12V2H14.5C15.05,2 16,2.45 16,3C16,2.45 16.95,2 17.5,2H20V4H18A1,1 0 0,0 17,5V7M2,7H13V9H4V15H13V17H2V7M20,15V9H17V15H20Z" /></svg></div>
+                        <h3 class="card-title-text">สถานะการรับสมัคร และ Deadline</h3>
+                    </div>
+                    <button class="btn-save-inline" onclick="saveSettingField('reg')"><svg viewBox="0 0 24 24"><path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" /></svg> บันทึก</button>
+                </div>
+                
+                <div class="radio-group" id="regStatus_open" onclick="selectRegStatus('open')">
+                    <input type="radio" id="regOpen" name="regStatus" value="open">
+                    <div class="label-content">
+                        <label for="regOpen" style="color: var(--success);">🟢 เปิดรับสมัคร (ระบบนับถอยหลังทำงาน)</label>
+                        <div class="desc">ผู้ใช้สามารถเข้าสู่เมนู "กรอกใบสมัครสอบ" ได้ตามปกติ จนกว่าจะถึงเวลาปิดรับสมัคร</div>
+                    </div>
+                </div>
+
+                <div class="radio-group" id="regStatus_closed" onclick="selectRegStatus('closed')">
+                    <input type="radio" id="regClosed" name="regStatus" value="closed">
+                    <div class="label-content">
+                        <label for="regClosed" style="color: var(--danger);">🔴 ปิดรับสมัคร</label>
+                        <div class="desc">ระงับการเข้าถึงหน้ากรอกใบสมัคร (ผู้ที่กำลังกรอกอยู่จะไม่สามารถส่งข้อมูลได้)</div>
+                    </div>
+                </div>
+
+                <div class="setting-box" id="deadlineBox">
+                    <label>วัน-เวลาสิ้นสุด</label>
+                    <input type="datetime-local" id="regDeadline" class="setting-input">
                 </div>
             </div>
 
-            <div class="setting-box" id="deadlineBox">
-                <label>วัน-เวลาสิ้นสุด</label>
-                <input type="datetime-local" id="regDeadline" class="setting-input">
-            </div>
-
-            <div class="section-header">
-                <div class="section-icon icon-dark">
-                    <svg viewBox="0 0 24 24"><path d="M21,16H3V4H21M21,2H3C1.89,2 1,2.89 1,4V16A2,2 0 0,0 3,18H10V20H8V22H16V20H14V18H21A2,2 0 0,0 23,16V4C23,2.89 22.1,2 21,2Z" /></svg>
+            <div class="setting-card card-dark">
+                <div class="card-header-flex">
+                    <div class="card-title-box">
+                        <div class="card-icon icon-dark"><svg viewBox="0 0 24 24"><path d="M21,16H3V4H21M21,2H3C1.89,2 1,2.89 1,4V16A2,2 0 0,0 3,18H10V20H8V22H16V20H14V18H21A2,2 0 0,0 23,16V4C23,2.89 22.1,2 21,2Z" /></svg></div>
+                        <h3 class="card-title-text">สถานะการเปิดเผยข้อมูลให้ผู้สมัคร (Phase)</h3>
+                    </div>
+                    <button class="btn-save-inline" onclick="saveSettingField('phase')"><svg viewBox="0 0 24 24"><path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" /></svg> บันทึก</button>
                 </div>
-                <h3 class="section-title-text">สถานะการเปิดเผยข้อมูล (Phase)</h3>
-            </div>
 
-            <div class="radio-group" id="box1" onclick="selectRadio('phase1')">
-                <input type="radio" id="phase1" name="systemPhase" value="1">
-                <div class="label-content">
-                    <label for="phase1" style="color: var(--theme-purple);">เฟส 1: ช่วงรับสมัครสอบ</label>
-                    <div class="desc">หน้าสถานะจะเปิดเผยเฉพาะ ข้อมูลการสมัคร (ห้องสอบและคะแนนจะถูกล็อก)</div>
+                <div class="radio-group" id="box1" onclick="selectRadio('phase1')">
+                    <input type="radio" id="phase1" name="systemPhase" value="1">
+                    <div class="label-content">
+                        <label for="phase1" style="color: var(--text-dark);">เฟส 1: ช่วงรับสมัครสอบ</label>
+                        <div class="desc">หน้าสถานะจะเปิดเผยเฉพาะ ข้อมูลการสมัคร (ห้องสอบและคะแนนจะถูกล็อก)</div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="radio-group" id="box2" onclick="selectRadio('phase2')">
-                <input type="radio" id="phase2" name="systemPhase" value="2">
-                <div class="label-content">
-                    <label for="phase2" style="color: var(--theme-purple);">เฟส 2: ช่วงประกาศห้องสอบ</label>
-                    <div class="desc">หน้าสถานะจะเปิดเผย ข้อมูลการสมัคร + ที่นั่งสอบ (คะแนนยังคงถูกล็อก)</div>
+                <div class="radio-group" id="box2" onclick="selectRadio('phase2')">
+                    <input type="radio" id="phase2" name="systemPhase" value="2">
+                    <div class="label-content">
+                        <label for="phase2" style="color: var(--text-dark);">เฟส 2: ช่วงประกาศห้องสอบ</label>
+                        <div class="desc">หน้าสถานะจะเปิดเผย ข้อมูลการสมัคร + ที่นั่งสอบ (คะแนนยังคงถูกล็อก)</div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="radio-group" id="box3" onclick="selectRadio('phase3')">
-                <input type="radio" id="phase3" name="systemPhase" value="3">
-                <div class="label-content">
-                    <label for="phase3" style="color: var(--theme-purple);">เฟส 3: ช่วงประกาศผลคะแนน</label>
-                    <div class="desc">หน้าสถานะจะเปิดเผย ข้อมูลทั้งหมด รวมถึงคะแนนและอันดับ ให้นักเรียนตรวจสอบได้</div>
+                <div class="radio-group" id="box3" onclick="selectRadio('phase3')">
+                    <input type="radio" id="phase3" name="systemPhase" value="3">
+                    <div class="label-content">
+                        <label for="phase3" style="color: var(--text-dark);">เฟส 3: ช่วงประกาศผลคะแนน</label>
+                        <div class="desc">หน้าสถานะจะเปิดเผย ข้อมูลทั้งหมด รวมถึงคะแนนและอันดับ ให้นักเรียนตรวจสอบได้</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="section-header" style="margin-top: 50px;">
-                <div class="section-icon icon-blue">
-                    <svg viewBox="0 0 24 24"><path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" /></svg>
+            <div class="setting-card card-blue">
+                <div class="card-header-flex">
+                    <div class="card-title-box">
+                        <div class="card-icon icon-blue"><svg viewBox="0 0 24 24"><path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" /></svg></div>
+                        <h3 class="card-title-text">จัดการบัญชีผู้ดูแลระบบ (Admin Users)</h3>
+                    </div>
                 </div>
-                <h3 class="section-title-text">จัดการบัญชีผู้ดูแลระบบ (Admin)</h3>
-            </div>
-            
-            <table class="admin-table" id="adminTable">
-                <thead>
-                    <tr>
-                        <th>ชื่อ - นามสกุล</th>
-                        <th>Username (ID)</th>
-                        <th>Password</th>
-                        <th style="text-align: center;">จัดการ</th>
-                    </tr>
-                </thead>
-                <tbody id="adminListBody">
-                    <tr><td colspan="4" class="loading-text">กำลังโหลดรายชื่อบัญชี... ⏳</td></tr>
-                </tbody>
-            </table>
+                
+                <table class="admin-table" id="adminTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px; text-align: center;">No.</th>
+                            <th>ชื่อ - นามสกุล</th>
+                            <th>Username (ID)</th>
+                            <th>สิทธิ์ (Role)</th>
+                            <th style="text-align: center;">จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminListBody">
+                        <tr><td colspan="5" class="loading-text">กำลังโหลดรายชื่อบัญชี... ⏳</td></tr>
+                    </tbody>
+                </table>
 
-            <div class="add-admin-form">
-                <input type="text" id="newAdminName" class="add-admin-input" placeholder="ชื่อ-นามสกุล">
-                <input type="text" id="newAdminId" class="add-admin-input" placeholder="Username">
-                <input type="text" id="newAdminPass" class="add-admin-input" placeholder="Password">
-                <button class="btn-add" id="btnAddAdmin" onclick="addAdmin()">เพิ่มบัญชี</button>
+                <div class="add-admin-form">
+                    <input type="text" id="newAdminName" class="add-admin-input" placeholder="ชื่อ-นามสกุล">
+                    <input type="text" id="newAdminId" class="add-admin-input" placeholder="Username">
+                    <input type="text" id="newAdminPass" class="add-admin-input" placeholder="Password">
+                    <select id="newAdminRole" class="add-admin-select">
+                        <option value="admin">แอดมินทั่วไป (Admin)</option>
+                        <option value="it">ฝ่ายไอที (IT)</option>
+                    </select>
+                    <button class="btn-add" id="btnAddAdmin" onclick="addAdmin()">เพิ่มบัญชี</button>
+                </div>
             </div>
 
-            <button class="btn-save-master" onclick="saveSettings()">
-                <svg viewBox="0 0 24 24"><path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" /></svg>
-                บันทึกการตั้งค่าระบบ
-            </button>
         </div>
     </div>
 
@@ -312,19 +315,36 @@
             <button class="btn-close" onclick="closeEditModal()">&times;</button>
             <h3 class="modal-title">แก้ไขบัญชี</h3>
             <input type="hidden" id="editIndex">
-            <input type="text" id="editName" class="form-control" placeholder="ชื่อผู้ดูแลระบบ">
-            <input type="text" id="editId" class="form-control" placeholder="Username">
-            <input type="text" id="editPass" class="form-control" placeholder="Password">
+            
+            <div class="form-group">
+                <label>ชื่อผู้ดูแลระบบ</label>
+                <input type="text" id="editName" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="editId" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Password ใหม่</label>
+                <input type="text" id="editPass" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>สิทธิ์การใช้งาน (Role)</label>
+                <select id="editRole" class="form-control">
+                    <option value="admin">แอดมินทั่วไป (Admin)</option>
+                    <option value="it">ฝ่ายไอที (IT)</option>
+                </select>
+            </div>
+
             <button class="btn-submit-edit" id="btnSubmitEdit" onclick="saveEditAdmin()">บันทึกการแก้ไข</button>
         </div>
     </div>
 
     <script>
-        // ⚠️ วาง Web App URL ที่นี่ให้ตรงกัน
+        // ⚠️ วาง Web App URL ที่นี่
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec";
         
         let adminUsers = [];
-        const currentUserName = localStorage.getItem('userName') || 'IT Support';
 
         window.onload = function() {
             updateProfileUI();
@@ -344,18 +364,13 @@
             document.getElementById('reg' + (regStatus === 'open' ? 'Open' : 'Closed')).checked = true;
             updateRegStatusHighlight(regStatus);
 
-            // เคลียร์โหมด Maintenance ออกจากระบบไปเลย (เพื่อไม่ให้ค้างในเครื่องแอดมิน)
-            localStorage.removeItem('maintenanceMode');
-
             // ดึงรายชื่อ Admin
             fetchAdmins();
         }
 
-        // ฟังก์ชันสำหรับอัปเดตชื่อผู้ใช้งานมุมขวาบน
         function updateProfileUI() {
             document.getElementById('displayName').innerText = currentUserName;
             document.getElementById('userAvatar').innerText = currentUserName ? currentUserName.charAt(0) : 'I';
-            document.getElementById('displayRole').innerText = 'IT Support';
             document.getElementById('userAvatar').style.background = '#F1416C'; 
         }
 
@@ -365,13 +380,17 @@
             window.location.replace('home.html'); 
         }
 
-        // ฟังก์ชัน UI ของ Radio Button
+        // =====================================
+        // ฟังก์ชัน UI ของ Radio Buttons
+        // =====================================
         function selectRadio(id) {
             document.getElementById(id).checked = true;
             updateBoxHighlight(id.replace('phase', ''));
         }
         function updateBoxHighlight(phaseNumber) {
-            document.querySelectorAll('.radio-group').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('[name="systemPhase"]').forEach(el => {
+                document.getElementById('box' + el.value).classList.remove('active');
+            });
             document.getElementById('box' + phaseNumber).classList.add('active');
         }
 
@@ -386,10 +405,35 @@
 
             if (status === 'open') {
                 document.getElementById('regStatus_open').classList.add('active-success');
-                deadlineBox.style.display = 'flex'; // แสดงช่องให้กรอกเวลา
+                deadlineBox.style.display = 'flex'; 
             } else {
                 document.getElementById('regStatus_closed').classList.add('active-danger');
-                deadlineBox.style.display = 'none'; // ซ่อนช่องกรอกเวลา
+                deadlineBox.style.display = 'none'; 
+            }
+        }
+
+        // =====================================
+        // ฟังก์ชันบันทึกแยกทีละส่วน (Partial Save)
+        // =====================================
+        function saveSettingField(type) {
+            if(type === 'year') {
+                const yr = document.getElementById('activeYear').value;
+                if(!yr || yr.length !== 4) return alert('กรุณากรอกปี 4 หลัก');
+                localStorage.setItem('activeYear', yr);
+                alert(`✅ บันทึกปีการศึกษาเป็น ${yr} เรียบร้อยแล้ว`);
+            } 
+            else if(type === 'reg') {
+                const st = document.querySelector('input[name="regStatus"]:checked').value;
+                const dl = document.getElementById('regDeadline').value;
+                if(st === 'open' && !dl) return alert('กรุณาระบุเวลาปิดรับสมัคร');
+                localStorage.setItem('regStatus', st);
+                localStorage.setItem('regDeadline', dl);
+                alert(`✅ บันทึกสถานะการรับสมัครเรียบร้อยแล้ว`);
+            }
+            else if(type === 'phase') {
+                const ph = document.querySelector('input[name="systemPhase"]:checked').value;
+                localStorage.setItem('systemPhase', ph);
+                alert(`✅ บันทึกเฟสแสดงผลเป็น เฟส ${ph} เรียบร้อยแล้ว`);
             }
         }
 
@@ -406,7 +450,7 @@
                 }
             })
             .catch(error => {
-                document.getElementById('adminListBody').innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">โหลดข้อมูลผิดพลาด</td></tr>';
+                document.getElementById('adminListBody').innerHTML = '<tr><td colspan="5" style="text-align:center;color:red;">โหลดข้อมูลผิดพลาด</td></tr>';
             });
         }
 
@@ -414,11 +458,16 @@
             const tbody = document.getElementById('adminListBody');
             tbody.innerHTML = '';
             adminUsers.forEach((admin, index) => {
+                let roleBadge = admin.role === 'it' 
+                    ? '<span class="role-badge role-it-badge">IT Support</span>' 
+                    : '<span class="role-badge role-admin-badge">Admin</span>';
+
                 tbody.innerHTML += `
                     <tr>
-                        <td style="font-weight: 600; color: var(--theme-purple);">${admin.name} ${admin.role === 'it' ? '(ฝ่ายไอที)' : ''}</td>
+                        <td style="text-align: center; color: var(--text-muted); font-weight: bold;">${index + 1}</td>
+                        <td style="font-weight: 600; color: var(--theme-purple);">${admin.name}</td>
                         <td>${admin.id}</td>
-                        <td>${admin.pass}</td>
+                        <td>${roleBadge}</td>
                         <td style="text-align: center;">
                             <div class="action-btns">
                                 <button class="btn-edit" onclick="openEditModal(${index})">แก้ไข</button>
@@ -434,6 +483,7 @@
             const name = document.getElementById('newAdminName').value.trim();
             const id = document.getElementById('newAdminId').value.trim();
             const pass = document.getElementById('newAdminPass').value.trim();
+            const role = document.getElementById('newAdminRole').value;
             const btn = document.getElementById('btnAddAdmin');
 
             if(!name || !id || !pass) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
@@ -441,7 +491,7 @@
             btn.innerHTML = "กำลังเพิ่ม...";
             btn.disabled = true;
 
-            const newAdmin = { name: name, id: id, pass: pass, role: "admin" };
+            const newAdmin = { name: name, id: id, pass: pass, role: role };
 
             fetch(GAS_URL, { 
                 method: 'POST', 
@@ -482,15 +532,13 @@
             }
         }
 
-        // =====================================
-        // ระบบแก้ไข Admin (Modal)
-        // =====================================
         function openEditModal(index) {
             const admin = adminUsers[index];
             document.getElementById('editIndex').value = index;
             document.getElementById('editName').value = admin.name;
             document.getElementById('editId').value = admin.id;
             document.getElementById('editPass').value = admin.pass;
+            document.getElementById('editRole').value = admin.role || 'admin';
             document.getElementById('editModal').style.display = 'flex';
         }
 
@@ -503,6 +551,7 @@
             const name = document.getElementById('editName').value.trim();
             const id = document.getElementById('editId').value.trim();
             const pass = document.getElementById('editPass').value.trim();
+            const role = document.getElementById('editRole').value;
             const btn = document.getElementById('btnSubmitEdit');
 
             if(!name || !id || !pass) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
@@ -510,7 +559,7 @@
             btn.innerHTML = "กำลังบันทึก... ⏳";
             btn.disabled = true;
 
-            const updatedAdmin = { name: name, id: id, pass: pass };
+            const updatedAdmin = { name: name, id: id, pass: pass, role: role };
 
             fetch(GAS_URL, { 
                 method: 'POST', 
@@ -528,29 +577,6 @@
             })
             .catch(err => alert("เกิดข้อผิดพลาดในการเชื่อมต่อ"))
             .finally(() => { btn.innerHTML = "บันทึกการแก้ไข"; btn.disabled = false; });
-        }
-
-        // =====================================
-        // บันทึกการตั้งค่าระบบ
-        // =====================================
-        function saveSettings() {
-            const selectedPhase = document.querySelector('input[name="systemPhase"]:checked').value;
-            const regStatus = document.querySelector('input[name="regStatus"]:checked').value;
-            const activeYear = document.getElementById('activeYear').value;
-            const regDeadline = document.getElementById('regDeadline').value;
-
-            if(!activeYear || activeYear.length !== 4) return alert('กรุณากรอกปีการศึกษาเป็นตัวเลข 4 หลัก');
-            if(regStatus === 'open' && !regDeadline) return alert('กรุณาระบุวัน-เวลาสิ้นสุดการรับสมัคร');
-
-            localStorage.setItem('systemPhase', selectedPhase); 
-            localStorage.setItem('regStatus', regStatus); 
-            localStorage.setItem('activeYear', activeYear); 
-            localStorage.setItem('regDeadline', regDeadline); 
-            
-            // ลบ Maintenance Mode เพื่อความปลอดภัย
-            localStorage.removeItem('maintenanceMode');
-
-            alert('อัปเดตระบบสำเร็จ!\nระบบได้บันทึกการตั้งค่าทั้งหมดเรียบร้อยแล้ว');
         }
     </script>
 </body>
