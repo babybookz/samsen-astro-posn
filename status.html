@@ -4,284 +4,303 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ตรวจสอบสถานะ | Samsen Astro POSN</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --theme-purple: #311B5E; 
-            --theme-purple-light: #4A2B8C;
-            --theme-orange: #FF8F00; 
-            --theme-orange-hover: #E68100;
-            --bg-light: #F8F9FA;
-            --text-dark: #181C32;
-            --text-muted: #7E8299;
-            --danger: #F1416C;
-            --success: #50CD89;
-            --border-color: #E4E6EF;
-            --input-bg: #ffffff;
-            --border-radius: 12px;
-            --card-radius: 16px;
-            --box-shadow: 0px 10px 30px 0px rgba(49, 27, 94, 0.05);
+            --kt-body-bg: #F3F6F9;
+            --kt-text-dark: #181C32;
+            --kt-text-muted: #A1A5B7;
+            --kt-primary: #009EF7;
+            --kt-success: #50CD89;
+            --kt-warning: #FFC700;
+            --kt-danger: #F1416C;
+            --kt-border-color: #E4E6EF;
+            --kt-input-bg: #ffffff;
+            --kt-border-radius: 0.75rem;
+            --kt-card-radius: 1rem;
+            --kt-box-shadow: 0px 0px 20px 0px rgba(76, 87, 125, 0.1);
         }
 
-        body { font-family: 'Sarabun', sans-serif; background: var(--bg-light); margin: 0; color: var(--text-dark); overflow-x: hidden; }
-        
-        /* ================= HEADER & NAVIGATION ================= */
-        .navbar { background-color: var(--theme-purple); padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
-        .nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: white;}
-        .nav-brand img { height: 45px; width: auto; background: white; padding: 3px; border-radius: 8px;}
-        .nav-brand div { line-height: 1.1; }
-        .brand-title { font-weight: 700; font-size: 1.2rem; }
-        .brand-sub { font-size: 0.8rem; color: #D1C4E9; }
-
-        .nav-links { display: flex; gap: 25px; align-items: center; }
-        .nav-links a { color: white; text-decoration: none; font-weight: 500; font-size: 1rem; transition: color 0.3s; }
-        .nav-links a:hover { color: var(--theme-orange); }
-
-        /* ================= MAIN CONTAINER ================= */
-        .page-wrapper { display: flex; justify-content: center; padding: 50px 20px; }
-        .container { max-width: 800px; width: 100%; }
-
-        .header-title { text-align: center; margin-bottom: 40px; }
-        h2 { color: var(--theme-purple); margin: 0 0 10px 0; font-weight: 700; font-size: 2rem; letter-spacing: -0.5px; }
-
-        .search-card { background: #ffffff; padding: 30px; border-radius: var(--card-radius); box-shadow: var(--box-shadow); margin-bottom: 30px; border-top: 4px solid var(--theme-orange); }
-        .search-box { display: flex; gap: 15px; }
-        .search-box input { flex: 1; padding: 16px 20px; border: 2px solid var(--border-color); border-radius: 50px; font-size: 1.1rem; font-family: 'Sarabun', sans-serif; color: var(--text-dark); transition: all 0.3s ease; text-align: center; letter-spacing: 1px;}
-        .search-box input:focus { border-color: var(--theme-purple); outline: none; box-shadow: 0 0 0 3px rgba(49, 27, 94, 0.1);}
-        .search-box button { padding: 16px 35px; background: var(--theme-purple); color: white; border: none; border-radius: 50px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(49, 27, 94, 0.2); font-family: 'Sarabun'; }
-        .search-box button:hover:not(:disabled) { background: var(--theme-purple-light); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(49, 27, 94, 0.3);}
-        .search-box button:disabled { background: var(--text-muted); cursor: not-allowed; box-shadow: none; }
-
-        @media (max-width: 768px) { 
-            .search-box { flex-direction: column; } 
-            .search-box button { width: 100%; } 
-            .navbar { flex-direction: column; gap: 15px; padding: 15px;}
+        body { 
+            font-family: 'Sarabun', sans-serif; 
+            background: var(--kt-body-bg); 
+            display: flex; 
+            justify-content: center; 
+            padding: 40px 20px; 
+            margin: 0; 
         }
 
-        #resultWrapper { display: none; animation: fadeIn 0.5s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .container { 
+            max-width: 650px; 
+            width: 100%; 
+        }
+
+        /* หัวข้อหน้า */
+        .header-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h2 { 
+            color: var(--kt-text-dark); 
+            margin: 0 0 10px 0; 
+            font-weight: 700;
+            font-size: 1.8rem;
+        }
+
+        /* กล่องค้นหา */
+        .search-card {
+            background: #ffffff; 
+            padding: 25px; 
+            border-radius: var(--kt-card-radius); 
+            box-shadow: var(--kt-box-shadow); 
+            margin-bottom: 25px;
+        }
+
+        .search-box { 
+            display: flex; 
+            gap: 15px; 
+        }
+
+        .search-box input { 
+            flex: 1; 
+            padding: 14px 20px; 
+            border: 2px solid var(--kt-border-color); 
+            border-radius: var(--kt-border-radius); 
+            font-size: 1.05rem; 
+            font-family: 'Sarabun', sans-serif;
+            color: var(--kt-text-dark);
+            transition: all 0.2s ease;
+        }
+
+        .search-box input:focus {
+            border-color: var(--kt-primary);
+            outline: none;
+        }
+
+        .search-box button { 
+            padding: 14px 25px; 
+            background: var(--kt-primary); 
+            color: white; 
+            border: none; 
+            border-radius: var(--kt-border-radius); 
+            font-size: 1.05rem; 
+            font-weight: 700; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            box-shadow: 0 4px 14px 0 rgba(0, 158, 247, 0.2);
+        }
+
+        .search-box button:hover { 
+            background: #008BD9; 
+            transform: translateY(-2px);
+        }
+
+        /* ปรับกล่องค้นหาให้ซ้อนกันบนมือถือ */
+        @media (max-width: 500px) {
+            .search-box { flex-direction: column; }
+            .search-box button { width: 100%; }
+        }
+
+        /* พื้นที่แสดงผลลัพธ์ */
+        #resultContainer { display: none; }
         
-        /* สไตล์สำหรับกล่องใบสมัครที่โผล่มาหลายใบ */
-        .app-block { margin-bottom: 50px; padding: 30px 20px 20px; border: 2px solid var(--border-color); border-radius: var(--card-radius); position: relative; background: transparent; }
-        .app-badge { position: absolute; top: -15px; left: 20px; background: var(--theme-purple); color: white; padding: 5px 20px; border-radius: 50px; font-size: 0.95rem; font-weight: 700; box-shadow: 0 4px 10px rgba(0,0,0,0.1);}
-
-        .card { background: #ffffff; border-radius: 12px; box-shadow: var(--box-shadow); margin-bottom: 20px; overflow: hidden; border: 1px solid var(--border-color); }
-        .card-header { background: var(--bg-light); padding: 18px 25px; border-bottom: 1px solid var(--border-color); font-weight: 700; font-size: 1.15rem; color: var(--theme-purple); }
-        .card-body { padding: 30px; }
+        /* สไตล์ของการ์ดข้อมูล (Metronic Cards) */
+        .card { 
+            background: #ffffff; 
+            border-radius: var(--kt-card-radius); 
+            box-shadow: var(--kt-box-shadow); 
+            margin-bottom: 20px; 
+            overflow: hidden;
+        }
         
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 25px 20px; margin-bottom: 25px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-        @media (max-width: 600px) { .grid-2, .grid-3 { grid-template-columns: 1fr; gap: 20px; } }
+        .card-header {
+            background: #F9F9F9;
+            padding: 15px 25px;
+            border-bottom: 1px solid var(--kt-border-color);
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: var(--kt-text-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-        .data-item { display: flex; flex-direction: column; }
-        .label { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;}
-        .value { font-size: 1.1rem; font-weight: 600; color: var(--text-dark); }
+        .card-body {
+            padding: 25px;
+        }
         
-        .status-container { text-align: center; padding-top: 25px; margin-top: 15px; border-top: 1px dashed var(--border-color); }
-        .status-badge { display: inline-block; padding: 10px 25px; border-radius: 50px; font-weight: 700; font-size: 1.15rem; margin-top: 10px; }
-        .status-pass { background: #E8F5E9; color: #2E7D32; border: 1px solid #A5D6A7; }
-        .status-fail { background: #FFEBEE; color: #C62828; border: 1px solid #EF9A9A; }
-        .status-wait { background: #FFF8E1; color: #F57C00; border: 1px solid #FFE082; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 15px; margin-bottom: 20px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        
+        /* สลับเป็น 1 คอลัมน์เมื่อจอมือถือ */
+        @media (max-width: 500px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; gap: 15px; }
+        }
 
-        .note-text { color: var(--danger); font-size: 0.95rem; margin-top: 15px; font-weight: 500; background: #FFF5F8; padding: 10px; border-radius: 8px;}
+        .data-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .label { 
+            font-size: 0.9rem; 
+            color: var(--kt-text-muted); 
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+        
+        .value { 
+            font-size: 1.1rem; 
+            font-weight: 600; 
+            color: var(--kt-text-dark); 
+        }
+        
+        /* ป้ายสถานะ (Badges) */
+        .status-container {
+            text-align: center;
+            padding-top: 20px;
+            margin-top: 10px;
+            border-top: 1px dashed var(--kt-border-color);
+        }
 
-        .score-highlight { font-size: 1.8rem; font-weight: 700; color: var(--theme-orange); }
-        .rank-highlight { font-size: 1.5rem; font-weight: 700; color: var(--theme-purple); }
+        .status-badge { 
+            display: inline-block; 
+            padding: 8px 20px; 
+            border-radius: 50px; 
+            font-weight: 700; 
+            font-size: 1.1rem; 
+            margin-top: 10px; 
+        }
+        
+        /* สีสถานะต่างๆ */
+        .status-pass { background: #E8FFF3; color: var(--kt-success); border: 1px solid var(--kt-success); }
+        .status-fail { background: #FFF5F8; color: var(--kt-danger); border: 1px solid var(--kt-danger); }
+        .status-wait { background: #FFF8DD; color: var(--kt-warning); border: 1px solid var(--kt-warning); }
+
+        .back-link { 
+            display: block; 
+            text-align: center; 
+            margin-top: 30px; 
+            color: var(--kt-text-muted); 
+            text-decoration: none; 
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+        
+        .back-link:hover { color: var(--kt-primary); }
     </style>
 </head>
 <body>
-
-    <nav class="navbar">
-        <a href="home.html" class="nav-brand">
-            <img src="assets/samsen-emblem.png" alt="Samsen Logo">
-            <div>
-                <div class="brand-title">SAMSEN ASTRO</div>
-                <div class="brand-sub">POSN System</div>
-            </div>
-        </a>
-        <div class="nav-links">
-            <a href="home.html">หน้าแรก</a>
-            <a href="register.html">สมัครสอบ</a>
-            <a href="#">ติดต่อเรา</a>
+    <div class="container">
+        <div class="header-title">
+            <h2>🔍 ตรวจสอบสถานะการสมัครสอบ</h2>
+            <span style="color: #A1A5B7; font-weight: 500;">ระบบแสดงผลตามช่วงเวลาที่ศูนย์สอบกำหนด</span>
         </div>
-    </nav>
-
-    <div class="page-wrapper">
-        <div class="container">
-            <div class="header-title">
-                <h2>ตรวจสอบสถานะการสมัครสอบ</h2>
-                <span style="color: #7E8299; font-weight: 500; font-size: 1.1rem;">ค้นหาด้วยเลขประจำตัวประชาชน (หากมีหลายใบสมัคร ระบบจะแสดงทั้งหมด)</span>
+        
+        <div class="search-card">
+            <div class="search-box">
+                <input type="text" id="searchId" placeholder="กรอกเลขประจำตัวประชาชน 13 หลัก" maxlength="13">
+                <button onclick="checkStatus()">ค้นหาข้อมูล</button>
             </div>
+        </div>
+
+        <div id="resultContainer">
             
-            <div class="search-card">
-                <div class="search-box">
-                    <input type="text" id="searchId" placeholder="กรอกเลขประจำตัวประชาชน 13 หลัก" maxlength="13" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                    <button id="searchBtn" onclick="checkStatus()">ค้นหาข้อมูล</button>
+            <div class="card">
+                <div class="card-header">👤 ส่วนที่ 1: ข้อมูลการสมัครและสถานะ</div>
+                <div class="card-body">
+                    <div class="grid-2">
+                        <div class="data-item"><span class="label">ชื่อ</span><span class="value" id="resName">-</span></div>
+                        <div class="data-item"><span class="label">สกุล</span><span class="value" id="resLastname">-</span></div>
+                        <div class="data-item"><span class="label">ระดับชั้น</span><span class="value" id="resGrade">-</span></div>
+                        <div class="data-item"><span class="label">โรงเรียน</span><span class="value" id="resSchool">-</span></div>
+                        <div class="data-item" style="grid-column: 1 / -1;"><span class="label">จังหวัด</span><span class="value" id="resProvince">-</span></div>
+                    </div>
+                    
+                    <div class="status-container">
+                        <span class="label">สถานะการสมัคร</span><br>
+                        <div id="resStatus" class="status-badge status-wait">รอการตรวจสอบ</div>
+                    </div>
                 </div>
             </div>
 
-            <div id="resultWrapper"></div>
-            
+            <div class="card">
+                <div class="card-header">🏫 ส่วนที่ 2: รายละเอียดการสอบ</div>
+                <div class="card-body">
+                    <div class="grid-3">
+                        <div class="data-item"><span class="label">เลขประจำตัวสอบ</span><span class="value" id="resExamId">-</span></div>
+                        <div class="data-item"><span class="label">ห้องสอบ</span><span class="value" id="resRoom">-</span></div>
+                        <div class="data-item"><span class="label">ลำดับที่</span><span class="value" id="resSeat">-</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">📊 ส่วนที่ 3: ผลการสอบ</div>
+                <div class="card-body">
+                    <div class="grid-2">
+                        <div class="data-item"><span class="label">เลขประจำตัวสอบ</span><span class="value" id="resExamId2">-</span></div>
+                        <div class="data-item">
+                            <span class="label">คะแนนที่ได้</span>
+                            <span class="value" id="resScore" style="font-size: 1.5rem; font-weight: 700;">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
+
+        <a href="home.html" class="back-link">⬅️ กลับหน้าเมนูหลัก</a>
     </div>
 
     <script>
-        // ⚠️ นำ Web App URL อันใหม่ที่ Deploy เสร็จแล้วมาใส่ตรงนี้
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec";
-
-        // โหลดปีการศึกษาปัจจุบัน
-        const activeYear = localStorage.getItem('activeYear') || new Date().getFullYear() + 543;
-
         function checkStatus() {
             const searchId = document.getElementById('searchId').value;
-            const btn = document.getElementById('searchBtn');
-
-            if(searchId.length !== 13) {
+            if(searchId.length < 13) {
                 alert("กรุณากรอกเลขประจำตัวประชาชนให้ครบ 13 หลัก");
                 return;
             }
 
-            btn.innerHTML = "กำลังค้นหาข้อมูล... ⏳";
-            btn.disabled = true;
-            document.getElementById('resultWrapper').style.display = 'none';
-
-            fetch(GAS_URL, {
-                method: 'POST',
-                body: JSON.stringify({
-                    action: 'checkStatus',
-                    idCard: searchId,
-                    activeYear: activeYear 
-                })
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 'success') {
-                    // ส่งข้อมูลที่เป็น Array ไปให้ฟังก์ชันวาด HTML
-                    displayMultipleData(result.data);
-                } else {
-                    alert("❌ " + result.message);
-                }
-            })
-            .catch(error => {
-                alert("❌ เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
-                console.error(error);
-            })
-            .finally(() => {
-                btn.innerHTML = "ค้นหาข้อมูล";
-                btn.disabled = false;
-            });
-        }
-
-        // ฟังก์ชันใหม่ วนลูปวาดกล่องใบสมัคร
-        function displayMultipleData(appsData) {
+            // 1. อ่านค่าจากหน้า Admin (ถ้าไม่ได้ตั้งค่าไว้ ให้ถือว่าเป็นเฟส 1)
             const currentPhase = localStorage.getItem('systemPhase') || '1';
-            const wrapper = document.getElementById('resultWrapper');
-            wrapper.innerHTML = ''; // เคลียร์ของเก่าทิ้งก่อน
+
+            // แสดงกล่องผลลัพธ์หลัก
+            document.getElementById('resultContainer').style.display = 'block';
+
+            // === ส่วน A: แสดงเสมอ (ข้อมูลการสมัคร) ===
+            document.getElementById('resName').innerText = "เด็กชายดาราศาสตร์";
+            document.getElementById('resLastname').innerText = "รักเรียน";
+            document.getElementById('resGrade').innerText = "ม.4";
+            document.getElementById('resSchool').innerText = "สามเสนวิทยาลัย";
+            document.getElementById('resProvince').innerText = "กรุงเทพมหานคร";
             
-            // วนลูปดึงข้อมูลทีละใบ
-            appsData.forEach((data, index) => {
-                
-                // === จัดการเงื่อนไขและสีของสถานะ ===
-                let statusText, statusClass, noteHtml = '';
-                if (data.applyStatus === 'pass') {
-                    statusText = "ผ่านเกณฑ์ มีสิทธิ์สอบ";
-                    statusClass = "status-pass";
-                } else if (data.applyStatus === 'fail') {
-                    statusText = "ไม่ผ่านเกณฑ์การสมัคร";
-                    statusClass = "status-fail";
-                    noteHtml = `<div class="note-text">หมายเหตุจากกรรมการ: ${data.note || "กรุณาสมัครใหม่และแก้ไขข้อมูลให้ถูกต้อง"}</div>`;
-                } else {
-                    statusText = "อยู่ระหว่างรอการตรวจสอบ";
-                    statusClass = "status-wait";
-                }
+            const statusElem = document.getElementById('resStatus');
+            statusElem.innerText = "ผ่านเกณฑ์ มีสิทธิ์สอบ";
+            statusElem.className = "status-badge status-pass"; 
+            // ตัวอย่าง: ถ้าไม่ผ่านให้เปลี่ยนคลาสเป็น "status-badge status-fail"
 
-                // === จัดการเงื่อนไขเฟส 2 (ห้องสอบ) ===
-                let examIdText = "-", roomText = "-", seatText = "-";
-                if (currentPhase >= 2 && data.applyStatus === 'pass') {
-                    examIdText = data.examId || "รอประกาศ";
-                    roomText = data.room || "รอประกาศ";
-                    seatText = data.seat || "-";
-                } else if (data.applyStatus === 'pass') {
-                    examIdText = "รอประกาศ";
-                    roomText = "รอประกาศ";
-                }
+            // === ส่วน B: ห้องสอบ (แสดงเมื่ออยู่เฟส 2 ขึ้นไป) ===
+            if (currentPhase >= 2) {
+                document.getElementById('resExamId').innerText = "69001";
+                document.getElementById('resRoom').innerText = "อาคาร 2 ห้อง 205";
+                document.getElementById('resSeat').innerText = "15";
+            } else {
+                document.getElementById('resExamId').innerText = "รอประกาศ";
+                document.getElementById('resRoom').innerText = "รอประกาศ";
+                document.getElementById('resSeat').innerText = "-";
+            }
 
-                // === จัดการเงื่อนไขเฟส 3 (คะแนนและอันดับ) ===
-                let examId2Text = "-", scoreText = "-", rankText = "-", scoreColor = "var(--text-muted)";
-                if (currentPhase == 3 && data.applyStatus === 'pass') {
-                    examId2Text = data.examId || "รอประกาศ";
-                    scoreText = data.score || "รอประกาศ";
-                    rankText = data.rank ? `${data.rank} / ${data.totalExaminees}` : "รอประกาศ";
-                    scoreColor = data.score ? "var(--theme-orange)" : "var(--text-muted)";
-                } else if (data.applyStatus === 'pass') {
-                    examId2Text = "รอประกาศ";
-                    scoreText = "รอประกาศ";
-                }
-
-                // === สร้างก้อน HTML สำหรับใบสมัคร 1 ใบ ===
-                const appHtml = `
-                    <div class="app-block">
-                        <div class="app-badge">ใบสมัครที่ ${index + 1} (ส่งข้อมูลเมื่อ: ${data.time || '-'})</div>
-                        
-                        <div class="card">
-                            <div class="card-header">ส่วนที่ 1: ข้อมูลการสมัครและสถานะอนุมัติ</div>
-                            <div class="card-body">
-                                <div class="grid-3">
-                                    <div class="data-item"><span class="label">ระดับที่สมัคร</span><span class="value" style="color: var(--theme-orange);">${data.applyLevel || '-'}</span></div>
-                                    <div class="data-item"><span class="label">ชื่อ</span><span class="value">${data.name || '-'}</span></div>
-                                    <div class="data-item"><span class="label">นามสกุล</span><span class="value">${data.lastname || '-'}</span></div>
-                                </div>
-                                <div class="grid-3" style="margin-top: 25px;">
-                                    <div class="data-item"><span class="label">ระดับชั้นปัจจุบัน</span><span class="value">${data.grade || '-'}</span></div>
-                                    <div class="data-item"><span class="label">โรงเรียน</span><span class="value">${data.school || '-'}</span></div>
-                                    <div class="data-item"><span class="label">จังหวัด</span><span class="value">${data.province || '-'}</span></div>
-                                </div>
-                                
-                                <div class="status-container">
-                                    <span class="label">สถานะการตรวจสอบสิทธิ์</span><br>
-                                    <div class="status-badge ${statusClass}">${statusText}</div>
-                                    ${noteHtml}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-header">ส่วนที่ 2: ข้อมูลที่นั่งสอบ</div>
-                            <div class="card-body">
-                                <div class="grid-3">
-                                    <div class="data-item"><span class="label">เลขประจำตัวสอบ</span><span class="value">${examIdText}</span></div>
-                                    <div class="data-item"><span class="label">อาคาร / ห้องสอบ</span><span class="value">${roomText}</span></div>
-                                    <div class="data-item"><span class="label">ลำดับที่นั่ง</span><span class="value">${seatText}</span></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-header">ส่วนที่ 3: ผลการสอบคัดเลือก</div>
-                            <div class="card-body">
-                                <div class="grid-3">
-                                    <div class="data-item"><span class="label">เลขประจำตัวสอบ</span><span class="value" style="font-size: 1.2rem;">${examId2Text}</span></div>
-                                    <div class="data-item">
-                                        <span class="label">คะแนนที่ได้</span>
-                                        <span class="value score-highlight" style="color: ${scoreColor};">${scoreText}</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="label">อันดับที่ (Rank)</span>
-                                        <span class="value rank-highlight">${rankText}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                // นำ HTML ที่จัดเตรียมไว้ไปแปะต่อท้ายใน wrapper
-                wrapper.innerHTML += appHtml;
-            });
-            
-            // แสดงกล่องผลลัพธ์ทั้งหมด
-            wrapper.style.display = 'block';
+            // === ส่วน C: คะแนน (แสดงเมื่ออยู่เฟส 3 เท่านั้น) ===
+            if (currentPhase == 3) {
+                document.getElementById('resExamId2').innerText = "69001";
+                document.getElementById('resScore').innerText = "85";
+                document.getElementById('resScore').style.color = "#009EF7"; // สีฟ้า Metronic
+            } else {
+                document.getElementById('resExamId2').innerText = "รอประกาศ";
+                document.getElementById('resScore').innerText = "รอประกาศ";
+                document.getElementById('resScore').style.color = "#A1A5B7"; // สีเทา Metronic
+            }
         }
     </script>
 </body>
