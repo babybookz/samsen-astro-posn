@@ -39,6 +39,24 @@
         }
     </script>
 
+    <script>
+        const regStatus = localStorage.getItem('regStatus');
+        const regDeadline = localStorage.getItem('regDeadline');
+        let isTimeOut = false;
+        
+        if(regDeadline) {
+            const countDownDate = new Date(regDeadline).getTime();
+            const now = new Date().getTime();
+            if (now > countDownDate) isTimeOut = true;
+        }
+
+        // หากแอดมินปิดระบบ หรือ หมดเวลาไปแล้ว ให้เด้งกลับหน้า Home
+        if (regStatus === 'closed' || isTimeOut) {
+            alert('⛔ ขณะนี้ระบบไม่ได้เปิดรับสมัคร หรือ หมดเวลาการรับสมัครไปแล้วครับ');
+            window.location.replace('home.html'); 
+        }
+    </script>
+
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -299,6 +317,36 @@
             accent-color: var(--theme-orange); 
         }
 
+        /* กล่องข้อตกลง PDPA */
+        .pdpa-box {
+            background-color: #FFF5F8;
+            border: 1px solid #FFCDD2;
+            padding: 20px;
+            border-radius: var(--input-radius);
+            margin-top: 30px;
+        }
+        .pdpa-box p {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            margin-top: 0;
+            line-height: 1.5;
+        }
+        .pdpa-checkbox-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-weight: 600;
+            color: var(--danger);
+            cursor: pointer;
+            margin-bottom: 0;
+        }
+        .pdpa-checkbox-label input[type="checkbox"] {
+            margin-top: 3px;
+            transform: scale(1.3);
+            accent-color: var(--danger);
+            cursor: pointer;
+        }
+
         /* ปุ่ม Submit */
         button[type="submit"] { 
             width: 100%; 
@@ -310,7 +358,7 @@
             font-size: 1.2rem; 
             cursor: pointer; 
             font-weight: 700; 
-            margin-top: 40px; 
+            margin-top: 30px; 
             transition: all 0.3s ease; 
             box-shadow: 0 5px 15px rgba(255, 143, 0, 0.3); 
             font-family: 'Sarabun'; 
@@ -324,6 +372,7 @@
             background: var(--text-muted); 
             box-shadow: none; 
             cursor: not-allowed; 
+            transform: none;
         }
     </style>
 </head>
@@ -349,6 +398,7 @@
             <a href="manage_applicants.html" class="role-admin role-it" style="display: none; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 20px; color: var(--success);">จัดการผู้สมัคร</a>
             <a href="manage_exam.html" class="role-admin role-it" style="display: none; color: var(--success);">จัดห้องสอบ</a>
             <a href="manage_score.html" class="role-admin role-it" style="display: none; color: var(--success);">บันทึกคะแนน</a>
+            <a href="it.html" class="role-it" style="display: none; color: var(--success);">ตั้งค่าระบบ</a>
         </div>
 
         <div class="nav-profile" id="profileForm">
@@ -550,7 +600,16 @@
                     <input type="file" id="paymentSlip" accept="image/*" required style="padding: 10px; background: #F9F9F9;">
                 </div>
 
-                <button type="submit" id="submitBtn">ยืนยันการส่งข้อมูลสมัครสอบ</button>
+                <div class="pdpa-box">
+                    <p><b>ข้อตกลงการเก็บรวบรวมข้อมูลส่วนบุคคล (PDPA)</b><br>
+                    ข้าพเจ้ายินยอมให้ศูนย์สอบโอลิมปิกวิชาการ สอวน. วิชาดาราศาสตร์ โรงเรียนสามเสนวิทยาลัย เก็บรวบรวม ใช้ และเปิดเผยข้อมูลส่วนบุคคลที่ข้าพเจ้าได้กรอกไว้ในแบบฟอร์มนี้ เพื่อวัตถุประสงค์ในการดำเนินการสมัครสอบ การประกาศผลสอบ และการติดต่อประสานงานที่เกี่ยวข้องกับการสอบเท่านั้น</p>
+                    <label class="pdpa-checkbox-label">
+                        <input type="checkbox" id="pdpaConsent" onchange="toggleSubmitBtn()">
+                        ข้าพเจ้าได้อ่านและยอมรับข้อตกลงการใช้ข้อมูลส่วนบุคคลดังกล่าว
+                    </label>
+                </div>
+
+                <button type="submit" id="submitBtn" disabled>ยืนยันการส่งข้อมูลสมัครสอบ</button>
             </form>
         </div>
     </div>
@@ -566,7 +625,6 @@
         window.onload = function() {
             document.getElementById('displayYearBadge').innerText = `ประจำปีการศึกษา ${activeYearTh}`;
 
-            // โชว์เมนูแอดมินถ้าคนที่ล็อกอินอยู่เป็นแอดมิน
             const currentRole = localStorage.getItem('userRole') || 'guest';
             const currentName = localStorage.getItem('userName') || '';
             const showAdmin = (currentRole === 'admin' || currentRole === 'it');
@@ -593,9 +651,14 @@
             document.querySelectorAll('.role-admin').forEach(el => {
                 if(el.tagName.toLowerCase() === 'a') el.style.display = showAdmin ? 'inline-block' : 'none';
             });
+            
+            if(currentRole === 'it') {
+                document.querySelectorAll('.role-it').forEach(el => {
+                    if(el.tagName.toLowerCase() === 'a') el.style.display = 'inline-block';
+                });
+            }
         };
 
-        // ฟังก์ชันสำหรับปุ่มออกจากระบบ (Logout)
         function handleLogout() { 
             localStorage.removeItem('userRole'); 
             localStorage.removeItem('userName'); 
@@ -613,7 +676,6 @@
             input.value = val;
         }
 
-        // ดักจับคำนำหน้าในช่อง "ชื่อ"
         function checkPrefixInName(nameStr) {
             const invalidPrefixes = ["เด็กชาย", "ด.ช.", "ดช", "เด็กหญิง", "ด.ญ.", "ดญ", "นาย", "นางสาว", "น.ส.", "นส", "นาง"];
             for(let i=0; i<invalidPrefixes.length; i++){
@@ -624,8 +686,22 @@
             return null; 
         }
 
+        // 🌟 ฟังก์ชันสำหรับเปิด/ปิดปุ่ม Submit ตามการกด Checkbox PDPA
+        function toggleSubmitBtn() {
+            const pdpaChecked = document.getElementById('pdpaConsent').checked;
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = !pdpaChecked;
+        }
+
         document.getElementById('registerForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            // เช็คอีกรอบเพื่อความชัวร์ว่ากดยอมรับ PDPA แล้ว
+            if(!document.getElementById('pdpaConsent').checked) {
+                alert("กรุณากดยอมรับข้อตกลง PDPA ก่อนดำเนินการต่อ");
+                return;
+            }
+
             const btn = document.getElementById('submitBtn');
             btn.innerHTML = "กำลังตรวจสอบข้อมูล... ⏳";
             btn.disabled = true;
@@ -638,13 +714,11 @@
                 btn.disabled = false;
             };
 
-            // ดักจับการใส่คำนำหน้าในช่องชื่อ
             const foundPrefix = checkPrefixInName(firstNameStr);
             if(foundPrefix) {
                 return rejectApplication(`ข้อผิดพลาด: กรุณาลบคำว่า "${foundPrefix}" ออกจากช่อง "ชื่อ"\nเนื่องจากมีให้ระบุในช่อง "คำนำหน้าชื่อ" แล้ว`);
             }
 
-            // คำนวณอายุโดยอิงตาม "ปีการศึกษา" ที่ตั้งไว้ (1 มกราคม ของปีที่จัดสอบ)
             const birthDateValue = document.getElementById('birthDate').value;
             const applyLevel = document.querySelector('input[name="applyLevel"]:checked').value;
             const grade = document.getElementById('grade').value;
@@ -658,7 +732,6 @@
                 age--;
             }
 
-            // ตรวจสอบเงื่อนไขตามธรรมนูญการแข่งขัน
             if (age < 13) {
                 return rejectApplication(`คุณสมบัติไม่ผ่านเกณฑ์: ผู้เข้าแข่งขันต้องมีอายุไม่ต่ำกว่า 13 ปีบริบูรณ์\n(นับถึงวันที่ 1 ม.ค. ${activeYearEn} อายุของคุณคือ ${Math.max(0, age)} ปี)`);
             }
@@ -679,7 +752,6 @@
                 }
             }
 
-            // ดำเนินการแปลงไฟล์และส่งข้อมูล
             btn.innerHTML = "กำลังแปลงไฟล์และอัปโหลดข้อมูล... ⏳";
             const fileInput = document.getElementById('paymentSlip');
             const file = fileInput.files[0];
@@ -700,7 +772,7 @@
 
             function sendData(base64Str, mimeType, fileName) {
                 const data = {
-                    activeYear: activeYearTh, // ส่งปีการศึกษาไปด้วยเพื่อเซฟลงโฟลเดอร์ให้ถูกปี
+                    activeYear: activeYearTh, 
                     prefix: document.getElementById('prefix').value,
                     firstName: document.getElementById('firstName').value,
                     lastName: document.getElementById('lastName').value,
