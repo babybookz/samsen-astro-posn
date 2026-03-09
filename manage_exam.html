@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>จัดการข้อมูลการสอบ | Samsen Astro POSN</title>
-    
+    <title>จัดห้องสอบและเช็คชื่อ | Samsen Astro POSN</title>
     
     <script>
         const currentRole = localStorage.getItem('userRole');
@@ -17,7 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Theme Colors (Match with Home) */
+            /* Theme Colors */
             --theme-purple: #311B5E; 
             --theme-purple-light: #4A2B8C;
             --theme-orange: #FF8F00; 
@@ -28,7 +27,6 @@
             --danger: #F1416C;
             --success: #50CD89;
             --border-color: #E4E6EF;
-            --input-bg: #ffffff;
             --border-radius: 12px;
             --box-shadow: 0px 10px 30px 0px rgba(49, 27, 94, 0.05);
         }
@@ -83,9 +81,12 @@
 
         .exam-id-badge { background: var(--bg-light); color: var(--theme-purple); border: 1px solid var(--border-color); font-family: monospace; font-size: 1.15rem; padding: 6px 12px; border-radius: 8px; font-weight: 700; letter-spacing: 1px; display: inline-block;}
 
-        .inline-input { width: 100%; padding: 10px 15px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Sarabun'; font-size: 1rem; box-sizing: border-box; transition: all 0.3s ease; background: var(--bg-light); color: var(--text-dark);}
-        .inline-input:focus { border-color: var(--theme-orange); outline: none; background: white; box-shadow: 0 0 0 3px rgba(255, 143, 0, 0.15); }
-        .input-score { width: 120px; text-align: center; font-weight: 700; color: var(--theme-purple); font-size: 1.15rem;}
+        .inline-input, .inline-select { width: 100%; padding: 10px 15px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Sarabun'; font-size: 1rem; box-sizing: border-box; transition: all 0.3s ease; background: var(--bg-light); color: var(--text-dark);}
+        .inline-input:focus, .inline-select:focus { border-color: var(--theme-orange); outline: none; background: white; box-shadow: 0 0 0 3px rgba(255, 143, 0, 0.15); }
+        
+        /* สไตล์สีของ Dropdown สถานะเข้าสอบ */
+        .status-present { color: var(--success); font-weight: 700; background: #E8F5E9; border-color: #A5D6A7;}
+        .status-absent { color: var(--danger); font-weight: 700; background: #FFEBEE; border-color: #EF9A9A;}
 
         .empty-state { text-align: center; padding: 60px; color: var(--text-muted); font-size: 1.2rem; }
         .loading-box { text-align: center; padding: 60px; font-size: 1.2rem; color: var(--theme-purple); font-weight: 700;}
@@ -111,8 +112,9 @@
         </a>
         <div class="nav-links">
             <a href="home.html">หน้าแรก</a>
-            <a href="manage_applicants.html">ระบบตรวจสอบสิทธิ์</a>
-            <a href="manage_exam.html" style="color: var(--theme-orange); font-weight: 700;">จัดการคะแนน</a>
+            <a href="manage_applicants.html">จัดการผู้สมัคร</a>
+            <a href="manage_exam.html" style="color: var(--theme-orange); font-weight: 700;">จัดห้องสอบ</a>
+            <a href="manage_score.html">บันทึกคะแนน</a>
         </div>
     </nav>
 
@@ -120,8 +122,8 @@
         <div class="container">
             <div class="header-title">
                 <div>
-                    <h2>ระบบจัดการห้องสอบและบันทึกคะแนน</h2>
-                    <p class="subtitle" id="pageSubtitle">บันทึกข้อมูลสำหรับผู้ที่มีสิทธิ์สอบ (กำลังโหลด...)</p>
+                    <h2>ระบบจัดห้องสอบและเช็คชื่อเข้าสอบ</h2>
+                    <p class="subtitle" id="pageSubtitle">บันทึกข้อมูลอาคาร ห้องสอบ และสถานะการมาสอบ (กำลังโหลด...)</p>
                 </div>
             </div>
 
@@ -158,7 +160,7 @@
                             <th>โรงเรียน</th>
                             <th style="width: 250px;">อาคาร / ห้องสอบ</th>
                             <th style="width: 150px;">ลำดับที่นั่ง</th>
-                            <th style="width: 150px;">คะแนนสอบ</th>
+                            <th style="width: 200px; text-align: center;">สถานะเข้าสอบ</th>
                         </tr>
                     </thead>
                     <tbody id="examTableBody">
@@ -178,12 +180,11 @@
         let currentLevel = 'ม.ต้น'; 
         let activeYear = localStorage.getItem('activeYear') || new Date().getFullYear() + 543;
 
-        // ตัวแปรสำหรับ Pagination
         let currentPage = 1;
         let rowsPerPage = 50;
 
         window.onload = function() {
-            document.getElementById('pageSubtitle').innerText = `ประจำปีการศึกษา ${activeYear}`;
+            document.getElementById('pageSubtitle').innerText = `บันทึกข้อมูลอาคาร ห้องสอบ และสถานะการมาสอบ (ปีการศึกษา ${activeYear})`;
             fetchDataFromSheet();
         };
 
@@ -227,7 +228,6 @@
             });
         }
 
-        // ================= Pagination Functions =================
         function changeRowsPerPage() {
             let val = document.getElementById('rowsPerPage').value;
             rowsPerPage = (val === 'all') ? filteredData.length : parseInt(val);
@@ -243,7 +243,13 @@
             let totalPages = Math.ceil(filteredData.length / rowsPerPage);
             if (currentPage < totalPages) { currentPage++; renderTable(); }
         }
-        // =======================================================
+
+        // ฟังก์ชันเปลี่ยนสี Dropdown อัตโนมัติเมื่อเลือกสถานะ
+        function changeStatusColor(selectElement) {
+            selectElement.className = "inline-select"; // รีเซ็ตคลาส
+            if(selectElement.value === 'present') selectElement.classList.add('status-present');
+            if(selectElement.value === 'absent') selectElement.classList.add('status-absent');
+        }
 
         function renderTable() {
             const tbody = document.getElementById('examTableBody');
@@ -267,13 +273,24 @@
             let displayData = filteredData.slice(startIdx, endIdx);
 
             displayData.forEach(app => {
+                let att = app.attendance || 'wait';
+                let selectClass = "inline-select";
+                if(att === 'present') selectClass += " status-present";
+                if(att === 'absent') selectClass += " status-absent";
+
                 let row = `<tr>
                     <td><span class="exam-id-badge">${app.examId}</span></td>
                     <td style="font-weight: 600;">${app.prefix}${app.fname} ${app.lname}</td>
                     <td>${app.school}</td>
                     <td><input type="text" id="room_${app.idCard}" class="inline-input" placeholder="ระบุห้องสอบ" value="${app.room}"></td>
                     <td><input type="text" id="seat_${app.idCard}" class="inline-input" placeholder="ระบุเลขที่นั่ง" value="${app.seat}"></td>
-                    <td><input type="number" id="score_${app.idCard}" class="inline-input input-score" placeholder="คะแนน" value="${app.score}"></td>
+                    <td style="text-align: center;">
+                        <select id="att_${app.idCard}" class="${selectClass}" onchange="changeStatusColor(this)">
+                            <option value="wait" ${att === 'wait' ? 'selected' : ''}>-- รอยืนยัน --</option>
+                            <option value="present" ${att === 'present' ? 'selected' : ''}>มาสอบ</option>
+                            <option value="absent" ${att === 'absent' ? 'selected' : ''}>ขาดสอบ</option>
+                        </select>
+                    </td>
                 </tr>`;
                 tbody.innerHTML += row;
             });
@@ -293,13 +310,13 @@
             displayData.forEach(app => {
                 const roomVal = document.getElementById(`room_${app.idCard}`).value;
                 const seatVal = document.getElementById(`seat_${app.idCard}`).value;
-                const scoreVal = document.getElementById(`score_${app.idCard}`).value;
+                const attVal = document.getElementById(`att_${app.idCard}`).value;
 
                 updatesPayload.push({
                     rowIndex: app.rowIndex, 
                     room: roomVal,
                     seat: seatVal,
-                    score: scoreVal
+                    attendance: attVal
                 });
             });
 

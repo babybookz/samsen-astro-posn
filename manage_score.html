@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>บันทึกคะแนนสอบ | Samsen Astro POSN</title>
+    
+    <script>
+        const currentRole = localStorage.getItem('userRole');
+        const currentUserName = localStorage.getItem('userName') || 'Admin';
+        if (currentRole !== 'admin' && currentRole !== 'it') {
+            alert('ไม่อนุญาตให้เข้าถึง'); window.location.replace('home.html');
+        }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* สไตล์หลักเหมือนหน้าอื่นๆ */
+        body { font-family: 'Sarabun', sans-serif; background: #F8F9FA; margin: 0; color: #181C32; }
+        .navbar { background-color: #311B5E; padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; }
+        .nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: white;}
+        .nav-brand img { height: 45px; background: white; padding: 3px; border-radius: 8px;}
+        .nav-links { display: flex; gap: 25px; align-items: center; }
+        .nav-links a { color: white; text-decoration: none; font-weight: 500; font-size: 1rem; }
+        .nav-links a:hover { color: #FF8F00; }
+        
+        .container { background: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0px 10px 30px rgba(0,0,0,0.05); max-width: 1200px; margin: 40px auto; border-top: 5px solid #50CD89;}
+        .header-title { border-bottom: 2px solid #E4E6EF; padding-bottom: 20px; margin-bottom: 30px; }
+        h2 { color: #311B5E; margin: 0; font-size: 1.8rem; font-weight: 700; }
+        .subtitle { color: #7E8299; font-size: 1.05rem; margin: 5px 0 0 0; }
+        
+        .tabs { display: flex; justify-content: space-between; margin-bottom: 25px; }
+        .tab-btn { padding: 12px 30px; border: 1px solid #E4E6EF; background: #F8F9FA; color: #7E8299; font-size: 1.1rem; font-weight: 700; border-radius: 50px; cursor: pointer; font-family: 'Sarabun'; }
+        .tab-btn.active { background: #311B5E; color: white; border-color: #311B5E; }
+        
+        .btn-save-all { padding: 14px 30px; background: #50CD89; color: white; border: none; border-radius: 50px; font-size: 1.1rem; font-weight: 700; cursor: pointer; font-family: 'Sarabun';}
+        .btn-save-all:hover { background: #47BE7D; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px;}
+        th { background: #311B5E; color: white; padding: 15px; text-align: left; }
+        td { padding: 15px; border-bottom: 1px dashed #E4E6EF; vertical-align: middle; }
+        
+        .inline-input { width: 120px; padding: 12px; border: 2px solid #E4E6EF; border-radius: 8px; font-family: 'Sarabun'; font-size: 1.2rem; font-weight: 700; color: #311B5E; text-align: center; background: #F8F9FA;}
+        .inline-input:focus { border-color: #50CD89; outline: none; background: white;}
+        .exam-id-badge { background: #F8F9FA; color: #311B5E; font-family: monospace; font-size: 1.2rem; padding: 5px 10px; border-radius: 6px; font-weight: 700; }
+        .recorder-name { font-size: 0.85rem; color: #A1A5B7; display: block; margin-top: 5px; font-weight: 600;}
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="home.html" class="nav-brand">
+            <img src="assets/samsen-emblem.png" alt="Samsen Logo">
+            <div><div style="font-weight: 700; font-size: 1.2rem;">SAMSEN ASTRO</div><div style="font-size: 0.8rem; color: #D1C4E9;">POSN System</div></div>
+        </a>
+        <div class="nav-links">
+            <a href="home.html">หน้าแรก</a>
+            <a href="manage_applicants.html">จัดการผู้สมัคร</a>
+            <a href="manage_exam.html">จัดห้องสอบ</a>
+            <a href="manage_score.html" style="color: #FF8F00; font-weight: 700;">บันทึกคะแนน</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header-title">
+            <h2>ระบบบันทึกคะแนนสอบคัดเลือก</h2>
+            <p class="subtitle">ระบบจะแสดงรายชื่อเฉพาะนักเรียนที่มีสถานะ "✅ มาสอบ" เท่านั้น</p>
+        </div>
+
+        <div class="tabs">
+            <div style="display:flex; gap:10px;">
+                <button class="tab-btn active" id="tab-m-ton" onclick="switchTab('ม.ต้น')">มัธยมศึกษาตอนต้น</button>
+                <button class="tab-btn" id="tab-m-plai" onclick="switchTab('ม.ปลาย')">มัธยมศึกษาตอนปลาย</button>
+            </div>
+            <button class="btn-save-all" id="btnSaveAll" onclick="saveScoreData()">บันทึกคะแนนทั้งหมด</button>
+        </div>
+
+        <table id="scoreTable">
+            <thead>
+                <tr>
+                    <th style="width: 150px;">เลขประจำตัวสอบ</th>
+                    <th>ชื่อ - นามสกุล</th>
+                    <th>ที่นั่งสอบ</th>
+                    <th style="width: 150px; text-align: center;">คะแนนที่ได้</th>
+                    <th style="width: 180px;">ผู้บันทึกคะแนน</th>
+                </tr>
+            </thead>
+            <tbody id="scoreTableBody">
+                <tr><td colspan="5" style="text-align: center; padding: 40px;">กำลังโหลดข้อมูล... ⏳</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec";
+        let filteredData = []; 
+        let currentLevel = 'ม.ต้น'; 
+        let activeYear = localStorage.getItem('activeYear') || new Date().getFullYear() + 543;
+
+        window.onload = function() { fetchDataFromSheet(); };
+
+        function switchTab(level) {
+            currentLevel = level;
+            document.getElementById('tab-m-ton').classList.remove('active');
+            document.getElementById('tab-m-plai').classList.remove('active');
+            document.getElementById(level === 'ม.ต้น' ? 'tab-m-ton' : 'tab-m-plai').classList.add('active');
+            fetchDataFromSheet(); 
+        }
+
+        function fetchDataFromSheet() {
+            document.getElementById('scoreTableBody').innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px;">กำลังโหลดข้อมูล... ⏳</td></tr>`;
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'getAdminData', activeYear: activeYear, level: currentLevel })
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.status === 'success') {
+                    // 🌟 กรองเอาเฉพาะคนที่ pass และ attendance == 'present' (มาสอบ)
+                    filteredData = result.data.filter(app => app.status === 'pass' && app.attendance === 'present');
+                    filteredData.sort((a, b) => parseInt(a.examId) - parseInt(b.examId));
+                    renderTable();
+                }
+            });
+        }
+
+        function markScoreChanged(idCard) {
+            // เมื่อมีการพิมพ์คะแนน ให้ขึ้นชื่อคนล็อกอินรอไว้เลย
+            const displaySpan = document.getElementById(`recorder_${idCard}`);
+            displaySpan.innerText = `บันทึกโดย: ${currentUserName} (รอเซฟ)`;
+            displaySpan.style.color = "#FF8F00";
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('scoreTableBody');
+            tbody.innerHTML = '';
+            if (filteredData.length === 0) return tbody.innerHTML = `<tr><td colspan="5" style="text-align: center;">ไม่มีผู้เข้าระบบสอบ หรือ ยังไม่ได้เช็คชื่อผู้เข้าสอบ</td></tr>`;
+
+            filteredData.forEach(app => {
+                let recorderHtml = app.scoreRecorder ? `บันทึกโดย: ${app.scoreRecorder}` : '-';
+                
+                let row = `<tr>
+                    <td><span class="exam-id-badge">${app.examId}</span></td>
+                    <td style="font-weight: 600;">${app.prefix}${app.fname} ${app.lname}</td>
+                    <td style="color: #7E8299;">ห้อง: ${app.room || '-'} / เลขที่: ${app.seat || '-'}</td>
+                    <td style="text-align: center;">
+                        <input type="number" id="score_${app.idCard}" class="inline-input" value="${app.score}" oninput="markScoreChanged('${app.idCard}')">
+                    </td>
+                    <td><span class="recorder-name" id="recorder_${app.idCard}">${recorderHtml}</span></td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function saveScoreData() {
+            const btn = document.getElementById('btnSaveAll');
+            btn.innerHTML = "กำลังบันทึก... ⏳"; btn.disabled = true;
+
+            let updatesPayload = [];
+            filteredData.forEach(app => {
+                let newScore = document.getElementById(`score_${app.idCard}`).value;
+                updatesPayload.push({
+                    rowIndex: app.rowIndex, 
+                    score: newScore,
+                    // ส่งชื่อ currentUserName ไปบันทึกด้วย ถ้าช่องคะแนนไม่ว่างเปล่า
+                    scoreRecorder: newScore ? currentUserName : '' 
+                });
+            });
+
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'updateScoreBatch', activeYear: activeYear, level: currentLevel, updates: updatesPayload })
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.status === 'success') {
+                    alert(`บันทึกคะแนนสำเร็จ!`);
+                    fetchDataFromSheet(); // โหลดใหม่เพื่อให้แสดงชื่อสีเทาปกติ
+                }
+            })
+            .finally(() => { btn.innerHTML = "บันทึกคะแนนทั้งหมด"; btn.disabled = false; });
+        }
+    </script>
+</body>
+</html>
