@@ -171,9 +171,10 @@
         </a>
         <div class="nav-links">
             <a href="home.html">หน้าแรก</a>
-            <a href="manage_applicants.html">จัดการผู้สมัคร</a>
-            <a href="manage_exam.html" style="color: var(--theme-orange); font-weight: 700;">จัดห้องสอบ</a>
+            <a href="manage_applicants.html" style="color: var(--theme-orange); font-weight: 700;">จัดการผู้สมัคร</a>
+            <a href="manage_exam.html">จัดห้องสอบ</a>
             <a href="manage_score.html">บันทึกคะแนน</a>
+            <a href="it.html" class="role-it" style="display: none;">ตั้งค่าระบบ</a>
         </div>
 
         <div class="nav-profile" id="profileForm" style="display: flex;">
@@ -271,6 +272,13 @@
             } else if(role === 'it') {
                 document.getElementById('displayRole').innerText = 'IT Support';
                 document.getElementById('userAvatar').style.background = '#F1416C'; 
+            }
+
+            // แสดงปุ่ม IT เฉพาะคนที่เป็น IT
+            if(role === 'it') {
+                document.querySelectorAll('.role-it').forEach(el => {
+                    if(el.tagName.toLowerCase() === 'a') el.style.display = 'inline-block';
+                });
             }
         }
 
