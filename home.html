@@ -278,8 +278,13 @@
             if (countdownInterval) clearInterval(countdownInterval);
 
             // ฟังก์ชันช่วยบล็อกปุ่ม
-            const disableUI = (msg, btnText) => {
-                if(timerEl) { timerEl.innerHTML = msg; timerEl.style.color = "#F1416C"; }
+            // ฟังก์ชันช่วยบล็อกปุ่ม
+            const disableUI = (msg, btnText, overwriteTimer = true) => {
+                // เพิ่มเงื่อนไขว่า ถ้า overwriteTimer เป็น true ถึงจะลบเวลาทิ้ง
+                if(timerEl && overwriteTimer) { 
+                    timerEl.innerHTML = msg; 
+                    timerEl.style.color = "#F1416C"; 
+                }
                 if(ctaBtn) {
                     ctaBtn.style.background = "#A1A5B7"; 
                     ctaBtn.style.cursor = "not-allowed";
@@ -369,7 +374,8 @@
                 if (mode === "toOpen") {
                     if(timerLabel) { timerLabel.innerText = "เริ่มรับสมัครในอีก"; timerLabel.style.display = 'block'; }
                     if(timerEl) { timerEl.innerHTML = `${days} วัน ${hours} ชม. ${minutes} นาที ${seconds} วิ`; timerEl.style.color = "var(--theme-orange)"; }
-                    disableUI("ระบบยังไม่ถึงเวลาเปิดรับสมัคร", "รอเปิดรับสมัคร");
+                    // เติม , false ต่อท้าย เพื่อไม่ให้ข้อความไปทับตัวเลข
+                    disableUI("ระบบยังไม่ถึงเวลาเปิดรับสมัคร", "รอเปิดรับสมัคร", false); 
                 } else if (mode === "toClose") {
                     if(timerLabel) { timerLabel.innerText = "เหลือเวลาเปิดรับสมัครอีก"; timerLabel.style.display = 'block'; }
                     if(timerEl) { timerEl.innerHTML = `${days} วัน ${hours} ชม. ${minutes} นาที ${seconds} วิ`; timerEl.style.color = "var(--theme-orange)"; }
