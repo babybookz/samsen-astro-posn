@@ -145,6 +145,7 @@
             <a href="manage_applicants.html" class="role-admin role-it" style="display: none; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 20px; color: var(--success);">จัดการผู้สมัคร</a>
             <a href="manage_exam.html" class="role-admin role-it" style="display: none; color: var(--success);">จัดห้องสอบ</a>
             <a href="manage_score.html" class="role-admin role-it" style="display: none; color: var(--success);">บันทึกคะแนน</a>
+            <a href="it.html" class="role-it" style="display: none; color: var(--theme-orange);">ตั้งค่าระบบ</a>
         </div>
 
         <div class="nav-auth" id="loginBtnContainer">
@@ -170,7 +171,7 @@
             <p id="displayYearDesc">ศูนย์สอบโรงเรียนสามเสนวิทยาลัย เปิดรับสมัครนักเรียนเพื่อสอบคัดเลือกเข้าค่ายโอลิมปิกวิชาการ <br>ประจำปีการศึกษา ...</p>
             
             <div class="countdown-box">
-                <span class="countdown-title">เหลือเวลาเปิดรับสมัครอีก</span>
+                <span class="countdown-title" id="countdownLabel">ตรวจสอบสถานะระบบ...</span>
                 <span class="countdown-timer" id="countdown">กำลังคำนวณ...</span>
             </div>
 
@@ -235,7 +236,7 @@
                         <svg viewBox="0 0 24 24"><path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" /></svg>
                     </div>
                     <h3 class="card-title">ตั้งค่าระบบ (IT)</h3>
-                    <p class="card-desc">ควบคุมการแสดงผล (Phase) ของหน้าตรวจสอบสถานะ และกำหนดปีการศึกษา</p>
+                    <p class="card-desc">ควบคุมเวลาเปิด/ปิดรับสมัคร และจัดการบัญชีผู้ดูแลระบบ</p>
                 </a>
 
             </div>
@@ -266,66 +267,115 @@
 
         function startCountdown() {
             const regStatus = localStorage.getItem('regStatus') || 'open';
+            const openTimeStr = localStorage.getItem('regOpenTime');
+            const closeTimeStr = localStorage.getItem('regCloseTime');
+
             const timerEl = document.getElementById("countdown");
+            const timerLabel = document.getElementById("countdownLabel");
             const ctaBtn = document.getElementById("ctaBtn");
             const cardRegister = document.getElementById("cardRegister");
 
-            // 🌟 กรณีผู้ดูแลระบบสั่ง "ปิดรับสมัคร"
-            if (regStatus === 'closed') {
-                if(timerEl) {
-                    timerEl.innerHTML = "ระบบปิดรับสมัครแล้ว";
-                    timerEl.style.color = "#F1416C";
-                }
+            if (countdownInterval) clearInterval(countdownInterval);
+
+            // ฟังก์ชันช่วยบล็อกปุ่ม
+            const disableUI = (msg, btnText) => {
+                if(timerEl) { timerEl.innerHTML = msg; timerEl.style.color = "#F1416C"; }
                 if(ctaBtn) {
                     ctaBtn.style.background = "#A1A5B7"; 
                     ctaBtn.style.cursor = "not-allowed";
-                    ctaBtn.innerHTML = '<svg style="width:24px;height:24px" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12C4,13.85 4.63,15.55 5.68,16.91L16.91,5.68C15.55,4.63 13.85,4 12,4M12,20A8,8 0 0,0 20,12C20,10.15 19.37,8.45 18.32,7.09L7.09,18.32C8.45,19.37 10.15,20 12,20Z"/></svg> ปิดรับสมัครแล้ว';
-                    ctaBtn.onclick = function(e) { e.preventDefault(); alert("ขณะนี้ระบบปิดรับสมัครแล้วครับ"); };
+                    ctaBtn.innerHTML = `<svg style="width:24px;height:24px" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12C4,13.85 4.63,15.55 5.68,16.91L16.91,5.68C15.55,4.63 13.85,4 12,4M12,20A8,8 0 0,0 20,12C20,10.15 19.37,8.45 18.32,7.09L7.09,18.32C8.45,19.37 10.15,20 12,20Z"/></svg> ${btnText}`;
+                    ctaBtn.onclick = function(e) { e.preventDefault(); alert(msg); };
                 }
                 if(cardRegister) {
                     cardRegister.style.opacity = "0.6";
                     cardRegister.style.cursor = "not-allowed";
-                    cardRegister.onclick = function(e) { e.preventDefault(); alert("ขณะนี้ระบบปิดรับสมัครแล้วครับ"); };
+                    cardRegister.onclick = function(e) { e.preventDefault(); alert(msg); };
                 }
+            };
+
+            // ฟังก์ชันช่วยเปิดปุ่ม
+            const enableUI = () => {
+                if(ctaBtn) {
+                    ctaBtn.style.background = ""; // ใช้ค่า CSS เดิม
+                    ctaBtn.style.cursor = "pointer";
+                    ctaBtn.innerHTML = `<svg style="width:24px;height:24px" viewBox="0 0 24 24"><path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" /></svg> สมัครสอบคลิกที่นี่`;
+                    ctaBtn.onclick = null; // คืนค่าลิงก์ปกติ
+                }
+                if(cardRegister) {
+                    cardRegister.style.opacity = "1";
+                    cardRegister.style.cursor = "pointer";
+                    cardRegister.onclick = null;
+                }
+            };
+
+            // 1. กรณีผู้ดูแลระบบสั่ง "ปิดรับสมัครทันที"
+            if (regStatus === 'closed') {
+                if(timerLabel) timerLabel.style.display = 'none';
+                disableUI("ขณะนี้ระบบปิดรับสมัครแล้ว", "ปิดรับสมัครแล้ว");
                 return;
             }
 
-            // 🌟 กรณีเปิดรับสมัคร ให้เริ่มนับถอยหลัง
-            let savedDeadline = localStorage.getItem('regDeadline');
-            let countDownDate = savedDeadline ? new Date(savedDeadline).getTime() : new Date("May 31, 2026 23:59:59").getTime();
+            // 2. กรณีสั่ง "เปิดรับสมัครทันที"
+            if (regStatus === 'open') {
+                if(timerLabel) timerLabel.innerText = "สถานะระบบ";
+                if(timerEl) { timerEl.innerHTML = "เปิดรับสมัครตามปกติ"; timerEl.style.color = "var(--success)"; }
+                enableUI();
+                return;
+            }
 
-            if (countdownInterval) clearInterval(countdownInterval);
-
+            // 3. กรณีตั้ง "เวลาอัตโนมัติ (Auto)"
             countdownInterval = setInterval(function() {
                 const now = new Date().getTime();
-                const distance = countDownDate - now;
+                let targetTime = null;
+                let mode = ""; // "toOpen" หรือ "toClose"
 
+                const openTime = openTimeStr ? new Date(openTimeStr).getTime() : 0;
+                const closeTime = closeTimeStr ? new Date(closeTimeStr).getTime() : 0;
+
+                if (openTime && now < openTime) {
+                    targetTime = openTime;
+                    mode = "toOpen";
+                } else if (closeTime && now < closeTime) {
+                    targetTime = closeTime;
+                    mode = "toClose";
+                } else if (closeTime && now >= closeTime) {
+                    clearInterval(countdownInterval);
+                    if(timerLabel) timerLabel.style.display = 'none';
+                    disableUI("หมดเวลาในการรับสมัครแล้ว", "หมดเขตรับสมัคร");
+                    return;
+                } else if (openTime && now >= openTime && !closeTime) {
+                    // ถึงเวลาเปิดแล้ว แต่ไม่ได้ตั้งเวลาปิด
+                    clearInterval(countdownInterval);
+                    if(timerLabel) timerLabel.innerText = "สถานะระบบ";
+                    if(timerEl) { timerEl.innerHTML = "เปิดรับสมัครตามปกติ"; timerEl.style.color = "var(--success)"; }
+                    enableUI();
+                    return;
+                } else {
+                    // หากไม่ได้ตั้งเวลาอะไรเลย ให้ถือว่าเปิดปกติ
+                    clearInterval(countdownInterval);
+                    if(timerLabel) timerLabel.innerText = "สถานะระบบ";
+                    if(timerEl) { timerEl.innerHTML = "เปิดรับสมัครตามปกติ"; timerEl.style.color = "var(--success)"; }
+                    enableUI();
+                    return;
+                }
+
+                // คำนวณเวลาที่เหลือ
+                const distance = targetTime - now;
                 const days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-                if(timerEl) {
-                    if (distance > 0) {
-                        timerEl.innerHTML = `${days} วัน ${hours} ชม. ${minutes} นาที ${seconds} วิ`;
-                    } else {
-                        clearInterval(countdownInterval);
-                        timerEl.innerHTML = "หมดเขตรับสมัครแล้ว";
-                        timerEl.style.color = "#F1416C";
-                        
-                        if(ctaBtn) {
-                            ctaBtn.style.background = "#A1A5B7"; 
-                            ctaBtn.style.cursor = "not-allowed";
-                            ctaBtn.innerHTML = '<svg style="width:24px;height:24px" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12C4,13.85 4.63,15.55 5.68,16.91L16.91,5.68C15.55,4.63 13.85,4 12,4M12,20A8,8 0 0,0 20,12C20,10.15 19.37,8.45 18.32,7.09L7.09,18.32C8.45,19.37 10.15,20 12,20Z"/></svg> ปิดรับสมัครแล้ว';
-                            ctaBtn.onclick = function(e) { e.preventDefault(); alert("หมดเวลาในการรับสมัครแล้วครับ"); };
-                        }
-                        if(cardRegister) {
-                            cardRegister.style.opacity = "0.6";
-                            cardRegister.style.cursor = "not-allowed";
-                            cardRegister.onclick = function(e) { e.preventDefault(); alert("หมดเวลาในการรับสมัครแล้วครับ"); };
-                        }
-                    }
+                if (mode === "toOpen") {
+                    if(timerLabel) { timerLabel.innerText = "เริ่มรับสมัครในอีก"; timerLabel.style.display = 'block'; }
+                    if(timerEl) { timerEl.innerHTML = `${days} วัน ${hours} ชม. ${minutes} นาที ${seconds} วิ`; timerEl.style.color = "var(--theme-orange)"; }
+                    disableUI("ระบบยังไม่ถึงเวลาเปิดรับสมัคร", "รอเปิดรับสมัคร");
+                } else if (mode === "toClose") {
+                    if(timerLabel) { timerLabel.innerText = "เหลือเวลาเปิดรับสมัครอีก"; timerLabel.style.display = 'block'; }
+                    if(timerEl) { timerEl.innerHTML = `${days} วัน ${hours} ชม. ${minutes} นาที ${seconds} วิ`; timerEl.style.color = "var(--theme-orange)"; }
+                    enableUI();
                 }
+
             }, 1000);
         }
 
@@ -372,7 +422,7 @@
             const showAdmin = (currentRole === 'admin' || currentRole === 'it');
             const showIt = (currentRole === 'it');
 
-            // แสดงปุ่ม Navbar ของแอดมินด้วย
+            // แสดง/ซ่อน เมนูตามบทบาท (Role)
             document.querySelectorAll('.role-admin').forEach(el => {
                 el.style.display = showAdmin ? 'flex' : 'none';
                 if(el.tagName.toLowerCase() === 'a') el.style.display = showAdmin ? 'inline-block' : 'none';

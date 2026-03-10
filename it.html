@@ -101,6 +101,7 @@
         .radio-group.active { border: 2px solid var(--theme-purple); background: #F9FAFC; box-shadow: 0 4px 10px rgba(49, 27, 94, 0.05);}
         .radio-group.active-success { border: 2px solid var(--success); background: #E8FFF3;}
         .radio-group.active-danger { border: 2px solid var(--danger); background: #FFF5F8;}
+        .radio-group.active-warning { border: 2px solid var(--theme-orange); background: #FFFDF5;}
         
         input[type="radio"] { transform: scale(1.3); margin-right: 15px; margin-top: 5px; cursor: pointer; accent-color: var(--theme-orange); }
         .label-content { display: flex; flex-direction: column; }
@@ -211,7 +212,7 @@
                 <div class="card-header-flex">
                     <div class="card-title-box">
                         <div class="card-icon icon-green"><svg viewBox="0 0 24 24"><path d="M17,7H22V17H17V19A1,1 0 0,0 18,20H20V22H17.5C16.95,22 16,21.55 16,21C16,21.55 15.05,22 14.5,22H12V20H14A1,1 0 0,0 15,19V5A1,1 0 0,0 14,4H12V2H14.5C15.05,2 16,2.45 16,3C16,2.45 16.95,2 17.5,2H20V4H18A1,1 0 0,0 17,5V7M2,7H13V9H4V15H13V17H2V7M20,15V9H17V15H20Z" /></svg></div>
-                        <h3 class="card-title-text">สถานะการรับสมัคร และ Deadline</h3>
+                        <h3 class="card-title-text">สถานะการรับสมัคร และ ตั้งเวลา (Schedule)</h3>
                     </div>
                     <button class="btn-save-inline" onclick="saveSettingField('reg')"><svg viewBox="0 0 24 24"><path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" /></svg> บันทึก</button>
                 </div>
@@ -219,22 +220,39 @@
                 <div class="radio-group" id="regStatus_open" onclick="selectRegStatus('open')">
                     <input type="radio" id="regOpen" name="regStatus" value="open">
                     <div class="label-content">
-                        <label for="regOpen" style="color: var(--success);">🟢 เปิดรับสมัคร (ระบบนับถอยหลังทำงาน)</label>
-                        <div class="desc">ผู้ใช้สามารถเข้าสู่เมนู "กรอกใบสมัครสอบ" ได้ตามปกติ จนกว่าจะถึงเวลาปิดรับสมัคร</div>
+                        <label for="regOpen" style="color: var(--success);">🟢 เปิดรับสมัครทันที</label>
+                        <div class="desc">เปิดระบบให้ผู้สมัครเข้าใช้งานได้ทันที (ไม่ใช้ระบบตั้งเวลา)</div>
                     </div>
                 </div>
 
                 <div class="radio-group" id="regStatus_closed" onclick="selectRegStatus('closed')">
                     <input type="radio" id="regClosed" name="regStatus" value="closed">
                     <div class="label-content">
-                        <label for="regClosed" style="color: var(--danger);">🔴 ปิดรับสมัคร</label>
+                        <label for="regClosed" style="color: var(--danger);">🔴 ปิดรับสมัครทันที</label>
                         <div class="desc">ระงับการเข้าถึงหน้ากรอกใบสมัคร (ผู้ที่กำลังกรอกอยู่จะไม่สามารถส่งข้อมูลได้)</div>
                     </div>
                 </div>
 
-                <div class="setting-box" id="deadlineBox">
-                    <label>วัน-เวลาสิ้นสุด</label>
-                    <input type="datetime-local" id="regDeadline" class="setting-input">
+                <div class="radio-group" id="regStatus_auto" onclick="selectRegStatus('auto')">
+                    <input type="radio" id="regAuto" name="regStatus" value="auto">
+                    <div class="label-content">
+                        <label for="regAuto" style="color: var(--theme-orange);">⏱️ ตั้งเวลาอัตโนมัติ (เปิด / ปิด)</label>
+                        <div class="desc">ระบบจะเปิดหรือปิดอัตโนมัติตามเวลาที่กำหนด (สามารถตั้งค่าแค่อย่างใดอย่างหนึ่งได้)</div>
+                    </div>
+                </div>
+
+                <div id="scheduleBox" style="display: none; background: #FFFDF5; padding: 20px; border-radius: 10px; border: 1px dashed var(--theme-orange); margin-bottom: 15px;">
+                    <div class="setting-box" style="background: white; margin-bottom: 10px;">
+                        <label style="width: 200px;">ตั้งเวลา <b>เปิด</b> รับสมัคร</label>
+                        <input type="datetime-local" id="regOpenTime" class="setting-input">
+                    </div>
+                    <div class="setting-box" style="background: white; margin-bottom: 0;">
+                        <label style="width: 200px;">ตั้งเวลา <b>ปิด</b> รับสมัคร</label>
+                        <input type="datetime-local" id="regCloseTime" class="setting-input">
+                    </div>
+                    <div style="font-size: 0.9rem; color: var(--theme-orange); margin-top: 10px; font-weight: 600;">
+                        * หมายเหตุ: สามารถเว้นว่างช่องที่ไม่ต้องการใช้งานได้ เช่น หากต้องการตั้งแค่เวลาเปิด ให้เว้นว่างช่องเวลาปิดไว้
+                    </div>
                 </div>
             </div>
 
@@ -353,16 +371,22 @@
             let savedYear = localStorage.getItem('activeYear') || '2569';
             document.getElementById('activeYear').value = savedYear;
 
-            let savedDeadline = localStorage.getItem('regDeadline');
-            if(savedDeadline) document.getElementById('regDeadline').value = savedDeadline;
-
             let currentPhase = localStorage.getItem('systemPhase') || '1';
             document.getElementById('phase' + currentPhase).checked = true;
             updateBoxHighlight(currentPhase);
 
+            // โหลดตั้งค่าโหมดรับสมัคร
             let regStatus = localStorage.getItem('regStatus') || 'open';
-            document.getElementById('reg' + (regStatus === 'open' ? 'Open' : 'Closed')).checked = true;
+            if(regStatus === 'open') document.getElementById('regOpen').checked = true;
+            else if(regStatus === 'closed') document.getElementById('regClosed').checked = true;
+            else document.getElementById('regAuto').checked = true;
             updateRegStatusHighlight(regStatus);
+
+            let savedOpenTime = localStorage.getItem('regOpenTime');
+            if(savedOpenTime) document.getElementById('regOpenTime').value = savedOpenTime;
+
+            let savedCloseTime = localStorage.getItem('regCloseTime');
+            if(savedCloseTime) document.getElementById('regCloseTime').value = savedCloseTime;
 
             // ดึงรายชื่อ Admin
             fetchAdmins();
@@ -381,7 +405,7 @@
         }
 
         // =====================================
-        // ฟังก์ชัน UI ของ Radio Buttons
+        // ฟังก์ชัน UI ของ Radio Buttons เฟสระบบ
         // =====================================
         function selectRadio(id) {
             document.getElementById(id).checked = true;
@@ -394,21 +418,33 @@
             document.getElementById('box' + phaseNumber).classList.add('active');
         }
 
+        // =====================================
+        // ฟังก์ชัน UI ของโหมดการรับสมัคร
+        // =====================================
         function selectRegStatus(status) {
-            document.getElementById('reg' + (status === 'open' ? 'Open' : 'Closed')).checked = true;
+            if (status === 'open') document.getElementById('regOpen').checked = true;
+            else if (status === 'closed') document.getElementById('regClosed').checked = true;
+            else document.getElementById('regAuto').checked = true;
+            
             updateRegStatusHighlight(status);
         }
+        
         function updateRegStatusHighlight(status) {
             document.getElementById('regStatus_open').className = "radio-group";
             document.getElementById('regStatus_closed').className = "radio-group";
-            const deadlineBox = document.getElementById('deadlineBox');
+            document.getElementById('regStatus_auto').className = "radio-group";
+            
+            const scheduleBox = document.getElementById('scheduleBox');
 
             if (status === 'open') {
                 document.getElementById('regStatus_open').classList.add('active-success');
-                deadlineBox.style.display = 'flex'; 
-            } else {
+                scheduleBox.style.display = 'none'; 
+            } else if (status === 'closed') {
                 document.getElementById('regStatus_closed').classList.add('active-danger');
-                deadlineBox.style.display = 'none'; 
+                scheduleBox.style.display = 'none'; 
+            } else if (status === 'auto') {
+                document.getElementById('regStatus_auto').classList.add('active-warning');
+                scheduleBox.style.display = 'block'; 
             }
         }
 
@@ -424,10 +460,17 @@
             } 
             else if(type === 'reg') {
                 const st = document.querySelector('input[name="regStatus"]:checked').value;
-                const dl = document.getElementById('regDeadline').value;
-                if(st === 'open' && !dl) return alert('กรุณาระบุเวลาปิดรับสมัคร');
+                const openTime = document.getElementById('regOpenTime').value;
+                const closeTime = document.getElementById('regCloseTime').value;
+                
+                // ถ้าระบุว่าเอาโหมดออโต้ แต่ไม่กรอกเวลาเลยสักช่อง
+                if(st === 'auto' && !openTime && !closeTime) {
+                    return alert('⚠️ กรุณาระบุเวลาเปิด หรือ เวลาปิด อย่างน้อย 1 ช่อง เพื่อใช้งานโหมดอัตโนมัติ');
+                }
+                
                 localStorage.setItem('regStatus', st);
-                localStorage.setItem('regDeadline', dl);
+                localStorage.setItem('regOpenTime', openTime);
+                localStorage.setItem('regCloseTime', closeTime);
                 alert(`✅ บันทึกสถานะการรับสมัครเรียบร้อยแล้ว`);
             }
             else if(type === 'phase') {
