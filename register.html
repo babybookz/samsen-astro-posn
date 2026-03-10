@@ -8,378 +8,76 @@
     <script>
         const maintState = localStorage.getItem('maintenanceMode');
         const usrRole = localStorage.getItem('userRole');
-        
         if (maintState === 'on' && usrRole !== 'it') {
-            document.write(`
-            <div style="display:flex; justify-content:center; align-items:center; height:100vh; background:#F8F9FA; font-family:'Sarabun', sans-serif; text-align:center;">
-                <div style="background:white; padding:50px; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.1); border-top: 5px solid #F1416C;">
-                    <h2 style="color:#311B5E; margin-top:0;">🔴 ปิดปรับปรุงระบบชั่วคราว</h2>
-                    <p style="color:#7E8299; margin-top:10px; font-size:1.1rem;">ระบบกำลังอยู่ระหว่างการบำรุงรักษาโดยเจ้าหน้าที่<br>กรุณากลับมาใช้งานใหม่อีกครั้งในภายหลังครับ</p>
-                    
-                    <div style="margin-top: 40px;">
-                        <a href="#" onclick="emergencyUnlock()" style="color: #E4E6EF; font-size: 0.8rem; text-decoration: none;">IT Access</a>
-                    </div>
-                </div>
-            </div>
-            <script>
-                function emergencyUnlock() {
-                    const pass = prompt("🔒 ปลดล็อกฉุกเฉิน (ระบุรหัสลับ):");
-                    if(pass === "1234") { 
-                        localStorage.setItem('maintenanceMode', 'off');
-                        alert("✅ ปลดล็อกสำเร็จ! กำลังโหลดหน้าเว็บใหม่...");
-                        window.location.reload();
-                    } else if(pass) {
-                        alert("❌ รหัสลับไม่ถูกต้อง");
-                    }
-                }
-            <\/script>
-            `);
-            document.close();
-            window.stop();
+            document.write('<div style="display:flex;justify-content:center;align-items:center;height:100vh;background:#F8F9FA;font-family:sans-serif;text-align:center;"><div style="background:white;padding:50px;border-radius:15px;box-shadow:0 10px 30px rgba(0,0,0,0.1);border-top:5px solid #F1416C;"><h2 style="color:#311B5E;margin-top:0;">🔴 ปิดปรับปรุงระบบชั่วคราว</h2><p style="color:#7E8299;">ระบบกำลังอยู่ระหว่างการบำรุงรักษาโดยเจ้าหน้าที่<br>กรุณากลับมาใช้งานใหม่อีกครั้งในภายหลังครับ</p><a href="#" onclick="emergencyUnlock()" style="color:#E4E6EF;font-size:0.8rem;text-decoration:none;display:block;margin-top:40px;">IT Access</a></div></div><script>function emergencyUnlock(){if(prompt("🔒 รหัสลับ:")==="1234"){localStorage.setItem("maintenanceMode","off");location.reload();}else{alert("❌ รหัสผิด");}}<\/script>');
+            document.close(); window.stop();
         }
-    </script>
-
-    <script>
+        
         const regStatus = localStorage.getItem('regStatus');
         const regDeadline = localStorage.getItem('regDeadline');
-        let isTimeOut = false;
+        const regStartTime = localStorage.getItem('regStartTime');
+        let isTimeOut = false; let isNotStart = false;
+        const now = new Date().getTime();
         
-        if(regDeadline) {
-            const countDownDate = new Date(regDeadline).getTime();
-            const now = new Date().getTime();
-            if (now > countDownDate) isTimeOut = true;
-        }
+        if(regDeadline && now > new Date(regDeadline).getTime()) isTimeOut = true;
+        if(regStartTime && now < new Date(regStartTime).getTime()) isNotStart = true;
 
-        // หากแอดมินปิดระบบ หรือ หมดเวลาไปแล้ว ให้เด้งกลับหน้า Home
-        if (regStatus === 'closed' || isTimeOut) {
-            alert('⛔ ขณะนี้ระบบไม่ได้เปิดรับสมัคร หรือ หมดเวลาการรับสมัครไปแล้วครับ');
+        if (regStatus === 'closed' || isTimeOut || (regStatus === 'auto' && isNotStart)) {
+            alert('⛔ ขณะนี้ระบบไม่ได้เปิดรับสมัคร หรืออยู่นอกเวลาที่กำหนดครับ');
             window.location.replace('home.html'); 
         }
     </script>
 
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --theme-purple: #311B5E; 
-            --theme-purple-light: #4A2B8C;
-            --theme-orange: #FF8F00; 
-            --theme-orange-hover: #E68100;
-            --bg-light: #F8F9FA;
-            --text-dark: #181C32;
-            --text-muted: #7E8299;
-            --danger: #F1416C;
-            --success: #50CD89;
-            --border-color: #E4E6EF;
-            --input-bg: #ffffff;
-            --border-radius: 12px;
-            --input-radius: 8px;
-            --box-shadow: 0px 10px 30px 0px rgba(49, 27, 94, 0.05);
-        }
-
-        body { 
-            font-family: 'Sarabun', sans-serif; 
-            background: var(--bg-light); 
-            margin: 0; 
-            color: var(--text-dark); 
-            overflow-x: hidden; 
-        }
-
-        /* ================= 1. TOP ADMIN BAR ================= */
-        .top-admin-bar { 
-            background-color: #181C32; 
-            color: var(--success); 
-            text-align: center; 
-            padding: 8px; 
-            font-size: 0.85rem; 
-            font-weight: 600; 
-            letter-spacing: 0.5px; 
-            display: none; 
-        }
-        .top-admin-bar span { 
-            color: white; 
-            font-weight: 400; 
-            margin-right: 10px; 
-        }
-
-        /* ================= HEADER & NAVIGATION ================= */
-        .navbar { 
-            background-color: var(--theme-purple); 
-            padding: 15px 50px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
-            position: sticky; 
-            top: 0; 
-            z-index: 100; 
-        }
-        .nav-brand { 
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-            text-decoration: none; 
-            color: white;
-        }
-        .nav-brand img { 
-            height: 45px; 
-            width: auto; 
-            background: white; 
-            padding: 3px; 
-            border-radius: 8px;
-        }
-        .nav-brand div { line-height: 1.1; }
-        .brand-title { font-weight: 700; font-size: 1.2rem; }
+        :root { --theme-purple: #311B5E; --theme-purple-light: #4A2B8C; --theme-orange: #FF8F00; --theme-orange-hover: #E68100; --bg-light: #F8F9FA; --text-dark: #181C32; --text-muted: #7E8299; --danger: #F1416C; --success: #50CD89; --border-color: #E4E6EF; --input-bg: #ffffff; --border-radius: 12px; --input-radius: 8px; --box-shadow: 0px 10px 30px 0px rgba(49, 27, 94, 0.05); }
+        body { font-family: 'Sarabun', sans-serif; background: var(--bg-light); margin: 0; color: var(--text-dark); overflow-x: hidden; }
+        .top-admin-bar { background-color: #181C32; color: var(--success); text-align: center; padding: 8px; font-size: 0.85rem; font-weight: 600; display: none; }
+        .navbar { background-color: var(--theme-purple); padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        .nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: white;}
+        .nav-brand img { height: 45px; background: white; padding: 3px; border-radius: 8px;}
+        .brand-title { font-weight: 700; font-size: 1.2rem; line-height: 1.1;}
         .brand-sub { font-size: 0.8rem; color: #D1C4E9; }
-
-        .nav-links { 
-            display: flex; 
-            gap: 25px; 
-            align-items: center; 
-        }
-        .nav-links a { 
-            color: white; 
-            text-decoration: none; 
-            font-weight: 500; 
-            font-size: 1rem; 
-            transition: color 0.3s; 
-        }
+        .nav-links { display: flex; gap: 25px; align-items: center; }
+        .nav-links a { color: white; text-decoration: none; font-weight: 500; font-size: 1rem; transition: 0.3s; }
         .nav-links a:hover { color: var(--theme-orange); }
-
-        .nav-profile { 
-            display: none; 
-            align-items: center; 
-            gap: 12px; 
-            background: rgba(255,255,255,0.1); 
-            padding: 5px 15px 5px 5px; 
-            border-radius: 50px;
-        }
-        .profile-avatar { 
-            width: 35px; 
-            height: 35px; 
-            background: var(--success); 
-            color: white; 
-            border-radius: 50%; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            font-weight: bold; 
-        }
-        .profile-info { 
-            color: white; 
-            font-size: 0.9rem; 
-            line-height: 1.2; 
-        }
-        .profile-name { font-weight: 600; }
-        .profile-role { font-size: 0.75rem; color: #D1C4E9; }
-        .btn-logout-icon { 
-            background: none; 
-            border: none; 
-            color: var(--theme-orange); 
-            font-size: 1.2rem; 
-            cursor: pointer; 
-            padding: 5px; 
-            transition: 0.3s; 
-            margin-left: 5px; 
-            display: flex; 
-            align-items: center;
-        }
+        .nav-profile { display: none; align-items: center; gap: 12px; background: rgba(255,255,255,0.1); padding: 5px 15px 5px 5px; border-radius: 50px;}
+        .profile-avatar { width: 35px; height: 35px; background: var(--success); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+        .profile-info { color: white; font-size: 0.9rem; line-height: 1.2; }
+        .btn-logout-icon { background: none; border: none; color: var(--theme-orange); font-size: 1.2rem; cursor: pointer; padding: 5px; transition: 0.3s;}
         .btn-logout-icon:hover { color: var(--danger); }
-
-        /* ================= MAIN CONTAINER ================= */
-        .page-wrapper { 
-            display: flex; 
-            justify-content: center; 
-            padding: 50px 20px; 
-        }
-
-        .container { 
-            background: #ffffff; 
-            padding: 50px; 
-            border-radius: var(--border-radius); 
-            box-shadow: var(--box-shadow); 
-            max-width: 900px; 
-            width: 100%; 
-            box-sizing: border-box; 
-            border-top: 5px solid var(--theme-purple); 
-        }
-
-        .header-title { 
-            text-align: center; 
-            border-bottom: 1px dashed var(--border-color); 
-            padding-bottom: 25px; 
-            margin-bottom: 40px; 
-        }
-        h2 { 
-            color: var(--theme-purple); 
-            margin: 0 0 10px 0; 
-            font-weight: 700; 
-            font-size: 1.8rem; 
-            letter-spacing: -0.5px; 
-        }
-        .header-desc { 
-            color: var(--text-muted); 
-            font-size: 1.1rem; 
-            font-weight: 500; 
-            margin: 0; 
-        }
-        .year-badge { 
-            display: inline-block; 
-            background: var(--theme-orange); 
-            color: white; 
-            padding: 4px 12px; 
-            border-radius: 50px; 
-            font-size: 0.9rem; 
-            font-weight: 600; 
-            margin-top: 10px; 
-        }
-        
-        /* ================= FORM STYLES ================= */
-        .section-title { 
-            font-size: 1.2rem; 
-            color: var(--theme-purple); 
-            margin-top: 40px; 
-            margin-bottom: 25px; 
-            font-weight: 700; 
-            border-bottom: 2px solid var(--theme-orange); 
-            padding-bottom: 10px; 
-            display: inline-block; 
-        }
+        .page-wrapper { display: flex; justify-content: center; padding: 50px 20px; }
+        .container { background: #ffffff; padding: 50px; border-radius: var(--border-radius); box-shadow: var(--box-shadow); max-width: 900px; width: 100%; box-sizing: border-box; border-top: 5px solid var(--theme-purple); }
+        .header-title { text-align: center; border-bottom: 1px dashed var(--border-color); padding-bottom: 25px; margin-bottom: 40px; }
+        h2 { color: var(--theme-purple); margin: 0 0 10px 0; font-weight: 700; font-size: 1.8rem;}
+        .header-desc { color: var(--text-muted); font-size: 1.1rem; font-weight: 500; margin: 0; }
+        .year-badge { display: inline-block; background: var(--theme-orange); color: white; padding: 4px 12px; border-radius: 50px; font-size: 0.9rem; font-weight: 600; margin-top: 10px; }
+        .section-title { font-size: 1.2rem; color: var(--theme-purple); margin: 40px 0 25px 0; font-weight: 700; border-bottom: 2px solid var(--theme-orange); padding-bottom: 10px; display: inline-block; }
         .input-group { margin-bottom: 20px; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 25px; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 25px; }
-
-        @media (max-width: 768px) {
-            .grid-2, .grid-3 { grid-template-columns: 1fr; gap: 0; }
-            .navbar { flex-direction: column; gap: 15px; padding: 15px;}
-            .container { padding: 30px 20px; }
-        }
-        
-        label { 
-            display: block; 
-            margin-bottom: 8px; 
-            font-weight: 600; 
-            color: var(--text-dark); 
-            font-size: 1rem; 
-        }
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 1rem; }
         .req { color: var(--danger); font-weight: bold; } 
-        .hint { 
-            font-size: 0.85rem; 
-            color: var(--text-muted); 
-            margin-bottom: 8px; 
-            display: block; 
-            font-weight: 500;
-        }
-        
-        input[type="text"], 
-        input[type="tel"], 
-        input[type="date"], 
-        input[type="file"], 
-        select { 
-            width: 100%; 
-            padding: 14px 15px; 
-            border: 1px solid var(--border-color); 
-            border-radius: var(--input-radius); 
-            box-sizing: border-box; 
-            font-family: 'Sarabun', sans-serif; 
-            font-size: 1rem; 
-            color: var(--text-dark); 
-            background-color: var(--input-bg); 
-            transition: all 0.3s ease; 
-        }
-        
-        input:focus, 
-        select:focus { 
-            border-color: var(--theme-purple); 
-            box-shadow: 0 0 0 3px rgba(49, 27, 94, 0.1); 
-            outline: none; 
-        }
-        
-        .radio-group { 
-            display: flex; 
-            gap: 30px; 
-            background: var(--bg-light); 
-            padding: 15px 20px; 
-            border-radius: var(--input-radius); 
-            border: 1px dashed var(--border-color); 
-        }
-        .radio-group label { 
-            font-weight: 600; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            margin: 0; 
-            color: var(--theme-purple); 
-        }
-        .radio-group input[type="radio"] { 
-            margin-right: 10px; 
-            transform: scale(1.3); 
-            cursor: pointer; 
-            accent-color: var(--theme-orange); 
-        }
-
-        /* กล่องข้อตกลง PDPA */
-        .pdpa-box {
-            background-color: #FFF5F8;
-            border: 1px solid #FFCDD2;
-            padding: 20px;
-            border-radius: var(--input-radius);
-            margin-top: 30px;
-        }
-        .pdpa-box p {
-            font-size: 0.9rem;
-            color: var(--text-dark);
-            margin-top: 0;
-            line-height: 1.5;
-        }
-        .pdpa-checkbox-label {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            font-weight: 600;
-            color: var(--danger);
-            cursor: pointer;
-            margin-bottom: 0;
-        }
-        .pdpa-checkbox-label input[type="checkbox"] {
-            margin-top: 3px;
-            transform: scale(1.3);
-            accent-color: var(--danger);
-            cursor: pointer;
-        }
-
-        /* ปุ่ม Submit */
-        button[type="submit"] { 
-            width: 100%; 
-            padding: 18px; 
-            background: var(--theme-orange); 
-            color: white; 
-            border: none; 
-            border-radius: 50px; 
-            font-size: 1.2rem; 
-            cursor: pointer; 
-            font-weight: 700; 
-            margin-top: 30px; 
-            transition: all 0.3s ease; 
-            box-shadow: 0 5px 15px rgba(255, 143, 0, 0.3); 
-            font-family: 'Sarabun'; 
-        }
-        button[type="submit"]:hover:not(:disabled) { 
-            background: var(--theme-orange-hover); 
-            transform: translateY(-2px); 
-            box-shadow: 0 8px 20px rgba(255, 143, 0, 0.4); 
-        }
-        button:disabled { 
-            background: var(--text-muted); 
-            box-shadow: none; 
-            cursor: not-allowed; 
-            transform: none;
-        }
+        .hint { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; display: block; font-weight: 500;}
+        input[type="text"], input[type="tel"], input[type="date"], input[type="time"], input[type="number"], input[type="file"], select { width: 100%; padding: 14px 15px; border: 1px solid var(--border-color); border-radius: var(--input-radius); box-sizing: border-box; font-family: 'Sarabun'; font-size: 1rem; transition: 0.3s; }
+        input:focus, select:focus { border-color: var(--theme-purple); box-shadow: 0 0 0 3px rgba(49, 27, 94, 0.1); outline: none; }
+        .radio-group { display: flex; gap: 30px; background: var(--bg-light); padding: 15px 20px; border-radius: var(--input-radius); border: 1px dashed var(--border-color); }
+        .radio-group label { font-weight: 600; cursor: pointer; display: flex; align-items: center; margin: 0; color: var(--theme-purple); }
+        .radio-group input[type="radio"] { margin-right: 10px; transform: scale(1.3); accent-color: var(--theme-orange); }
+        .qr-box { background: #F8F9FA; padding: 25px; text-align: center; border-radius: 12px; border: 2px dashed var(--theme-purple-light); margin-bottom: 30px; }
+        .qr-box img { max-width: 100%; height: auto; border-radius: 8px; margin-top: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .pdpa-box { background: #FFF5F8; border: 1px solid #FFCDD2; padding: 20px; border-radius: var(--input-radius); margin-top: 30px; }
+        .pdpa-checkbox-label { display: flex; align-items: flex-start; gap: 10px; font-weight: 600; color: var(--danger); cursor: pointer; margin-bottom: 0; }
+        button[type="submit"] { width: 100%; padding: 18px; background: var(--theme-orange); color: white; border: none; border-radius: 50px; font-size: 1.2rem; cursor: pointer; font-weight: 700; margin-top: 30px; transition: 0.3s; box-shadow: 0 5px 15px rgba(255, 143, 0, 0.3); font-family: 'Sarabun'; }
+        button[type="submit"]:hover:not(:disabled) { background: var(--theme-orange-hover); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 143, 0, 0.4); }
+        button:disabled { background: var(--text-muted); box-shadow: none; cursor: not-allowed; transform: none; }
+        @media (max-width: 768px) { .grid-2, .grid-3 { grid-template-columns: 1fr; gap: 0; } .navbar { flex-direction: column; gap: 15px; padding: 15px;} .container { padding: 30px 20px; } }
     </style>
 </head>
 <body>
 
     <div id="adminTopBar" class="top-admin-bar">
-        <span><svg style="width:14px;height:14px;vertical-align:middle;fill:white;margin-top:-2px;" viewBox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 17.96,13.82 17.96,15.47C17.75,16 17.46,16.5 17.13,17Z" /></svg> โหมดผู้ดูแลระบบ:</span> คุณกำลังเข้าสู่ระบบในฐานะเจ้าหน้าที่ศูนย์สอบ
+        <span>✅ โหมดผู้ดูแลระบบ:</span> คุณกำลังเข้าสู่ระบบในฐานะเจ้าหน้าที่ศูนย์สอบ
     </div>
 
     <nav class="navbar">
@@ -407,9 +105,7 @@
                 <div class="profile-name" id="displayName">ชื่อผู้ใช้</div>
                 <div class="profile-role" id="displayRole">ตำแหน่ง</div>
             </div>
-            <button class="btn-logout-icon" onclick="handleLogout()" title="ออกจากระบบ">
-                <svg viewBox="0 0 24 24" style="width:20px;height:20px;"><path d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z" /></svg>
-            </button>
+            <button class="btn-logout-icon" onclick="handleLogout()" title="ออกจากระบบ">✖</button>
         </div>
     </nav>
 
@@ -424,7 +120,6 @@
             <form id="registerForm">
                 
                 <div class="section-title">ส่วนที่ 1: ข้อมูลผู้สมัคร</div>
-                
                 <div class="grid-3">
                     <div class="input-group">
                         <label>คำนำหน้าชื่อ <span class="req">*</span></label>
@@ -434,7 +129,6 @@
                             <option value="เด็กหญิง">เด็กหญิง</option>
                             <option value="นาย">นาย</option>
                             <option value="นางสาว">นางสาว</option>
-                            <option value="นาง">นาง</option>
                         </select>
                     </div>
                     <div class="input-group">
@@ -450,11 +144,12 @@
                 <div class="grid-2">
                     <div class="input-group">
                         <label>เลขประจำตัวประชาชน <span class="req">*</span></label>
+                        <span class="hint">ใช้ตรวจสอบสถานะ (13 หลักติดกัน)</span>
                         <input type="text" id="idCard" maxlength="13" placeholder="ตัวอย่าง: 1100012345678" required>
                     </div>
                     <div class="input-group">
                         <label>วัน / เดือน / ปีเกิด <span class="req">*</span></label>
-
+                        <span class="hint">กรอกปี ค.ศ. เท่านั้น</span>
                         <input type="date" id="birthDate" required>
                     </div>
                 </div>
@@ -471,7 +166,6 @@
                 </div>
 
                 <div class="section-title">ส่วนที่ 2: ข้อมูลการศึกษา</div>
-
                 <div class="grid-2">
                     <div class="input-group">
                         <label>ระดับการศึกษาปัจจุบัน <span class="req">*</span></label>
@@ -486,20 +180,20 @@
                         </select>
                     </div>
                     <div class="input-group">
-                        <label>จังหวัด <span class="req">*</span></label>
+                        <label>จังหวัด (เฉพาะที่กำหนด) <span class="req">*</span></label>
                         <select id="province" required>
                             <option value="">-- เลือกจังหวัด --</option>
-                            <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>/
-                            <option value="ชัยนาท">ชัยนาท</option>/
-                            <option value="นครนายก">นครนายก</option>/
-                            <option value="นนทบุรี">นนทบุรี</option>/
-                            <option value="ปทุมธานี">ปทุมธานี</option>/
-                            <option value="พระนครศรีอยุธยา">พระนครศรีอยุธยา</option>/
-                            <option value="ลพบุรี">ลพบุรี</option>/
-                            <option value="สระบุรี">สระบุรี</option>/
-                            <option value="สิงห์บุรี">สิงห์บุรี</option>/
-                            <option value="อ่างทอง">อ่างทอง</option>/
-                            <option value="อุทัยธานี">อุทัยธานี</option>/
+                            <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
+                            <option value="ชัยนาท">ชัยนาท</option>
+                            <option value="นครนายก">นครนายก</option>
+                            <option value="นนทบุรี">นนทบุรี</option>
+                            <option value="ปทุมธานี">ปทุมธานี</option>
+                            <option value="พระนครศรีอยุธยา">พระนครศรีอยุธยา</option>
+                            <option value="ลพบุรี">ลพบุรี</option>
+                            <option value="สระบุรี">สระบุรี</option>
+                            <option value="สิงห์บุรี">สิงห์บุรี</option>
+                            <option value="อ่างทอง">อ่างทอง</option>
+                            <option value="อุทัยธานี">อุทัยธานี</option>
                         </select>
                     </div>
                 </div>
@@ -507,38 +201,59 @@
                 <div class="grid-2">
                     <div class="input-group">
                         <label>โรงเรียน <span class="req">*</span></label>
-                        <span class="hint">ไม่ต้องใส่คำว่าโรงเรียน (เช่น พิมพ์แค่ สามเสนวิทยาลัย)</span>
+                        <span class="hint">ไม่ต้องใส่คำว่าโรงเรียน (เช่น สามเสนวิทยาลัย)</span>
                         <input type="text" id="school" required>
                     </div>
                     <div class="input-group">
                         <label>ชื่อครูดาราศาสตร์ / วิทยาศาสตร์ในโรงเรียน</label>
-                        <span class="hint">เว้นว่างไว้ได้หากไม่มี</span>
-                        <input type="text" id="teacherName" placeholder="ระบุชื่อครูผู้สอน">
+                        <span class="hint">เว้นว่างได้หากไม่มี</span>
+                        <input type="text" id="teacherName" >
                     </div>
                 </div>
 
-                <div class="section-title">ส่วนที่ 3: ข้อมูลการสมัครสอบและหลักฐาน</div>
+                <div class="section-title">ส่วนที่ 3: ข้อมูลการชำระเงินและหลักฐาน</div>
 
                 <div class="input-group">
                     <label>สมัครสอบในระดับชั้น <span class="req">*</span></label>
                     <div class="radio-group">
-                        <label><input type="radio" name="applyLevel" value="มัธยมศึกษาตอนต้น" required> ระดับมัธยมศึกษาตอนต้น</label>
-                        <label><input type="radio" name="applyLevel" value="มัธยมศึกษาตอนปลาย"> ระดับมัธยมศึกษาตอนปลาย</label>
+                        <label><input type="radio" name="applyLevel" value="มัธยมศึกษาตอนต้น" required> ระดับ ม.ต้น (ม.1 - ม.3)</label>
+                        <label><input type="radio" name="applyLevel" value="มัธยมศึกษาตอนปลาย"> ระดับ ม.ปลาย (ม.3 - ม.5)</label>
+                    </div>
+                </div>
+
+                <div class="qr-box" id="paymentQrSection">
+                    <h3 style="color: var(--theme-purple); margin-top: 0;">สแกนเพื่อชำระค่าสมัครสอบ (100 บาท)</h3>
+                    <p style="color: var(--danger); font-size: 0.95rem; margin-top: -10px; font-weight: bold;">* ห้ามโอนผ่านแอปพลิเคชัน True Wallet เด็ดขาด เนื่องจากไม่สามารถตรวจสอบได้ *</p>
+                    <img id="qrDisplay" src="" alt="กำลังโหลดรูปภาพการชำระเงิน..." style="display: none; max-width: 400px; width: 100%;">
+                </div>
+
+                <div class="grid-3" style="background: #F9FAFC; padding: 20px; border-radius: 12px; border: 1px solid var(--border-color);">
+                    <div class="input-group" style="margin-bottom: 0;">
+                        <label>วันที่โอนเงิน <span class="req">*</span></label>
+                        <input type="date" id="transferDate" required>
+                    </div>
+                    <div class="input-group" style="margin-bottom: 0;">
+                        <label>เวลาที่โอน (น.) <span class="req">*</span></label>
+                        <input type="time" id="transferTime" required>
+                    </div>
+                    <div class="input-group" style="margin-bottom: 0;">
+                        <label>ยอดเงิน (บาท) <span class="req">*</span></label>
+                        <input type="number" id="transferAmount" placeholder="เช่น 100" required>
                     </div>
                 </div>
 
                 <div class="input-group" style="margin-top: 30px;">
-                    <label>หลักฐานการชำระค่าสมัครสอบ <span class="req">*</span></label>
-                    <span class="hint">อัปโหลดสลิปโอนเงินที่เห็นข้อมูลชัดเจน ห้ามปิด QR Code (รองรับไฟล์รูปภาพ .jpg, .png)</span>
+                    <label>อัปโหลดหลักฐานการโอนเงิน (สลิป) <span class="req">*</span></label>
+                    <span class="hint">อัปโหลดสลิปที่เห็นวันที่ เวลา และ ยอดเงิน ชัดเจน (รองรับไฟล์ .jpg, .png)</span>
                     <input type="file" id="paymentSlip" accept="image/*" required style="padding: 10px; background: #F9F9F9;">
                 </div>
 
                 <div class="pdpa-box">
                     <p><b>ข้อตกลงการเก็บรวบรวมข้อมูลส่วนบุคคล (PDPA)</b><br>
-                    ข้าพเจ้ายินยอมให้ศูนย์สอบโอลิมปิกวิชาการ สอวน. วิชาดาราศาสตร์ โรงเรียนสามเสนวิทยาลัย เก็บรวบรวม ใช้ และเปิดเผยข้อมูลส่วนบุคคลที่ข้าพเจ้าได้กรอกไว้ในแบบฟอร์มนี้ เพื่อวัตถุประสงค์ในการดำเนินการสมัครสอบ การประกาศผลสอบ และการติดต่อประสานงานที่เกี่ยวข้องกับการสอบเท่านั้น</p>
+                    ข้าพเจ้ายินยอมให้ศูนย์สอบโอลิมปิกวิชาการ สอวน. วิชาดาราศาสตร์ โรงเรียนสามเสนวิทยาลัย เก็บรวบรวม ใช้ และเปิดเผยข้อมูลส่วนบุคคลที่ข้าพเจ้าได้กรอกไว้ในแบบฟอร์มนี้ เพื่อวัตถุประสงค์ในการดำเนินการสมัครสอบเท่านั้น</p>
                     <label class="pdpa-checkbox-label">
                         <input type="checkbox" id="pdpaConsent" onchange="toggleSubmitBtn()">
-                        ข้าพเจ้าได้อ่านและยอมรับข้อตกลงการใช้ข้อมูลส่วนบุคคลดังกล่าว
+                        ข้าพเจ้าได้อ่านและยอมรับข้อตกลงดังกล่าว
                     </label>
                 </div>
 
@@ -551,40 +266,44 @@
         // ⚠️ วาง Web App URL ของคุณที่นี่
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec"; 
 
-        // ดึงปีการศึกษาจาก LocalStorage (ค่าเริ่มต้น 2569) และนำไปแสดงผล
         let activeYearTh = localStorage.getItem('activeYear') || '2569';
-        let activeYearEn = parseInt(activeYearTh) - 543; // แปลงเป็นปี ค.ศ. สำหรับใช้คำนวณอายุ
+        let activeYearEn = parseInt(activeYearTh) - 543; 
 
         window.onload = function() {
             document.getElementById('displayYearBadge').innerText = `ประจำปีการศึกษา ${activeYearTh}`;
 
+            fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'getQrCode' }) })
+            .then(res => res.json())
+            .then(result => {
+                if(result.status === 'success' && result.url) {
+                    const img = document.getElementById('qrDisplay');
+                    img.src = result.url;
+                    img.style.display = 'inline-block';
+                } else {
+                    document.getElementById('paymentQrSection').innerHTML += '<p style="color:var(--danger); font-weight:bold;">ไม่พบรูปภาพ QR Code กรุณาติดต่อเจ้าหน้าที่</p>';
+                }
+            });
+
             const currentRole = localStorage.getItem('userRole') || 'guest';
-            const currentName = localStorage.getItem('userName') || '';
             const showAdmin = (currentRole === 'admin' || currentRole === 'it');
             
-            const profileForm = document.getElementById('profileForm');
-            const adminTopBar = document.getElementById('adminTopBar');
-
             if (currentRole !== 'guest') {
-                profileForm.style.display = 'flex';
-                adminTopBar.style.display = 'block';
-                
-                document.getElementById('displayName').innerText = currentName;
-                document.getElementById('userAvatar').innerText = currentName ? currentName.charAt(0) : 'A';
+                document.getElementById('profileForm').style.display = 'flex';
+                document.getElementById('adminTopBar').style.display = 'block';
+                document.getElementById('displayName').innerText = localStorage.getItem('userName') || '';
+                document.getElementById('userAvatar').innerText = localStorage.getItem('userName') ? localStorage.getItem('userName').charAt(0) : 'A';
 
-                if(currentRole === 'admin') {
-                    document.getElementById('displayRole').innerText = 'Administrator';
-                    document.getElementById('userAvatar').style.background = '#50CD89';
-                } else if(currentRole === 'it') {
+                if(currentRole === 'it') {
                     document.getElementById('displayRole').innerText = 'IT Support';
                     document.getElementById('userAvatar').style.background = '#F1416C';
+                } else {
+                    document.getElementById('displayRole').innerText = 'Administrator';
                 }
             }
 
             document.querySelectorAll('.role-admin').forEach(el => {
                 if(el.tagName.toLowerCase() === 'a') el.style.display = showAdmin ? 'inline-block' : 'none';
             });
-            
             if(currentRole === 'it') {
                 document.querySelectorAll('.role-it').forEach(el => {
                     if(el.tagName.toLowerCase() === 'a') el.style.display = 'inline-block';
@@ -598,59 +317,37 @@
             window.location.reload(); 
         }
 
-        // จัดการเบอร์โทรศัพท์ (ใส่ขีดอัตโนมัติ)
         function formatPhoneNumber(input) {
             let val = input.value.replace(/\D/g, '');
-            if (val.length > 3 && val.length <= 6) {
-                val = val.slice(0, 3) + '-' + val.slice(3);
-            } else if (val.length > 6) {
-                val = val.slice(0, 3) + '-' + val.slice(3, 6) + '-' + val.slice(6, 10);
-            }
+            if (val.length > 3 && val.length <= 6) val = val.slice(0, 3) + '-' + val.slice(3);
+            else if (val.length > 6) val = val.slice(0, 3) + '-' + val.slice(3, 6) + '-' + val.slice(6, 10);
             input.value = val;
         }
 
         function checkPrefixInName(nameStr) {
             const invalidPrefixes = ["เด็กชาย", "ด.ช.", "ดช", "เด็กหญิง", "ด.ญ.", "ดญ", "นาย", "นางสาว", "น.ส.", "นส", "นาง"];
-            for(let i=0; i<invalidPrefixes.length; i++){
-                if(nameStr.startsWith(invalidPrefixes[i])) {
-                    return invalidPrefixes[i]; 
-                }
-            }
+            for(let i=0; i<invalidPrefixes.length; i++) if(nameStr.startsWith(invalidPrefixes[i])) return invalidPrefixes[i];
             return null; 
         }
 
-        // 🌟 ฟังก์ชันสำหรับเปิด/ปิดปุ่ม Submit ตามการกด Checkbox PDPA
         function toggleSubmitBtn() {
-            const pdpaChecked = document.getElementById('pdpaConsent').checked;
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = !pdpaChecked;
+            document.getElementById('submitBtn').disabled = !document.getElementById('pdpaConsent').checked;
         }
 
         document.getElementById('registerForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // เช็คอีกรอบเพื่อความชัวร์ว่ากดยอมรับ PDPA แล้ว
-            if(!document.getElementById('pdpaConsent').checked) {
-                alert("กรุณากดยอมรับข้อตกลง PDPA ก่อนดำเนินการต่อ");
-                return;
-            }
+            if(!document.getElementById('pdpaConsent').checked) return alert("กรุณากดยอมรับข้อตกลง PDPA");
 
             const btn = document.getElementById('submitBtn');
             btn.innerHTML = "กำลังตรวจสอบข้อมูล... ⏳";
             btn.disabled = true;
 
             const firstNameStr = document.getElementById('firstName').value.trim();
-
-            const rejectApplication = (message) => {
-                alert(message);
-                btn.innerHTML = "ยืนยันการส่งข้อมูลสมัครสอบ";
-                btn.disabled = false;
-            };
+            const rejectApp = (msg) => { alert(msg); btn.innerHTML = "ยืนยันการส่งข้อมูลสมัครสอบ"; btn.disabled = false; };
 
             const foundPrefix = checkPrefixInName(firstNameStr);
-            if(foundPrefix) {
-                return rejectApplication(`ข้อผิดพลาด: กรุณาลบคำว่า "${foundPrefix}" ออกจากช่อง "ชื่อ"\nเนื่องจากมีให้ระบุในช่อง "คำนำหน้าชื่อ" แล้ว`);
-            }
+            if(foundPrefix) return rejectApp(`ข้อผิดพลาด: ลบคำว่า "${foundPrefix}" ออกจากช่อง "ชื่อ" ด้วยครับ`);
 
             const birthDateValue = document.getElementById('birthDate').value;
             const applyLevel = document.querySelector('input[name="applyLevel"]:checked').value;
@@ -658,34 +355,21 @@
 
             const bDate = new Date(birthDateValue);
             const baseDate = new Date(`${activeYearEn}-01-01`); 
-
             let age = baseDate.getFullYear() - bDate.getFullYear();
             const m = baseDate.getMonth() - bDate.getMonth();
-            if (m < 0 || (m === 0 && baseDate.getDate() < bDate.getDate())) {
-                age--;
-            }
+            if (m < 0 || (m === 0 && baseDate.getDate() < bDate.getDate())) age--;
 
-            if (age < 13) {
-                return rejectApplication(`คุณสมบัติไม่ผ่านเกณฑ์: ผู้เข้าแข่งขันต้องมีอายุไม่ต่ำกว่า 13 ปีบริบูรณ์\n(นับถึงวันที่ 1 ม.ค. ${activeYearEn} อายุของคุณคือ ${Math.max(0, age)} ปี)`);
-            }
+            if (age < 13) return rejectApp(`คุณสมบัติไม่ผ่านเกณฑ์: อายุไม่ต่ำกว่า 13 ปีบริบูรณ์ (นับถึง 1 ม.ค. ${activeYearEn})`);
 
             if (applyLevel === "มัธยมศึกษาตอนต้น") {
-                if (age > 15) {
-                    return rejectApplication(`คุณสมบัติไม่ผ่านเกณฑ์: ระดับ ม.ต้น ต้องมีอายุไม่เกิน 15 ปี\n(นับถึงวันที่ 1 ม.ค. ${activeYearEn} อายุของคุณคือ ${age} ปี)`);
-                }
-                if (!["ม.1", "ม.2", "ม.3"].includes(grade)) {
-                    return rejectApplication("คุณสมบัติไม่ผ่านเกณฑ์: ระดับ ม.ต้น ต้องกำลังศึกษาอยู่ในชั้น ม.1 - ม.3 เท่านั้น");
-                }
+                if (age > 15) return rejectApp(`คุณสมบัติไม่ผ่านเกณฑ์: ม.ต้น ต้องอายุไม่เกิน 15 ปี`);
+                if (!["ม.1", "ม.2", "ม.3"].includes(grade)) return rejectApp("ระดับ ม.ต้น ต้องกำลังศึกษาอยู่ในชั้น ม.1 - ม.3 เท่านั้น");
             } else if (applyLevel === "มัธยมศึกษาตอนปลาย") {
-                if (age > 19) {
-                    return rejectApplication(`คุณสมบัติไม่ผ่านเกณฑ์: ระดับ ม.ปลาย ต้องมีอายุไม่เกิน 19 ปี\n(นับถึงวันที่ 1 ม.ค. ${activeYearEn} อายุของคุณคือ ${age} ปี)`);
-                }
-                if (!["ม.4", "ม.5"].includes(grade)) {
-                    return rejectApplication("คุณสมบัติไม่ผ่านเกณฑ์: ระดับ ม.ปลาย ต้องกำลังศึกษาอยู่ในชั้น ม.4 หรือ ม.5 เท่านั้น\n(ไม่อนุญาตให้นักเรียนชั้น ม.6 สมัครสอบ)");
-                }
+                if (age > 19) return rejectApp(`คุณสมบัติไม่ผ่านเกณฑ์: ม.ปลาย ต้องอายุไม่เกิน 19 ปี`);
+                if (!["ม.3", "ม.4", "ม.5"].includes(grade)) return rejectApp("ระดับ ม.ปลาย ต้องกำลังศึกษาอยู่ในชั้น ม.3 - ม.5 เท่านั้น");
             }
 
-            btn.innerHTML = "กำลังแปลงไฟล์และอัปโหลดข้อมูล... ⏳";
+            btn.innerHTML = "กำลังอัปโหลดสลิป... ⏳";
             const fileInput = document.getElementById('paymentSlip');
             const file = fileInput.files[0];
 
@@ -693,58 +377,44 @@
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
                 reader.onload = function () {
-                    const base64String = reader.result.split(',')[1]; 
-                    sendData(base64String, file.type, file.name);
+                    sendData(reader.result.split(',')[1], file.type, file.name);
                 };
-                reader.onerror = function (error) {
-                    rejectApplication("เกิดข้อผิดพลาดในการอ่านไฟล์รูปภาพ กรุณาลองใหม่อีกครั้ง");
-                };
-            } else {
-                sendData("", "", "");
-            }
+                reader.onerror = () => rejectApp("เกิดข้อผิดพลาดในการอ่านไฟล์รูปภาพ");
+            } else { sendData("", "", ""); }
 
             function sendData(base64Str, mimeType, fileName) {
-                const data = {
-                    activeYear: activeYearTh, 
-                    prefix: document.getElementById('prefix').value,
-                    firstName: document.getElementById('firstName').value,
-                    lastName: document.getElementById('lastName').value,
-                    idCard: document.getElementById('idCard').value,
-                    birthDate: document.getElementById('birthDate').value,
-                    studentPhone: document.getElementById('studentPhone').value, 
-                    parentPhone: document.getElementById('parentPhone').value,   
-                    grade: document.getElementById('grade').value,
-                    province: document.getElementById('province').value,
-                    school: document.getElementById('school').value,
-                    teacherName: document.getElementById('teacherName').value,
-                    applyLevel: document.querySelector('input[name="applyLevel"]:checked').value,
-                    slipFileBase64: base64Str,
-                    slipMimeType: mimeType,
-                    slipFileName: fileName
-                };
-
                 fetch(GAS_URL, {
                     method: 'POST',
-                    body: JSON.stringify(data)
+                    body: JSON.stringify({
+                        activeYear: activeYearTh, 
+                        prefix: document.getElementById('prefix').value,
+                        firstName: document.getElementById('firstName').value,
+                        lastName: document.getElementById('lastName').value,
+                        idCard: document.getElementById('idCard').value,
+                        birthDate: document.getElementById('birthDate').value,
+                        studentPhone: document.getElementById('studentPhone').value, 
+                        parentPhone: document.getElementById('parentPhone').value,   
+                        grade: document.getElementById('grade').value,
+                        province: document.getElementById('province').value,
+                        school: document.getElementById('school').value,
+                        teacherName: document.getElementById('teacherName').value,
+                        applyLevel: document.querySelector('input[name="applyLevel"]:checked').value,
+                        slipFileBase64: base64Str, slipMimeType: mimeType, slipFileName: fileName,
+                        transferDate: document.getElementById('transferDate').value,
+                        transferTime: document.getElementById('transferTime').value,
+                        transferAmount: document.getElementById('transferAmount').value
+                    })
                 })
-                .then(response => response.json())
+                .then(res => res.json())
                 .then(result => {
-                    if(result.status === 'duplicate') {
-                        // ถ้าแอปสคริปต์ส่งค่าว่าซ้ำ ให้เด้งเตือน
-                        rejectApplication(result.message);
-                    } else if(result.status === 'success') {
-                        // ถ้าสำเร็จจริง
-                        alert("การส่งข้อมูลสำเร็จ! ใบสมัครและหลักฐานของคุณถูกบันทึกเข้าระบบเรียบร้อยแล้ว");
+                    if(result.status === 'duplicate') rejectApp(result.message);
+                    else if(result.status === 'success') {
+                        alert("✅ ส่งข้อมูลสมัครสอบและสลิปสำเร็จ!");
                         document.getElementById('registerForm').reset();
                         window.location.href = "status.html";
-                    } else {
-                        rejectApplication("เกิดข้อผิดพลาด: " + result.message);
-                    }
+                    } else rejectApp("Error: " + result.message);
                 })
-                .catch(error => {
-                    console.error(error);
-                    rejectApplication("เกิดข้อผิดพลาด: ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ในขณะนี้");
-                });
+                .catch(err => { console.error(err); rejectApp("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้"); });
             }
         });
     </script>
