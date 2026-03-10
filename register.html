@@ -729,9 +729,17 @@
                 })
                 .then(response => response.json())
                 .then(result => {
-                    alert("การส่งข้อมูลสำเร็จ! ใบสมัครและหลักฐานของคุณถูกบันทึกเข้าระบบเรียบร้อยแล้ว");
-                    document.getElementById('registerForm').reset();
-                    window.location.href = "status.html";
+                    if(result.status === 'duplicate') {
+                        // ถ้าแอปสคริปต์ส่งค่าว่าซ้ำ ให้เด้งเตือน
+                        rejectApplication(result.message);
+                    } else if(result.status === 'success') {
+                        // ถ้าสำเร็จจริง
+                        alert("การส่งข้อมูลสำเร็จ! ใบสมัครและหลักฐานของคุณถูกบันทึกเข้าระบบเรียบร้อยแล้ว");
+                        document.getElementById('registerForm').reset();
+                        window.location.href = "status.html";
+                    } else {
+                        rejectApplication("เกิดข้อผิดพลาด: " + result.message);
+                    }
                 })
                 .catch(error => {
                     console.error(error);
