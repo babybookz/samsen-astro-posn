@@ -6,6 +6,7 @@
     <title>IT Control Panel | Samsen Astro POSN</title>
     
     <script>
+        // 🔒 ตรวจสอบสิทธิ์เฉพาะ IT เท่านั้น (หน้า it.html ไม่ควรโดนบล็อกด้วย Maintenance Mode)
         const currentRole = localStorage.getItem('userRole');
         const currentUserName = localStorage.getItem('userName') || 'IT Support';
         if (currentRole !== 'it') {
@@ -17,7 +18,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Theme Colors */
             --theme-purple: #311B5E; 
             --theme-purple-light: #4A2B8C;
             --theme-orange: #FF8F00; 
@@ -367,26 +367,32 @@
         window.onload = function() {
             updateProfileUI();
 
-            // โหลดตั้งค่าเดิมทั้งหมดจาก LocalStorage
-            let savedYear = localStorage.getItem('activeYear') || '2569';
-            document.getElementById('activeYear').value = savedYear;
+            // โหลดตั้งค่าจาก Server ก่อน (ถ้ามี) ถ้าไม่มีให้ใช้จาก LocalStorage
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'getSettings' })
+            })
+            .then(res => res.json())
+            .then(res => {
+                if(res.status === 'success') {
+                    const s = res.data;
+                    document.getElementById('activeYear').value = s.activeYear || '2569';
+                    
+                    let currentPhase = s.systemPhase || '1';
+                    document.getElementById('phase' + currentPhase).checked = true;
+                    updateBoxHighlight(currentPhase);
 
-            let currentPhase = localStorage.getItem('systemPhase') || '1';
-            document.getElementById('phase' + currentPhase).checked = true;
-            updateBoxHighlight(currentPhase);
+                    let regStatus = s.regStatus || 'open';
+                    if(regStatus === 'open') document.getElementById('regOpen').checked = true;
+                    else if(regStatus === 'closed') document.getElementById('regClosed').checked = true;
+                    else document.getElementById('regAuto').checked = true;
+                    updateRegStatusHighlight(regStatus);
 
-            // โหลดตั้งค่าโหมดรับสมัคร
-            let regStatus = localStorage.getItem('regStatus') || 'open';
-            if(regStatus === 'open') document.getElementById('regOpen').checked = true;
-            else if(regStatus === 'closed') document.getElementById('regClosed').checked = true;
-            else document.getElementById('regAuto').checked = true;
-            updateRegStatusHighlight(regStatus);
-
-            let savedOpenTime = localStorage.getItem('regOpenTime');
-            if(savedOpenTime) document.getElementById('regOpenTime').value = savedOpenTime;
-
-            let savedCloseTime = localStorage.getItem('regCloseTime');
-            if(savedCloseTime) document.getElementById('regCloseTime').value = savedCloseTime;
+                    if(s.regOpenTime) document.getElementById('regOpenTime').value = s.regOpenTime;
+                    if(s.regCloseTime) document.getElementById('regCloseTime').value = s.regCloseTime;
+                }
+            })
+            .catch(err => console.error("โหลดตั้งค่าไม่สำเร็จ"));
 
             // ดึงรายชื่อ Admin
             fetchAdmins();
@@ -471,14 +477,17 @@
                 
                 payload = { regStatus: st, regOpenTime: openTime, regCloseTime: closeTime };
                 localStorage.setItem('regStatus', st);
-                localStorage.setItem('regOpenTime', openTime);
-                localStorage.setItem('regCloseTime', closeTime);
             }
             else if(type === 'phase') {
                 const ph = document.querySelector('input[name="systemPhase"]:checked').value;
                 payload = { systemPhase: ph };
                 localStorage.setItem('systemPhase', ph);
             }
+
+            const btn = event.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = "⏳ กำลังบันทึก...";
+            btn.disabled = true;
 
             // ส่งค่าไปเซฟที่ Server (Google Apps Script)
             fetch(GAS_URL, {
@@ -491,7 +500,11 @@
                     alert(`✅ บันทึกการตั้งค่าลง Server เรียบร้อยแล้ว`);
                 }
             })
-            .catch(err => alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์"));
+            .catch(err => alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์"))
+            .finally(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
         }
 
         // =====================================
