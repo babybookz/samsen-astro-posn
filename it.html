@@ -7,6 +7,7 @@
     
     <script>
         const currentRole = localStorage.getItem('userRole');
+        const currentUserName = localStorage.getItem('userName') || 'IT Support';
         if (currentRole !== 'it') {
             alert('ไม่อนุญาตให้เข้าถึง: พื้นที่นี้สงวนไว้สำหรับฝ่าย IT เท่านั้น');
             window.location.replace('home.html'); 
@@ -89,7 +90,6 @@
 
         /* Input Boxes */
         .setting-box { display: flex; align-items: center; gap: 15px; background: var(--bg-light); padding: 20px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border-color); transition: 0.3s;}
-        .setting-box.time-box { background: white; border: 1px dashed var(--theme-orange); padding: 15px; margin-left: 30px;}
         .setting-box:focus-within { border-color: var(--theme-purple); box-shadow: 0 0 0 3px rgba(49, 27, 94, 0.1); background: white;}
         .setting-box label { font-size: 1.05rem; font-weight: 600; color: var(--text-dark); margin: 0; width: 180px; }
         .setting-input { flex: 1; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Sarabun'; font-size: 1.1rem; color: var(--theme-purple); font-weight: 600; outline: none; transition: 0.3s; }
@@ -101,10 +101,9 @@
         .radio-group.active { border: 2px solid var(--theme-purple); background: #F9FAFC; box-shadow: 0 4px 10px rgba(49, 27, 94, 0.05);}
         .radio-group.active-success { border: 2px solid var(--success); background: #E8FFF3;}
         .radio-group.active-danger { border: 2px solid var(--danger); background: #FFF5F8;}
-        .radio-group.active-warning { border: 2px solid var(--theme-orange); background: #FFF8E1;}
         
         input[type="radio"] { transform: scale(1.3); margin-right: 15px; margin-top: 5px; cursor: pointer; accent-color: var(--theme-orange); }
-        .label-content { display: flex; flex-direction: column; width: 100%;}
+        .label-content { display: flex; flex-direction: column; }
         .label-content label { font-size: 1.1rem; font-weight: 700; color: var(--text-dark); cursor: pointer; margin: 0;}
         .desc { font-size: 0.95rem; color: var(--text-muted); margin-top: 5px; line-height: 1.5; }
 
@@ -212,7 +211,7 @@
                 <div class="card-header-flex">
                     <div class="card-title-box">
                         <div class="card-icon icon-green"><svg viewBox="0 0 24 24"><path d="M17,7H22V17H17V19A1,1 0 0,0 18,20H20V22H17.5C16.95,22 16,21.55 16,21C16,21.55 15.05,22 14.5,22H12V20H14A1,1 0 0,0 15,19V5A1,1 0 0,0 14,4H12V2H14.5C15.05,2 16,2.45 16,3C16,2.45 16.95,2 17.5,2H20V4H18A1,1 0 0,0 17,5V7M2,7H13V9H4V15H13V17H2V7M20,15V9H17V15H20Z" /></svg></div>
-                        <h3 class="card-title-text">ตั้งเวลาเปิด/ปิดรับสมัคร (Registration Timer)</h3>
+                        <h3 class="card-title-text">สถานะการรับสมัคร และ Deadline</h3>
                     </div>
                     <button class="btn-save-inline" onclick="saveSettingField('reg')"><svg viewBox="0 0 24 24"><path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z" /></svg> บันทึก</button>
                 </div>
@@ -220,36 +219,21 @@
                 <div class="radio-group" id="regStatus_open" onclick="selectRegStatus('open')">
                     <input type="radio" id="regOpen" name="regStatus" value="open">
                     <div class="label-content">
-                        <label for="regOpen" style="color: var(--success);">🟢 เปิดรับสมัครทันที (Manual Open)</label>
-                        <div class="desc">เปิดให้ผู้ใช้เข้าสู่หน้า "กรอกใบสมัครสอบ" ได้ทันที จนกว่าจะถึงเวลาปิดระบบ (Deadline)</div>
-                    </div>
-                </div>
-
-                <div class="radio-group" id="regStatus_auto" onclick="selectRegStatus('auto')">
-                    <input type="radio" id="regAuto" name="regStatus" value="auto">
-                    <div class="label-content">
-                        <label for="regAuto" style="color: var(--theme-orange);">⏱️ เปิด-ปิดรับสมัครอัตโนมัติตามเวลา (Auto Timer)</label>
-                        <div class="desc">ระบบจะทำการนับถอยหลัง และเปิด/ปิดการรับสมัครตามเวลาที่ตั้งไว้ด้านล่าง</div>
-                        
-                        <div id="autoTimeBox" style="display: none; width: 100%; margin-top: 15px;">
-                            <div class="setting-box time-box">
-                                <label style="width: 140px; color: var(--theme-purple);">เริ่มเปิดรับสมัคร:</label>
-                                <input type="datetime-local" id="regStartTime" class="setting-input">
-                            </div>
-                        </div>
+                        <label for="regOpen" style="color: var(--success);">🟢 เปิดรับสมัคร (ระบบนับถอยหลังทำงาน)</label>
+                        <div class="desc">ผู้ใช้สามารถเข้าสู่เมนู "กรอกใบสมัครสอบ" ได้ตามปกติ จนกว่าจะถึงเวลาปิดรับสมัคร</div>
                     </div>
                 </div>
 
                 <div class="radio-group" id="regStatus_closed" onclick="selectRegStatus('closed')">
                     <input type="radio" id="regClosed" name="regStatus" value="closed">
                     <div class="label-content">
-                        <label for="regClosed" style="color: var(--danger);">🔴 ปิดรับสมัคร (Manual Close)</label>
-                        <div class="desc">ระงับการเข้าถึงหน้ากรอกใบสมัครทันที</div>
+                        <label for="regClosed" style="color: var(--danger);">🔴 ปิดรับสมัคร</label>
+                        <div class="desc">ระงับการเข้าถึงหน้ากรอกใบสมัคร (ผู้ที่กำลังกรอกอยู่จะไม่สามารถส่งข้อมูลได้)</div>
                     </div>
                 </div>
 
                 <div class="setting-box" id="deadlineBox">
-                    <label style="color: var(--danger);">เวลาปิดรับสมัคร (Deadline):</label>
+                    <label>วัน-เวลาสิ้นสุด</label>
                     <input type="datetime-local" id="regDeadline" class="setting-input">
                 </div>
             </div>
@@ -361,7 +345,6 @@
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec";
         
         let adminUsers = [];
-        const currentUserName = localStorage.getItem('userName') || 'IT Support';
 
         window.onload = function() {
             updateProfileUI();
@@ -372,16 +355,13 @@
 
             let savedDeadline = localStorage.getItem('regDeadline');
             if(savedDeadline) document.getElementById('regDeadline').value = savedDeadline;
-            
-            let savedStartTime = localStorage.getItem('regStartTime');
-            if(savedStartTime) document.getElementById('regStartTime').value = savedStartTime;
 
             let currentPhase = localStorage.getItem('systemPhase') || '1';
             document.getElementById('phase' + currentPhase).checked = true;
             updateBoxHighlight(currentPhase);
 
             let regStatus = localStorage.getItem('regStatus') || 'open';
-            document.getElementById('reg' + (regStatus.charAt(0).toUpperCase() + regStatus.slice(1))).checked = true;
+            document.getElementById('reg' + (regStatus === 'open' ? 'Open' : 'Closed')).checked = true;
             updateRegStatusHighlight(regStatus);
 
             // ดึงรายชื่อ Admin
@@ -391,7 +371,6 @@
         function updateProfileUI() {
             document.getElementById('displayName').innerText = currentUserName;
             document.getElementById('userAvatar').innerText = currentUserName ? currentUserName.charAt(0) : 'I';
-            document.getElementById('displayRole').innerText = 'IT Support';
             document.getElementById('userAvatar').style.background = '#F1416C'; 
         }
 
@@ -416,30 +395,20 @@
         }
 
         function selectRegStatus(status) {
-            document.getElementById('reg' + (status.charAt(0).toUpperCase() + status.slice(1))).checked = true;
+            document.getElementById('reg' + (status === 'open' ? 'Open' : 'Closed')).checked = true;
             updateRegStatusHighlight(status);
         }
-        
         function updateRegStatusHighlight(status) {
             document.getElementById('regStatus_open').className = "radio-group";
-            document.getElementById('regStatus_auto').className = "radio-group";
             document.getElementById('regStatus_closed').className = "radio-group";
-            
             const deadlineBox = document.getElementById('deadlineBox');
-            const autoTimeBox = document.getElementById('autoTimeBox');
 
             if (status === 'open') {
                 document.getElementById('regStatus_open').classList.add('active-success');
                 deadlineBox.style.display = 'flex'; 
-                autoTimeBox.style.display = 'none';
-            } else if (status === 'auto') {
-                document.getElementById('regStatus_auto').classList.add('active-warning');
-                deadlineBox.style.display = 'flex'; 
-                autoTimeBox.style.display = 'block';
             } else {
                 document.getElementById('regStatus_closed').classList.add('active-danger');
                 deadlineBox.style.display = 'none'; 
-                autoTimeBox.style.display = 'none';
             }
         }
 
@@ -456,15 +425,9 @@
             else if(type === 'reg') {
                 const st = document.querySelector('input[name="regStatus"]:checked').value;
                 const dl = document.getElementById('regDeadline').value;
-                const stTime = document.getElementById('regStartTime').value;
-                
-                if((st === 'open' || st === 'auto') && !dl) return alert('กรุณาระบุเวลาปิดรับสมัคร (Deadline)');
-                if(st === 'auto' && !stTime) return alert('กรุณาระบุเวลา "เริ่มเปิดรับสมัคร" ด้วยครับ');
-
+                if(st === 'open' && !dl) return alert('กรุณาระบุเวลาปิดรับสมัคร');
                 localStorage.setItem('regStatus', st);
                 localStorage.setItem('regDeadline', dl);
-                if(st === 'auto') localStorage.setItem('regStartTime', stTime);
-
                 alert(`✅ บันทึกสถานะการรับสมัครเรียบร้อยแล้ว`);
             }
             else if(type === 'phase') {
