@@ -642,7 +642,7 @@
                     <div style="text-align: center;">
                         <a href="#" id="v_slipLink" target="_blank" style="font-size: 0.95rem; color: var(--theme-purple); font-weight: 600; text-decoration: underline;">คลิกเปิดดูรูปขนาดเต็ม</a>
                         
-                        <img id="v_slipImage" class="slip-preview" src="" alt="สลิปโอนเงิน">
+                        <iframe id="v_slipIframe" class="slip-preview" src="" frameborder="0" style="display:none; height: 400px;"></iframe>
                         
                         <div id="v_slipFallback" style="display:none; padding: 20px; background: #FFEBEE; color: #C62828; border-radius: 8px; margin-top: 10px; border: 1px dashed #EF9A9A;">
                             ⚠️ ไม่สามารถแสดงรูปภาพพรีวิวได้<br>อาจเกิดจากการตั้งค่าการแชร์ใน Google Drive<br>กรุณาคลิก <b>"เปิดดูรูปขนาดเต็ม"</b> ด้านบนแทน
@@ -880,27 +880,26 @@
                 document.getElementById('v_transferAmount').innerText = app.transferAmount ? `${app.transferAmount} บาท` : '-';
 
                 const slipLink = document.getElementById('v_slipLink');
-                const slipImg = document.getElementById('v_slipImage');
+                const slipIframe = document.getElementById('v_slipIframe');
                 const slipFallback = document.getElementById('v_slipFallback');
 
                 if (app.slipUrl && app.slipUrl.startsWith('http')) {
                     slipLink.href = app.slipUrl;
                     slipLink.style.display = 'inline-block';
                     
-                    // พยายามแปลงลิงก์ Drive view เป็นลิงก์รูปภาพ (uc?export=view)
                     const match = app.slipUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
                     if(match && match[1]) {
-                        // โหลดภาพ หากโหลดไม่ขึ้นจะไปเรียก onerror ที่ซ่อนใน html แล้วโชว์ fallback
-                        slipImg.src = `https://drive.google.com/uc?export=view&id=${match[1]}`;
-                        slipImg.style.display = 'block';
+                        // 🌟 ใช้ iframe ชี้ไปที่ /preview ของ Google Drive จะแสดงผลได้เสถียรกว่า
+                        slipIframe.src = `https://drive.google.com/file/d/${match[1]}/preview`;
+                        slipIframe.style.display = 'block';
                         slipFallback.style.display = 'none';
                     } else {
-                        slipImg.style.display = 'none';
+                        slipIframe.style.display = 'none';
                         slipFallback.style.display = 'block';
                     }
                 } else { 
                     slipLink.style.display = 'none'; 
-                    slipImg.style.display = 'none';
+                    slipIframe.style.display = 'none';
                     slipFallback.style.display = 'none';
                 }
 
@@ -920,12 +919,6 @@
                 
             } catch (error) { console.error(error); alert("พบข้อผิดพลาด: " + error.message); }
         }
-
-        // กรณีที่รูป Google Drive ดึงมาแสดงผลไม่ได้ (Permissions ฯลฯ)
-        document.getElementById('v_slipImage').onerror = function() {
-            this.style.display = 'none';
-            document.getElementById('v_slipFallback').style.display = 'block';
-        };
 
         function closeModal() { document.getElementById('reviewModal').style.display = 'none'; }
 
