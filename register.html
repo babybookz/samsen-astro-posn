@@ -75,13 +75,7 @@
             --box-shadow: 0px 10px 30px 0px rgba(49, 27, 94, 0.05);
         }
 
-        body { 
-            font-family: 'Sarabun', sans-serif; 
-            background: var(--bg-light); 
-            margin: 0; 
-            color: var(--text-dark); 
-            overflow-x: hidden; 
-        }
+        body { font-family: 'Sarabun', sans-serif; background: var(--bg-light); margin: 0; color: var(--text-dark); overflow-x: hidden; }
 
         /* ================= NAVIGATION ================= */
         .top-admin-bar { background-color: #181C32; color: var(--success); text-align: center; padding: 8px; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px; display: none; }
@@ -115,7 +109,7 @@
         .stepper-wrapper::before { content: ''; position: absolute; top: 18px; left: 0; width: 100%; height: 3px; background: var(--border-color); z-index: 1; }
         .progress-bar { position: absolute; top: 18px; left: 0; height: 3px; background: var(--theme-orange); z-index: 2; transition: width 0.4s ease; width: 0%; }
         
-        .step-item { position: relative; z-index: 3; text-align: center; width: 33.33%; }
+        .step-item { position: relative; z-index: 3; text-align: center; width: 25%; }
         .step-circle { width: 40px; height: 40px; background: white; border: 3px solid var(--border-color); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 700; color: var(--text-muted); margin: 0 auto 10px auto; transition: 0.4s ease; font-size: 1.1rem; }
         .step-title { font-size: 0.9rem; font-weight: 600; color: var(--text-muted); transition: 0.4s ease; }
         
@@ -161,6 +155,14 @@
         .pdpa-box p { font-size: 0.9rem; color: var(--text-dark); margin-top: 0; line-height: 1.5; }
         .pdpa-checkbox-label { display: flex; align-items: flex-start; gap: 10px; font-weight: 600; color: var(--danger); cursor: pointer; margin-bottom: 0; }
         .pdpa-checkbox-label input[type="checkbox"] { margin-top: 3px; transform: scale(1.3); accent-color: var(--danger); cursor: pointer; }
+
+        /* Review Step Styles */
+        .review-box { background: var(--bg-light); border: 1px solid var(--border-color); border-radius: var(--border-radius); padding: 25px; margin-bottom: 25px; }
+        .review-title { font-weight: 700; color: var(--theme-purple); border-bottom: 2px solid var(--theme-orange); display: inline-block; margin-bottom: 15px; padding-bottom: 5px; }
+        .review-row { display: flex; margin-bottom: 10px; font-size: 1rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 5px; }
+        .review-label { width: 180px; font-weight: 600; color: var(--text-muted); }
+        .review-value { flex: 1; font-weight: 600; color: var(--text-dark); }
+        .review-img { max-width: 100%; max-height: 300px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 10px; }
 
         /* Buttons */
         .btn-container { display: flex; gap: 15px; margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 25px;}
@@ -229,7 +231,11 @@
                 </div>
                 <div class="step-item" id="indicator3">
                     <div class="step-circle">3</div>
-                    <div class="step-title">ชำระเงินและยืนยัน</div>
+                    <div class="step-title">ชำระเงิน</div>
+                </div>
+                <div class="step-item" id="indicator4">
+                    <div class="step-circle">4</div>
+                    <div class="step-title">ตรวจสอบข้อมูล</div>
                 </div>
             </div>
 
@@ -272,14 +278,17 @@
                     <div class="grid-3">
                         <div class="input-group">
                             <label>เลขประจำตัวประชาชน <span class="req">*</span></label>
-                            <input type="text" id="idCard" maxlength="13" placeholder="13 หลัก" required>
+                            <span class="hint">ใช้เพื่อยืนยันตัวตน</span>
+                            <input type="text" id="idCard" maxlength="13" placeholder="13 หลัก" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                         </div>
                         <div class="input-group">
                             <label>วัน / เดือน / ปีเกิด <span class="req">*</span></label>
+                            <span class="hint">เพื่อตรวจสอบอายุ</span>
                             <input type="date" id="birthDate" required>
                         </div>
                         <div class="input-group">
                             <label>ระดับชั้นปัจจุบัน <span class="req">*</span></label>
+                            <span class="hint">ระดับชั้นที่กำลังศึกษา</span>
                             <select id="grade" required>
                                 <option value="">-- เลือกระดับชั้น --</option>
                                 <option value="ม.1">มัธยมศึกษาปีที่ 1</option>
@@ -303,7 +312,7 @@
                     <div class="grid-2">
                         <div class="input-group">
                             <label>จังหวัด<span class="req">*</span></label>
-                            <span class="hint">จังหวัดที่ศึกษาอยู่</span>
+                            <span class="hint">ที่ตั้งของโรงเรียน</span>
                             <select id="province" required>
                                 <option value="">-- เลือกจังหวัด --</option>
                                 <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
@@ -350,7 +359,7 @@
                 </div>
 
                 <div class="form-step" id="step3">
-                    <div class="section-title">ส่วนที่ 3: หลักฐานการชำระเงินยืนยันการสมัคร</div>
+                    <div class="section-title">ส่วนที่ 3: หลักฐานการชำระเงิน</div>
 
                     <div class="payment-image-box">
                         <h3 style="margin-top: 0; color: var(--theme-purple);">ข้อมูลบัญชีสำหรับโอนเงิน</h3>
@@ -377,8 +386,40 @@
 
                     <div class="input-group">
                         <label>อัปโหลดสลิปโอนเงิน <span class="req">*</span></label>
-                        <span class="hint">อัปโหลดสลิปที่เห็นข้อมูลชัดเจน ห้ามปิด QR Code (รองรับไฟล์ .jpg, .png)</span>
-                        <input type="file" id="paymentSlip" accept="image/*" required style="padding: 10px; background: #F9F9F9;">
+                        <span class="hint">รองรับไฟล์ .jpg, .png (ขนาดไม่เกิน 5 MB) ห้ามปิด QR Code</span>
+                        <input type="file" id="paymentSlip" accept="image/*" required style="padding: 10px; background: #F9F9F9;" onchange="validateFileSize(this)">
+                    </div>
+
+                    <div class="btn-container">
+                        <button type="button" class="btn btn-outline" onclick="goToStep(2)">⬅ ย้อนกลับ</button>
+                        <button type="button" class="btn btn-primary" onclick="validateStep3()">ถัดไป (ตรวจสอบข้อมูล) ➔</button>
+                    </div>
+                </div>
+
+                <div class="form-step" id="step4">
+                    <div class="section-title">ส่วนที่ 4: ตรวจสอบข้อมูลก่อนส่งใบสมัคร</div>
+                    
+                    <p style="color: var(--danger); font-weight: 600; text-align: center; margin-bottom: 20px;">
+                        * กรุณาตรวจสอบข้อมูลให้ถูกต้องครบถ้วน หากกดยืนยันแล้วจะไม่สามารถแก้ไขได้
+                    </p>
+
+                    <div class="review-box">
+                        <div class="review-title">ข้อมูลส่วนตัว และ การศึกษา</div>
+                        <div class="review-row"><div class="review-label">ระดับที่สมัคร:</div><div class="review-value" id="r_applyLevel"></div></div>
+                        <div class="review-row"><div class="review-label">ชื่อ-นามสกุล:</div><div class="review-value" id="r_name"></div></div>
+                        <div class="review-row"><div class="review-label">เลขบัตร ปชช.:</div><div class="review-value" id="r_idcard"></div></div>
+                        <div class="review-row"><div class="review-label">ระดับชั้น:</div><div class="review-value" id="r_grade"></div></div>
+                        <div class="review-row"><div class="review-label">โรงเรียน:</div><div class="review-value" id="r_school"></div></div>
+                    </div>
+
+                    <div class="review-box">
+                        <div class="review-title">ข้อมูลการชำระเงิน</div>
+                        <div class="review-row"><div class="review-label">วันที่และเวลาโอน:</div><div class="review-value" id="r_transferDateTime"></div></div>
+                        <div class="review-row"><div class="review-label">จำนวนเงิน:</div><div class="review-value" id="r_transferAmount"></div></div>
+                        <div style="margin-top: 15px;">
+                            <span class="review-label" style="display:block; margin-bottom: 5px;">รูปภาพสลิปที่แนบ:</span>
+                            <img id="r_slipPreview" class="review-img" src="" alt="พรีวิวสลิป">
+                        </div>
                     </div>
 
                     <div class="pdpa-box">
@@ -391,7 +432,7 @@
                     </div>
 
                     <div class="btn-container">
-                        <button type="button" class="btn btn-outline" onclick="goToStep(2)">⬅ ย้อนกลับ</button>
+                        <button type="button" class="btn btn-outline" onclick="goToStep(3)">⬅ ย้อนกลับไปแก้ไข</button>
                         <button type="submit" class="btn btn-submit" id="submitBtn" disabled>✅ ยืนยันและส่งใบสมัคร</button>
                     </div>
                 </div>
@@ -467,6 +508,28 @@
             return null; 
         }
 
+        // --- เพิ่มระบบตรวจสอบเลขบัตร ปชช. (ID Card Checksum) ---
+        function isValidThaiID(id) {
+            if (id.length !== 13 || !/^[0-9]+$/.test(id)) return false;
+            let sum = 0;
+            for (let i = 0; i < 12; i++) {
+                sum += parseInt(id.charAt(i)) * (13 - i);
+            }
+            let checkDigit = (11 - (sum % 11)) % 10;
+            return checkDigit === parseInt(id.charAt(12));
+        }
+
+        // --- เพิ่มระบบตรวจสอบขนาดไฟล์ (Max 5MB) ---
+        function validateFileSize(input) {
+            if (input.files && input.files[0]) {
+                const fileSize = input.files[0].size / 1024 / 1024; // in MB
+                if (fileSize > 5) {
+                    alert("ไฟล์รูปภาพมีขนาดใหญ่เกินไป (" + fileSize.toFixed(2) + " MB)\nกรุณาใช้ไฟล์ขนาดไม่เกิน 5 MB ครับ");
+                    input.value = ''; // ล้างค่าไฟล์ที่เลือก
+                }
+            }
+        }
+
         function toggleSubmitBtn() {
             const pdpaChecked = document.getElementById('pdpaConsent').checked;
             document.getElementById('submitBtn').disabled = !pdpaChecked;
@@ -474,33 +537,31 @@
 
         // ================= STEPPER WIZARD LOGIC =================
         function updateStepperUI(stepIndex) {
-            const steps = [1, 2, 3];
+            const steps = [1, 2, 3, 4];
             const progressBar = document.getElementById('progressBar');
             
             steps.forEach(i => {
                 const indicator = document.getElementById('indicator' + i);
                 const formStep = document.getElementById('step' + i);
                 
-                // Set Display
-                if(i === stepIndex) formStep.classList.add('active');
-                else formStep.classList.remove('active');
+                if(formStep) {
+                    if(i === stepIndex) formStep.classList.add('active');
+                    else formStep.classList.remove('active');
+                }
 
-                // Set Indicator styling
-                if(i < stepIndex) {
-                    indicator.className = 'step-item completed';
-                } else if(i === stepIndex) {
-                    indicator.className = 'step-item active';
-                } else {
-                    indicator.className = 'step-item';
+                if(indicator) {
+                    if(i < stepIndex) indicator.className = 'step-item completed';
+                    else if(i === stepIndex) indicator.className = 'step-item active';
+                    else indicator.className = 'step-item';
                 }
             });
 
-            // Set progress bar width (0%, 50%, 100%)
             if(stepIndex === 1) progressBar.style.width = '0%';
-            if(stepIndex === 2) progressBar.style.width = '50%';
-            if(stepIndex === 3) progressBar.style.width = '100%';
+            if(stepIndex === 2) progressBar.style.width = '33%';
+            if(stepIndex === 3) progressBar.style.width = '66%';
+            if(stepIndex === 4) progressBar.style.width = '100%';
             
-            window.scrollTo(0, 0); // เลื่อนจอขึ้นบนสุดเมื่อเปลี่ยนหน้า
+            window.scrollTo(0, 0); 
         }
 
         function goToStep(stepIndex) {
@@ -512,7 +573,7 @@
             const inputs = stepDiv.querySelectorAll('input, select');
             for(let i=0; i<inputs.length; i++) {
                 if(!inputs[i].checkValidity()) {
-                    inputs[i].reportValidity(); // ให้ Browser แจ้งเตือนช่องที่ลืมกรอก
+                    inputs[i].reportValidity(); 
                     return false;
                 }
             }
@@ -528,6 +589,11 @@
                 return alert(`ข้อผิดพลาด: กรุณาลบคำว่า "${foundPrefix}" ออกจากช่อง "ชื่อ"\nเนื่องจากมีให้ระบุในช่อง "คำนำหน้าชื่อ" แยกต่างหากแล้ว`);
             }
 
+            const idCard = document.getElementById('idCard').value;
+            if(!isValidThaiID(idCard)) {
+                return alert("เลขประจำตัวประชาชนไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง");
+            }
+
             const birthDateValue = document.getElementById('birthDate').value;
             const applyLevelEl = document.querySelector('input[name="applyLevel"]:checked');
             const grade = document.getElementById('grade').value;
@@ -535,7 +601,6 @@
             if(!applyLevelEl) return alert("กรุณาเลือกระดับที่ต้องการสมัคร");
             const applyLevel = applyLevelEl.value;
 
-            // คำนวณอายุอ้างอิงวันที่ 1 มกราคม ของปีที่จัดแข่งขัน
             const bDate = new Date(birthDateValue);
             const baseDate = new Date(`${activeYearEn}-01-01`); 
             let age = baseDate.getFullYear() - bDate.getFullYear();
@@ -559,23 +624,48 @@
                     return alert(`คุณสมบัติไม่ผ่านเกณฑ์: ระดับ ม.ปลาย ต้องมีอายุไม่เกิน 19 ปี\n(นับอายุถึงวันที่ 1 มกราคม ${activeYearTh} อายุของคุณคือ ${age} ปี)`);
                 }
                 if (!["ม.3", "ม.4", "ม.5"].includes(grade)) {
-                    return alert("คุณสมบัติไม่ผ่านเกณฑ์: ระดับ ม.ปลาย ต้องกำลังศึกษาอยู่ในชั้น ม.3 - ม.5 เท่านั้น\n(ไม่อนุญาตให้นักเรียนชั้น ม.6 สมัครสอบ)");
+                    return alert("คุณสมบัติไม่ผ่านเกณฑ์: ระดับ ม.ปลาย ต้องกำลังศึกษาอยู่ในชั้น ม.3 - ม.5 เท่านั้น");
                 }
             }
 
-            goToStep(2); // ผ่านเกณฑ์ -> ไปต่อ Step 2
+            goToStep(2);
         }
 
         function validateStep2() {
             if(!checkHtmlValidity('step2')) return;
-            goToStep(3); // ผ่านเกณฑ์ -> ไปต่อ Step 3
+            goToStep(3); 
+        }
+
+        function validateStep3() {
+            if(!checkHtmlValidity('step3')) return;
+            
+            // เตรียมข้อมูลแสดงใน Step 4 Review
+            document.getElementById('r_applyLevel').innerText = document.querySelector('input[name="applyLevel"]:checked').value;
+            document.getElementById('r_name').innerText = document.getElementById('prefix').value + document.getElementById('firstName').value + " " + document.getElementById('lastName').value;
+            document.getElementById('r_idcard').innerText = document.getElementById('idCard').value;
+            document.getElementById('r_grade').innerText = document.getElementById('grade').value;
+            document.getElementById('r_school').innerText = document.getElementById('school').value + " จ." + document.getElementById('province').value;
+            
+            document.getElementById('r_transferDateTime').innerText = document.getElementById('transferDate').value + " / เวลา " + document.getElementById('transferTime').value + " น.";
+            document.getElementById('r_transferAmount').innerText = document.getElementById('transferAmount').value + " บาท";
+
+            // พรีวิวรูปภาพ
+            const fileInput = document.getElementById('paymentSlip');
+            if(fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('r_slipPreview').src = e.target.result;
+                }
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+
+            goToStep(4);
         }
 
         // ================= SUBMIT FORM =================
         document.getElementById('registerForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            if(!checkHtmlValidity('step3')) return;
             if(!document.getElementById('pdpaConsent').checked) {
                 return alert("กรุณากดยอมรับข้อตกลง PDPA ก่อนดำเนินการต่อ");
             }
@@ -600,7 +690,9 @@
                     btn.disabled = false;
                 };
             } else {
-                sendData("", "", ""); // เผื่อกรณีเกิดข้อผิดพลาดหลุดมาได้
+                alert("กรุณาแนบไฟล์สลิปโอนเงิน");
+                btn.innerHTML = "✅ ยืนยันและส่งใบสมัคร";
+                btn.disabled = false;
             }
 
             function sendData(base64Str, mimeType, fileName) {
@@ -632,6 +724,12 @@
                 })
                 .then(response => response.json())
                 .then(result => {
+                    if(result.status === 'duplicate') {
+                        alert(result.message);
+                        btn.innerHTML = "✅ ยืนยันและส่งใบสมัคร";
+                        btn.disabled = false;
+                        return;
+                    }
                     alert("การส่งข้อมูลสำเร็จ! ใบสมัครและหลักฐานของคุณถูกบันทึกเข้าระบบเรียบร้อยแล้ว");
                     document.getElementById('registerForm').reset();
                     window.location.href = "status.html";
