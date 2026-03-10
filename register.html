@@ -39,23 +39,6 @@
         }
     </script>
 
-    <script>
-        const regStatus = localStorage.getItem('regStatus');
-        const regDeadline = localStorage.getItem('regDeadline');
-        let isTimeOut = false;
-        
-        if(regDeadline) {
-            const countDownDate = new Date(regDeadline).getTime();
-            const now = new Date().getTime();
-            if (now > countDownDate) isTimeOut = true;
-        }
-
-        if (regStatus === 'closed' || isTimeOut) {
-            alert('⛔ ขณะนี้ระบบไม่ได้เปิดรับสมัคร หรือ หมดเวลาการรับสมัครไปแล้วครับ');
-            window.location.replace('home.html'); 
-        }
-    </script>
-
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -441,6 +424,11 @@
         </div>
     </div>
 
+    <div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-light); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <h2 style="color: var(--theme-purple); margin-bottom: 10px;">กำลังเชื่อมต่อกับศูนย์สอบ...</h2>
+        <p style="color: var(--text-muted); font-size: 1.1rem;">กรุณารอสักครู่ ระบบกำลังตรวจสอบสถานะการรับสมัคร ⏳</p>
+    </div>
+
     <script>
         // ⚠️ วาง Web App URL ของคุณที่นี่
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec"; 
@@ -449,22 +437,19 @@
         let activeYearEn = parseInt(activeYearTh) - 543; 
 
         window.onload = function() {
+            // ดึงข้อมูลปี และตั้งค่า Profile
             document.getElementById('displayYearBadge').innerText = `ประจำปีการศึกษา ${activeYearTh}`;
-
             const currentRole = localStorage.getItem('userRole') || 'guest';
             const currentName = localStorage.getItem('userName') || '';
             const showAdmin = (currentRole === 'admin' || currentRole === 'it');
-            
             const profileForm = document.getElementById('profileForm');
             const adminTopBar = document.getElementById('adminTopBar');
 
             if (currentRole !== 'guest') {
                 profileForm.style.display = 'flex';
                 adminTopBar.style.display = 'block';
-                
                 document.getElementById('displayName').innerText = currentName;
                 document.getElementById('userAvatar').innerText = currentName ? currentName.charAt(0) : 'A';
-
                 if(currentRole === 'admin') {
                     document.getElementById('displayRole').innerText = 'Administrator';
                     document.getElementById('userAvatar').style.background = '#50CD89';
@@ -482,6 +467,53 @@
                     if(el.tagName.toLowerCase() === 'a') el.style.display = 'inline-block';
                 });
             }
+
+            // 🌟 เช็คเวลาจาก Server แบบ Real-time
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'getSettings' })
+            })
+            .then(res => res.json())
+            .then(res => {
+                if(res.status === 'success') {
+                    const s = res.data;
+                    const now = new Date().getTime();
+                    
+                    if(s.regStatus === 'closed') {
+                        alert('⛔ ขณะนี้ระบบปิดรับสมัครแล้วครับ');
+                        window.location.replace('home.html');
+                        return;
+                    }
+                    if(s.regCloseTime) {
+                        const deadline = new Date(s.regCloseTime).getTime();
+                        if(now > deadline) {
+                            alert('⛔ หมดเวลาการรับสมัครสอบแล้วครับ');
+                            window.location.replace('home.html');
+                            return;
+                        }
+                    }
+                    if(s.regOpenTime) {
+                        const openTime = new Date(s.regOpenTime).getTime();
+                        if(now < openTime) {
+                            alert('⏳ ระบบยังไม่ถึงเวลาเปิดรับสมัครครับ');
+                            window.location.replace('home.html');
+                            return;
+                        }
+                    }
+                    
+                    // อัปเดตปีการศึกษาจากเซิร์ฟเวอร์เพื่อให้ตรงกัน
+                    activeYearTh = s.activeYear;
+                    activeYearEn = parseInt(activeYearTh) - 543;
+                    document.getElementById('displayYearBadge').innerText = `ประจำปีการศึกษา ${activeYearTh}`;
+                    
+                    // ปิดหน้าจอโหลด เข้าสู่ฟอร์มได้
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                }
+            })
+            .catch(err => {
+                console.error("ไม่สามารถตรวจสอบสถานะได้:", err);
+                document.getElementById('loadingOverlay').style.display = 'none'; // Fallback
+            });
         };
 
         function handleLogout() { 

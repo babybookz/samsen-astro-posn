@@ -452,32 +452,46 @@
         // ฟังก์ชันบันทึกแยกทีละส่วน (Partial Save)
         // =====================================
         function saveSettingField(type) {
+            let payload = {};
+            
             if(type === 'year') {
                 const yr = document.getElementById('activeYear').value;
                 if(!yr || yr.length !== 4) return alert('กรุณากรอกปี 4 หลัก');
+                payload = { activeYear: yr };
                 localStorage.setItem('activeYear', yr);
-                alert(`✅ บันทึกปีการศึกษาเป็น ${yr} เรียบร้อยแล้ว`);
             } 
             else if(type === 'reg') {
                 const st = document.querySelector('input[name="regStatus"]:checked').value;
                 const openTime = document.getElementById('regOpenTime').value;
                 const closeTime = document.getElementById('regCloseTime').value;
                 
-                // ถ้าระบุว่าเอาโหมดออโต้ แต่ไม่กรอกเวลาเลยสักช่อง
                 if(st === 'auto' && !openTime && !closeTime) {
                     return alert('⚠️ กรุณาระบุเวลาเปิด หรือ เวลาปิด อย่างน้อย 1 ช่อง เพื่อใช้งานโหมดอัตโนมัติ');
                 }
                 
+                payload = { regStatus: st, regOpenTime: openTime, regCloseTime: closeTime };
                 localStorage.setItem('regStatus', st);
                 localStorage.setItem('regOpenTime', openTime);
                 localStorage.setItem('regCloseTime', closeTime);
-                alert(`✅ บันทึกสถานะการรับสมัครเรียบร้อยแล้ว`);
             }
             else if(type === 'phase') {
                 const ph = document.querySelector('input[name="systemPhase"]:checked').value;
+                payload = { systemPhase: ph };
                 localStorage.setItem('systemPhase', ph);
-                alert(`✅ บันทึกเฟสแสดงผลเป็น เฟส ${ph} เรียบร้อยแล้ว`);
             }
+
+            // ส่งค่าไปเซฟที่ Server (Google Apps Script)
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'saveSettings', payload: payload })
+            })
+            .then(res => res.json())
+            .then(r => {
+                if(r.status === 'success') {
+                    alert(`✅ บันทึกการตั้งค่าลง Server เรียบร้อยแล้ว`);
+                }
+            })
+            .catch(err => alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์"));
         }
 
         // =====================================
