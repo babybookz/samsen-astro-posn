@@ -343,10 +343,10 @@
         }
         .modal-content { 
             background: white; 
-            padding: 40px; 
+            padding: 35px; 
             border-radius: var(--border-radius); 
-            width: 850px; 
-            max-height: 90vh; 
+            width: 1050px; /* ขยายความกว้าง Modal ขึ้นเพื่อรองรับรูปสลิป */
+            max-height: 95vh; 
             overflow-y: auto; 
             box-shadow: 0 15px 40px rgba(0,0,0,0.2); 
             border-top: 5px solid var(--theme-orange);
@@ -354,7 +354,7 @@
         .modal-header { 
             font-size: 1.4rem; 
             font-weight: 700; 
-            margin-bottom: 25px; 
+            margin-bottom: 20px; 
             color: var(--theme-purple); 
             border-bottom: 2px solid var(--border-color); 
             padding-bottom: 15px; 
@@ -373,12 +373,16 @@
         }
         .btn-close-modal:hover { color: var(--danger); }
         
-        .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .modal-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1.2fr; /* แบ่งซ้าย(ข้อมูล) ขวา(หลักฐานการจ่ายเงิน) */
+            gap: 25px; 
+        }
         @media (max-width: 768px) { .modal-grid { grid-template-columns: 1fr; } }
         
         .info-section { 
             background: var(--bg-light); 
-            padding: 25px; 
+            padding: 20px; 
             border-radius: 12px; 
             border: 1px solid var(--border-color); 
         }
@@ -387,63 +391,64 @@
             font-weight: 700; 
             color: var(--theme-purple); 
             margin-top: 0; 
-            margin-bottom: 20px; 
+            margin-bottom: 15px; 
             border-bottom: 2px solid var(--theme-orange); 
             padding-bottom: 8px; 
             display: inline-block;
         }
-        .info-row { display: flex; margin-bottom: 12px; font-size: 1rem; }
-        .info-label { width: 140px; font-weight: 600; color: var(--text-muted); }
+        .info-row { display: flex; margin-bottom: 10px; font-size: 0.95rem; }
+        .info-label { width: 130px; font-weight: 600; color: var(--text-muted); }
         .info-value { flex: 1; color: var(--text-dark); font-weight: 600; }
         
-        .btn-view-slip { 
-            display: inline-block; 
-            padding: 10px 20px; 
-            background: var(--theme-purple); 
-            color: white; 
-            text-decoration: none; 
-            border-radius: 8px; 
-            font-size: 0.95rem; 
-            font-weight: 600; 
-            margin-top: 10px; 
-            transition: 0.3s;
+        /* สไตล์สำหรับพรีวิวสลิป */
+        .slip-preview {
+            width: 100%;
+            max-height: 450px;
+            object-fit: contain;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: #E4E6EF;
+            margin-top: 10px;
         }
-        .btn-view-slip:hover { 
-            background: var(--theme-purple-light); 
-            box-shadow: 0 4px 10px rgba(49, 27, 94, 0.2);
+        .payment-highlight {
+            background: #FFFDF5;
+            border: 1px dashed var(--theme-orange);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
         }
+        .payment-highlight .info-label { width: 100px; color: var(--theme-orange); }
 
-        .form-group { margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
         .form-group label { 
             display: block; 
             font-weight: 700; 
             color: var(--text-dark); 
             margin-bottom: 8px; 
-            font-size: 1.05rem; 
+            font-size: 1rem; 
         }
         select, textarea { 
             width: 100%; 
-            padding: 14px; 
+            padding: 12px; 
             border: 1px solid var(--border-color); 
             border-radius: 8px; 
             font-family: 'Sarabun'; 
             font-size: 1rem; 
             color: var(--text-dark); 
             box-sizing: border-box; 
-            background: var(--bg-light); 
+            background: white; 
             transition: 0.3s;
         }
         select:focus, textarea:focus { 
             border-color: var(--theme-orange); 
             outline: none; 
-            background: white; 
             box-shadow: 0 0 0 3px rgba(255, 143, 0, 0.1);
         }
         
         .modal-footer { 
             display: flex; 
             gap: 15px; 
-            margin-top: 30px; 
+            margin-top: 20px; 
             grid-column: 1 / -1; 
             border-top: 1px solid var(--border-color); 
             padding-top: 20px;
@@ -580,50 +585,76 @@
                 <span id="modalTitle">พิจารณาใบสมัคร</span>
                 <button class="btn-close-modal" onclick="closeModal()">&times;</button>
             </div>
+            
             <div class="modal-grid">
+                
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <div class="info-section">
+                        <div class="info-title">ข้อมูลผู้สมัคร</div>
+                        <div class="info-row"><div class="info-label">ลำดับใบสมัคร:</div><div class="info-value" id="v_no"></div></div>
+                        <div class="info-row"><div class="info-label">เวลาที่สมัคร:</div><div class="info-value" id="v_time"></div></div>
+                        <div class="info-row"><div class="info-label">เลข ปชช.:</div><div class="info-value" id="v_idCard"></div></div>
+                        <div class="info-row"><div class="info-label">ชื่อ-นามสกุล:</div><div class="info-value" id="v_fullname"></div></div>
+                        <div class="info-row"><div class="info-label">ว/ด/ป เกิด:</div><div class="info-value" id="v_dob"></div></div>
+                        <div class="info-row"><div class="info-label">อายุ (คำนวณ):</div><div class="info-value" id="v_age"></div></div>
+                        <div class="info-row"><div class="info-label">ระดับที่สมัคร:</div><div class="info-value" id="v_applyLevel"></div></div>
+                        <div class="info-row"><div class="info-label">ชั้นเรียน:</div><div class="info-value" id="v_grade"></div></div>
+                        <div class="info-row"><div class="info-label">โรงเรียน:</div><div class="info-value" id="v_school"></div></div>
+                        <div class="info-row"><div class="info-label">เบอร์นักเรียน:</div><div class="info-value" id="v_phone"></div></div>
+                    </div>
+
+                    <div class="info-section" style="border-color: var(--theme-purple);">
+                        <div class="info-title">การพิจารณาอนุมัติ</div>
+                        <div class="form-group">
+                            <label>ผลการตรวจสอบสิทธิ์</label>
+                            <select id="statusSelect" onchange="toggleReasonField()">
+                                <option value="wait">รอตรวจสอบ</option>
+                                <option value="pass">ผ่านเกณฑ์ (ระบบจะออกเลขสอบให้)</option>
+                                <option value="fail">ไม่ผ่านเกณฑ์ (ต้องระบุเหตุผล)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>เหตุผล / หมายเหตุ <span style="color:var(--danger); font-size:0.85rem; display:none;" id="reasonReq">(บังคับกรอก)</span></label>
+                            <textarea id="reasonNote" rows="3" placeholder="ระบุสาเหตุ เช่น ภาพสลิปโอนเงินไม่ชัดเจน, อายุผิดเกณฑ์ตามธรรมนูญ ฯลฯ"></textarea>
+                        </div>
+                        <div id="examIdDisplayBox" style="display:none; margin-top: 15px; padding: 15px; background: var(--theme-purple-light); border-radius: 12px; text-align: center; color: white;">
+                            <div style="font-size:0.9rem; opacity: 0.8; margin-bottom: 5px;">เลขประจำตัวสอบ</div>
+                            <div id="v_examId" style="font-size:1.5rem; font-weight:700; font-family:monospace; letter-spacing: 2px;"></div>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 0.85rem; color: var(--text-muted); text-align: right;">
+                            ผู้ทำรายการ: <span style="font-weight: bold; color: var(--theme-purple);" id="currentAdminNameDisplay"></span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="info-section">
-                    <div class="info-title">ข้อมูลผู้สมัคร</div>
-                    <div class="info-row"><div class="info-label">ลำดับใบสมัคร:</div><div class="info-value" id="v_no"></div></div>
-                    <div class="info-row"><div class="info-label">เวลาที่สมัคร:</div><div class="info-value" id="v_time"></div></div>
-                    <div class="info-row"><div class="info-label">เลข ปชช.:</div><div class="info-value" id="v_idCard"></div></div>
-                    <div class="info-row"><div class="info-label">ชื่อ-นามสกุล:</div><div class="info-value" id="v_fullname"></div></div>
-                    <div class="info-row"><div class="info-label">ว/ด/ป เกิด:</div><div class="info-value" id="v_dob"></div></div>
-                    <div class="info-row"><div class="info-label">ระดับที่สมัคร:</div><div class="info-value" id="v_applyLevel"></div></div>
-                    <div class="info-row"><div class="info-label">ชั้นเรียนปัจจุบัน:</div><div class="info-value" id="v_grade"></div></div>
-                    <div class="info-row"><div class="info-label">โรงเรียน:</div><div class="info-value" id="v_school"></div></div>
-                    <div class="info-row"><div class="info-label">เบอร์นักเรียน:</div><div class="info-value" id="v_phone"></div></div>
-                    <div class="info-row"><div class="info-label">ครูผู้สอน:</div><div class="info-value" id="v_teacher"></div></div>
-                    <div style="margin-top: 20px; border-top: 1px dashed var(--border-color); padding-top: 15px;">
-                        <div class="info-label" style="margin-bottom: 5px;">หลักฐานการชำระเงิน:</div>
-                        <a href="#" id="v_slipUrl" target="_blank" class="btn-view-slip">คลิกดูรูปภาพสลิปโอนเงิน</a>
+                    <div class="info-title">หลักฐานการชำระเงิน</div>
+                    
+                    <div class="payment-highlight">
+                        <div class="info-row"><div class="info-label">วันที่โอน:</div><div class="info-value" id="v_transferDate"></div></div>
+                        <div class="info-row"><div class="info-label">เวลาที่โอน:</div><div class="info-value" id="v_transferTime"></div></div>
+                        <div class="info-row" style="margin-bottom: 0;">
+                            <div class="info-label">จำนวนเงิน:</div>
+                            <div class="info-value" id="v_transferAmount" style="color: var(--danger); font-size: 1.2rem;"></div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center;">
+                        <a href="#" id="v_slipLink" target="_blank" style="font-size: 0.95rem; color: var(--theme-purple); font-weight: 600; text-decoration: underline;">คลิกเปิดดูรูปขนาดเต็ม</a>
+                        
+                        <img id="v_slipImage" class="slip-preview" src="" alt="สลิปโอนเงิน">
+                        
+                        <div id="v_slipFallback" style="display:none; padding: 20px; background: #FFEBEE; color: #C62828; border-radius: 8px; margin-top: 10px; border: 1px dashed #EF9A9A;">
+                            ⚠️ ไม่สามารถแสดงรูปภาพพรีวิวได้<br>อาจเกิดจากการตั้งค่าการแชร์ใน Google Drive<br>กรุณาคลิก <b>"เปิดดูรูปขนาดเต็ม"</b> ด้านบนแทน
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <div class="info-title">การพิจารณาอนุมัติ</div>
-                    <div class="form-group">
-                        <label>ผลการตรวจสอบสิทธิ์</label>
-                        <select id="statusSelect" onchange="toggleReasonField()">
-                            <option value="wait">รอตรวจสอบ</option>
-                            <option value="pass">ผ่านเกณฑ์ (ระบบจะออกเลขที่นั่งสอบให้)</option>
-                            <option value="fail">ไม่ผ่านเกณฑ์ (ต้องระบุเหตุผล)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>เหตุผล / หมายเหตุ <span style="color:var(--danger); font-size:0.85rem; display:none;" id="reasonReq">(บังคับกรอก)</span></label>
-                        <textarea id="reasonNote" rows="4" placeholder="ระบุสาเหตุ เช่น ภาพสลิปโอนเงินไม่ชัดเจน, อายุเกินเกณฑ์ตามธรรมนูญ ฯลฯ"></textarea>
-                    </div>
-                    <div id="examIdDisplayBox" style="display:none; margin-top: 20px; padding: 20px; background: var(--theme-purple-light); border-radius: 12px; text-align: center; color: white;">
-                        <div style="font-size:0.95rem; opacity: 0.8; margin-bottom: 5px;">เลขประจำตัวสอบที่ออกให้แล้ว</div>
-                        <div id="v_examId" style="font-size:1.8rem; font-weight:700; font-family:monospace; letter-spacing: 2px;"></div>
-                    </div>
-                    <div style="margin-top: 15px; font-size: 0.9rem; color: var(--text-muted); text-align: right;">
-                        ผู้ทำรายการ: <span style="font-weight: bold; color: var(--theme-purple);" id="currentAdminNameDisplay"></span>
-                    </div>
-                </div>
+
                 <div class="modal-footer">
                     <button class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
-                    <button class="btn-save-modal" id="btnSaveData" onclick="submitReview()">บันทึกข้อมูล</button>
+                    <button class="btn-save-modal" id="btnSaveData" onclick="submitReview()">บันทึกข้อมูลการตรวจสอบ</button>
                 </div>
+
             </div>
         </div>
     </div>
@@ -661,7 +692,6 @@
                 document.getElementById('userAvatar').style.background = '#F1416C'; 
             }
 
-            // แสดงปุ่ม IT เฉพาะคนที่เป็น IT
             if(role === 'it') {
                 document.querySelectorAll('.role-it').forEach(el => {
                     if(el.tagName.toLowerCase() === 'a') el.style.display = 'inline-block';
@@ -792,16 +822,39 @@
                 
                 if (!app) return alert('ไม่พบข้อมูลผู้สมัคร รหัส ' + currentReviewIdCard);
                 
+                // --- 1. แสดงข้อมูลผู้สมัคร ---
                 document.getElementById('modalTitle').innerText = "พิจารณาใบสมัครลำดับที่ " + (app.no || '-') + " (" + (app.applyLevel || '-') + ")";
                 document.getElementById('v_no').innerText = app.no || '-';
                 document.getElementById('v_time').innerText = app.time || '-';
                 document.getElementById('v_idCard').innerText = app.idCard || '-';
                 document.getElementById('v_fullname').innerText = `${app.prefix || ''}${app.fname || ''} ${app.lname || ''}`;
                 
+                // คำนวณอายุและจัดรูปแบบ ว/ด/ป เกิด
                 let dobText = app.dob || '-';
+                let ageText = '-';
                 if (typeof dobText === 'string' && dobText.includes('T')) {
                     let d = new Date(dobText);
                     dobText = d.toLocaleDateString('th-TH', { day:'2-digit', month:'2-digit', year:'numeric' });
+                    
+                    // คำนวณอายุเทียบกับ 1 ม.ค. ของปีการศึกษาปัจจุบัน
+                    let activeYearEn = parseInt(activeYear) - 543;
+                    let baseDate = new Date(`${activeYearEn}-01-01`);
+                    let age = baseDate.getFullYear() - d.getFullYear();
+                    if (d.getMonth() > 0 || (d.getMonth() === 0 && d.getDate() > 1)) { age--; }
+                    
+                    ageText = `${age} ปี (นับถึง 1 ม.ค. ${activeYear})`;
+                    
+                    // เช็คเกณฑ์อายุ
+                    let isAgeValid = true;
+                    if(age < 13) isAgeValid = false;
+                    if(app.applyLevel.includes('ต้น') && age > 15) isAgeValid = false;
+                    if(app.applyLevel.includes('ปลาย') && age > 19) isAgeValid = false;
+
+                    document.getElementById('v_age').innerHTML = isAgeValid 
+                        ? `<span style="color: var(--success); font-weight: bold;">${ageText}</span>` 
+                        : `<span style="color: var(--danger); font-weight: bold;">${ageText} (ผิดเกณฑ์!)</span>`;
+                } else {
+                    document.getElementById('v_age').innerText = '-';
                 }
                 document.getElementById('v_dob').innerText = dobText;
                 
@@ -809,13 +862,49 @@
                 document.getElementById('v_grade').innerText = app.grade || '-';
                 document.getElementById('v_school').innerText = `${app.school || '-'} (${app.province || '-'})`;
                 document.getElementById('v_phone').innerText = app.phone || '-';
-                document.getElementById('v_teacher').innerText = app.teacher || '-';
                 
-                const slipLink = document.getElementById('v_slipUrl');
-                if (app.slipUrl && app.slipUrl.startsWith('http')) {
-                    slipLink.href = app.slipUrl; slipLink.style.display = 'inline-block';
-                } else { slipLink.style.display = 'none'; }
+                // --- 2. แสดงข้อมูลและรูปสลิปโอนเงิน ---
+                let tDate = app.transferDate || '-';
+                if (typeof tDate === 'string' && tDate.includes('T')) {
+                    let d = new Date(tDate);
+                    tDate = d.toLocaleDateString('th-TH', { day:'2-digit', month:'2-digit', year:'numeric' });
+                }
+                document.getElementById('v_transferDate').innerText = tDate;
+                
+                let tTime = app.transferTime || '-';
+                if (typeof tTime === 'string' && tTime.includes('T')) {
+                     let d = new Date(tTime);
+                     tTime = d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+                }
+                document.getElementById('v_transferTime').innerText = tTime !== '-' ? tTime + ' น.' : '-';
+                document.getElementById('v_transferAmount').innerText = app.transferAmount ? `${app.transferAmount} บาท` : '-';
 
+                const slipLink = document.getElementById('v_slipLink');
+                const slipImg = document.getElementById('v_slipImage');
+                const slipFallback = document.getElementById('v_slipFallback');
+
+                if (app.slipUrl && app.slipUrl.startsWith('http')) {
+                    slipLink.href = app.slipUrl;
+                    slipLink.style.display = 'inline-block';
+                    
+                    // พยายามแปลงลิงก์ Drive view เป็นลิงก์รูปภาพ (uc?export=view)
+                    const match = app.slipUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                    if(match && match[1]) {
+                        // โหลดภาพ หากโหลดไม่ขึ้นจะไปเรียก onerror ที่ซ่อนใน html แล้วโชว์ fallback
+                        slipImg.src = `https://drive.google.com/uc?export=view&id=${match[1]}`;
+                        slipImg.style.display = 'block';
+                        slipFallback.style.display = 'none';
+                    } else {
+                        slipImg.style.display = 'none';
+                        slipFallback.style.display = 'block';
+                    }
+                } else { 
+                    slipLink.style.display = 'none'; 
+                    slipImg.style.display = 'none';
+                    slipFallback.style.display = 'none';
+                }
+
+                // --- 3. สถานะการอนุมัติ ---
                 document.getElementById('statusSelect').value = app.status || 'wait';
                 document.getElementById('reasonNote').value = app.note || '';
                 toggleReasonField();
@@ -823,12 +912,20 @@
                 if(app.examId) {
                     document.getElementById('examIdDisplayBox').style.display = 'block';
                     document.getElementById('v_examId').innerText = app.examId;
-                } else { document.getElementById('examIdDisplayBox').style.display = 'none'; }
+                } else { 
+                    document.getElementById('examIdDisplayBox').style.display = 'none'; 
+                }
 
                 document.getElementById('reviewModal').style.display = 'flex';
                 
             } catch (error) { console.error(error); alert("พบข้อผิดพลาด: " + error.message); }
         }
+
+        // กรณีที่รูป Google Drive ดึงมาแสดงผลไม่ได้ (Permissions ฯลฯ)
+        document.getElementById('v_slipImage').onerror = function() {
+            this.style.display = 'none';
+            document.getElementById('v_slipFallback').style.display = 'block';
+        };
 
         function closeModal() { document.getElementById('reviewModal').style.display = 'none'; }
 
@@ -850,7 +947,6 @@
             let app = dbApplicants[appIndex];
             app.status = status; app.note = note;
             
-            // 🌟 อัปเดตชื่อผู้อนุมัติ
             app.approverName = (status === 'wait') ? '' : currentUserName;
 
             if(status === 'pass' && !app.examId) {
@@ -862,7 +958,6 @@
 
             btn.innerHTML = "กำลังบันทึก... ⏳"; btn.disabled = true;
 
-            // ส่งข้อมูลไปเซฟที่หลังบ้าน
             fetch(GAS_URL, {
                 method: 'POST',
                 body: JSON.stringify({
@@ -880,7 +975,7 @@
                 } else { alert(result.message); }
             })
             .catch(error => { console.error(error); alert('บันทึกไม่สำเร็จ กรุณาลองอีกครั้ง'); })
-            .finally(() => { btn.innerHTML = "บันทึกข้อมูล"; btn.disabled = false; });
+            .finally(() => { btn.innerHTML = "บันทึกข้อมูลการตรวจสอบ"; btn.disabled = false; });
         }
     </script>
 </body>

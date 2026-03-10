@@ -273,6 +273,8 @@
         input[type="text"], 
         input[type="tel"], 
         input[type="date"], 
+        input[type="time"], 
+        input[type="number"], 
         input[type="file"], 
         select { 
             width: 100%; 
@@ -374,6 +376,21 @@
             cursor: not-allowed; 
             transform: none;
         }
+        
+        .payment-image-box {
+            background: #F8F9FA;
+            border: 2px dashed #E4E6EF;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .payment-image-box img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -454,7 +471,6 @@
                     </div>
                     <div class="input-group">
                         <label>วัน / เดือน / ปีเกิด <span class="req">*</span></label>
-
                         <input type="date" id="birthDate" required>
                     </div>
                 </div>
@@ -489,17 +505,17 @@
                         <label>จังหวัด <span class="req">*</span></label>
                         <select id="province" required>
                             <option value="">-- เลือกจังหวัด --</option>
-                            <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>/
-                            <option value="ชัยนาท">ชัยนาท</option>/
-                            <option value="นครนายก">นครนายก</option>/
-                            <option value="นนทบุรี">นนทบุรี</option>/
-                            <option value="ปทุมธานี">ปทุมธานี</option>/
-                            <option value="พระนครศรีอยุธยา">พระนครศรีอยุธยา</option>/
-                            <option value="ลพบุรี">ลพบุรี</option>/
-                            <option value="สระบุรี">สระบุรี</option>/
-                            <option value="สิงห์บุรี">สิงห์บุรี</option>/
-                            <option value="อ่างทอง">อ่างทอง</option>/
-                            <option value="อุทัยธานี">อุทัยธานี</option>/
+                            <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
+                            <option value="ชัยนาท">ชัยนาท</option>
+                            <option value="นครนายก">นครนายก</option>
+                            <option value="นนทบุรี">นนทบุรี</option>
+                            <option value="ปทุมธานี">ปทุมธานี</option>
+                            <option value="พระนครศรีอยุธยา">พระนครศรีอยุธยา</option>
+                            <option value="ลพบุรี">ลพบุรี</option>
+                            <option value="สระบุรี">สระบุรี</option>
+                            <option value="สิงห์บุรี">สิงห์บุรี</option>
+                            <option value="อ่างทอง">อ่างทอง</option>
+                            <option value="อุทัยธานี">อุทัยธานี</option>
                         </select>
                     </div>
                 </div>
@@ -527,8 +543,31 @@
                     </div>
                 </div>
 
-                <div class="input-group" style="margin-top: 30px;">
-                    <label>หลักฐานการชำระค่าสมัครสอบ <span class="req">*</span></label>
+                <div class="payment-image-box">
+                    <h3 style="margin-top: 0; color: var(--theme-purple);">ข้อมูลการชำระเงิน</h3>
+                    <img src="assets/payment.jpg" alt="รายละเอียดการชำระเงิน สอวน. ดาราศาสตร์">
+                    <p style="color: var(--danger); font-size: 0.95rem; font-weight: 600; margin-bottom: 0;">
+                        * กรุณาโอนชำระเงินตามข้อมูลในรูปภาพด้านบนให้เรียบร้อยก่อนกรอกข้อมูลในส่วนถัดไป
+                    </p>
+                </div>
+
+                <div class="grid-3">
+                    <div class="input-group">
+                        <label>วันที่โอนเงิน <span class="req">*</span></label>
+                        <input type="date" id="transferDate" required>
+                    </div>
+                    <div class="input-group">
+                        <label>เวลาที่โอนเงิน <span class="req">*</span></label>
+                        <input type="time" id="transferTime" required>
+                    </div>
+                    <div class="input-group">
+                        <label>จำนวนเงิน (บาท) <span class="req">*</span></label>
+                        <input type="number" id="transferAmount" value="100" min="100" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>หลักฐานการชำระค่าสมัครสอบ (สลิปโอนเงิน) <span class="req">*</span></label>
                     <span class="hint">อัปโหลดสลิปโอนเงินที่เห็นข้อมูลชัดเจน ห้ามปิด QR Code (รองรับไฟล์รูปภาพ .jpg, .png)</span>
                     <input type="file" id="paymentSlip" accept="image/*" required style="padding: 10px; background: #F9F9F9;">
                 </div>
@@ -619,7 +658,7 @@
             return null; 
         }
 
-        // 🌟 ฟังก์ชันสำหรับเปิด/ปิดปุ่ม Submit ตามการกด Checkbox PDPA
+        // ฟังก์ชันสำหรับเปิด/ปิดปุ่ม Submit ตามการกด Checkbox PDPA
         function toggleSubmitBtn() {
             const pdpaChecked = document.getElementById('pdpaConsent').checked;
             const btn = document.getElementById('submitBtn');
@@ -656,32 +695,34 @@
             const applyLevel = document.querySelector('input[name="applyLevel"]:checked').value;
             const grade = document.getElementById('grade').value;
 
+            // 🌟 1. ระบบคำนวณอายุ โดยอ้างอิงจากวันที่ 1 มกราคม ของปีการศึกษาปัจจุบัน
             const bDate = new Date(birthDateValue);
             const baseDate = new Date(`${activeYearEn}-01-01`); 
-
             let age = baseDate.getFullYear() - bDate.getFullYear();
-            const m = baseDate.getMonth() - bDate.getMonth();
-            if (m < 0 || (m === 0 && baseDate.getDate() < bDate.getDate())) {
+            
+            // ถ้าเดือนเกิดมากกว่ามกราคม หรือเกิดเดือนมกราคมแต่วันที่เกิดหลังวันที่ 1 ให้ลบอายุออก 1 ปี
+            if (bDate.getMonth() > 0 || (bDate.getMonth() === 0 && bDate.getDate() > 1)) {
                 age--;
             }
 
+            // 🌟 2. ตรวจสอบคุณสมบัติตามธรรมนูญ สอวน.
             if (age < 13) {
-                return rejectApplication(`คุณสมบัติไม่ผ่านเกณฑ์: ผู้เข้าแข่งขันต้องมีอายุไม่ต่ำกว่า 13 ปีบริบูรณ์\n(นับถึงวันที่ 1 ม.ค. ${activeYearEn} อายุของคุณคือ ${Math.max(0, age)} ปี)`);
+                return rejectApplication(`คุณสมบัติไม่ผ่านเกณฑ์: ผู้เข้าแข่งขันต้องมีอายุไม่ต่ำกว่า 13 ปีบริบูรณ์\n(นับอายุถึงวันที่ 1 มกราคม ${activeYearTh} อายุของคุณคือ ${Math.max(0, age)} ปี)`);
             }
 
             if (applyLevel === "มัธยมศึกษาตอนต้น") {
                 if (age > 15) {
-                    return rejectApplication(`คุณสมบัติไม่ผ่านเกณฑ์: ระดับ ม.ต้น ต้องมีอายุไม่เกิน 15 ปี\n(นับถึงวันที่ 1 ม.ค. ${activeYearEn} อายุของคุณคือ ${age} ปี)`);
+                    return rejectApplication(`คุณสมบัติไม่ผ่านเกณฑ์: ระดับ ม.ต้น ต้องมีอายุไม่เกิน 15 ปี\n(นับอายุถึงวันที่ 1 มกราคม ${activeYearTh} อายุของคุณคือ ${age} ปี)`);
                 }
                 if (!["ม.1", "ม.2", "ม.3"].includes(grade)) {
                     return rejectApplication("คุณสมบัติไม่ผ่านเกณฑ์: ระดับ ม.ต้น ต้องกำลังศึกษาอยู่ในชั้น ม.1 - ม.3 เท่านั้น");
                 }
             } else if (applyLevel === "มัธยมศึกษาตอนปลาย") {
                 if (age > 19) {
-                    return rejectApplication(`คุณสมบัติไม่ผ่านเกณฑ์: ระดับ ม.ปลาย ต้องมีอายุไม่เกิน 19 ปี\n(นับถึงวันที่ 1 ม.ค. ${activeYearEn} อายุของคุณคือ ${age} ปี)`);
+                    return rejectApplication(`คุณสมบัติไม่ผ่านเกณฑ์: ระดับ ม.ปลาย ต้องมีอายุไม่เกิน 19 ปี\n(นับอายุถึงวันที่ 1 มกราคม ${activeYearTh} อายุของคุณคือ ${age} ปี)`);
                 }
-                if (!["ม.4", "ม.5"].includes(grade)) {
-                    return rejectApplication("คุณสมบัติไม่ผ่านเกณฑ์: ระดับ ม.ปลาย ต้องกำลังศึกษาอยู่ในชั้น ม.4 หรือ ม.5 เท่านั้น\n(ไม่อนุญาตให้นักเรียนชั้น ม.6 สมัครสอบ)");
+                if (!["ม.3", "ม.4", "ม.5"].includes(grade)) {
+                    return rejectApplication("คุณสมบัติไม่ผ่านเกณฑ์: ระดับ ม.ปลาย ต้องกำลังศึกษาอยู่ในชั้น ม.3 - ม.5 เท่านั้น\n(ไม่อนุญาตให้นักเรียนชั้น ม.6 สมัครสอบ)");
                 }
             }
 
@@ -718,6 +759,12 @@
                     school: document.getElementById('school').value,
                     teacherName: document.getElementById('teacherName').value,
                     applyLevel: document.querySelector('input[name="applyLevel"]:checked').value,
+                    
+                    // เพิ่มข้อมูลการโอนเงิน 3 ค่านี้ส่งไปยัง Apps Script
+                    transferDate: document.getElementById('transferDate').value,
+                    transferTime: document.getElementById('transferTime').value,
+                    transferAmount: document.getElementById('transferAmount').value,
+
                     slipFileBase64: base64Str,
                     slipMimeType: mimeType,
                     slipFileName: fileName
