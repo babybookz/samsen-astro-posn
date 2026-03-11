@@ -299,7 +299,8 @@
 
                     <div class="grid-2">
                         <div class="input-group">
-                            <label>จังหวัด (ที่ตั้งของโรงเรียน) <span class="req">*</span></label>
+                            <label>จังหวัด<span class="req">*</span></label>
+                            <span class="hint">ที่ตั้งของโรงเรียน</span>
                             <select id="province" required>
                                 <option value="">-- เลือกจังหวัด --</option>
                                 <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
@@ -420,7 +421,7 @@
 
                     <div class="btn-container">
                         <button type="button" class="btn btn-outline" onclick="goToStep(3)">⬅ ย้อนกลับไปแก้ไข</button>
-                        <button type="submit" class="btn btn-submit" id="submitBtn" disabled>✅ ยืนยันและส่งใบสมัคร</button>
+                        <button type="submit" class="btn btn-submit" id="submitBtn" disabled>ยืนยันและส่งใบสมัคร</button>
                     </div>
                 </div>
 
@@ -725,12 +726,12 @@
                 };
                 reader.onerror = function (error) {
                     alert("เกิดข้อผิดพลาดในการอ่านไฟล์รูปภาพ กรุณาลองใหม่อีกครั้ง");
-                    btn.innerHTML = "✅ ยืนยันและส่งใบสมัคร";
+                    btn.innerHTML = "ยืนยันและส่งใบสมัคร";
                     btn.disabled = false;
                 };
             } else {
                 alert("กรุณาแนบไฟล์สลิปโอนเงิน");
-                btn.innerHTML = "✅ ยืนยันและส่งใบสมัคร";
+                btn.innerHTML = "ยืนยันและส่งใบสมัคร";
                 btn.disabled = false;
             }
 
@@ -765,7 +766,7 @@
                 .then(result => {
                     if(result.status === 'duplicate') {
                         alert(result.message);
-                        btn.innerHTML = "✅ ยืนยันและส่งใบสมัคร";
+                        btn.innerHTML = "ยืนยันและส่งใบสมัคร";
                         btn.disabled = false;
                         return;
                     }
@@ -776,7 +777,7 @@
                 .catch(error => {
                     console.error(error);
                     alert("เกิดข้อผิดพลาด: ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ในขณะนี้");
-                    btn.innerHTML = "✅ ยืนยันและส่งใบสมัคร";
+                    btn.innerHTML = "ยืนยันและส่งใบสมัคร";
                     btn.disabled = false;
                 });
             }

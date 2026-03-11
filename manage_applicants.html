@@ -207,8 +207,8 @@
                     <select id="filterStatus" class="select-rows" onchange="applyFilters()">
                         <option value="all">สถานะทั้งหมด</option>
                         <option value="wait">รอตรวจสอบ</option>
-                        <option value="pass">อนุมัติ ✅</option>
-                        <option value="fail">ไม่อนุมัติ ❌</option>
+                        <option value="pass">อนุมัติ</option>
+                        <option value="fail">ไม่อนุมัติ</option>
                     </select>
 
                     <div style="display: flex; align-items: center; gap: 5px; margin-left: 10px;">
@@ -486,12 +486,12 @@
                     statusBadge = '<span class="badge badge-wait">รอตรวจสอบ</span>';
                     btnText = 'ตรวจสิทธิ์';
                 } else if(app.status === 'pass') {
-                    statusBadge = '<span class="badge badge-success">อนุมัติ ✅</span>';
+                    statusBadge = '<span class="badge badge-success">อนุมัติ</span>';
                     btnText = 'แก้ไข';
                     btnClass = 'btn-action btn-done'; 
                     approverHtml = `<span class="approver-name">(ตรวจโดย: ${app.approverName || 'ไม่ทราบชื่อ'})</span>`;
                 } else if(app.status === 'fail') {
-                    statusBadge = '<span class="badge badge-danger">ไม่อนุมัติ ❌</span>';
+                    statusBadge = '<span class="badge badge-danger">ไม่อนุมัติ</span>';
                     btnText = 'แก้ไข';
                     approverHtml = `<span class="approver-name">(ตรวจโดย: ${app.approverName || 'ไม่ทราบชื่อ'})</span>`;
                 }
