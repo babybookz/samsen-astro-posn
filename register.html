@@ -194,6 +194,11 @@
         </div>
     </nav>
 
+    <div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-light); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <h2 style="color: var(--theme-purple); margin-bottom: 10px;">กำลังเชื่อมต่อกับศูนย์สอบ...</h2>
+        <p style="color: var(--text-muted); font-size: 1.1rem;">กรุณารอสักครู่ ระบบกำลังตรวจสอบสถานะการรับสมัคร ⏳</p>
+    </div>
+
     <div class="page-wrapper">
         <div class="container">
             <div class="header-title">
@@ -294,8 +299,7 @@
 
                     <div class="grid-2">
                         <div class="input-group">
-                            <label>จังหวัด<span class="req">*</span></label>
-                            <span class="hint">ที่ตั้งของโรงเรียน</span>
+                            <label>จังหวัด (ที่ตั้งของโรงเรียน) <span class="req">*</span></label>
                             <select id="province" required>
                                 <option value="">-- เลือกจังหวัด --</option>
                                 <option value="กรุงเทพมหานคร">กรุงเทพมหานคร</option>
@@ -424,11 +428,6 @@
         </div>
     </div>
 
-    <div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-light); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-        <h2 style="color: var(--theme-purple); margin-bottom: 10px;">กำลังเชื่อมต่อกับศูนย์สอบ...</h2>
-        <p style="color: var(--text-muted); font-size: 1.1rem;">กรุณารอสักครู่ ระบบกำลังตรวจสอบสถานะการรับสมัคร ⏳</p>
-    </div>
-
     <script>
         // ⚠️ วาง Web App URL ของคุณที่นี่
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec"; 
@@ -468,7 +467,7 @@
                 });
             }
 
-            // 🌟 เช็คเวลาจาก Server แบบ Real-time
+            // 🌟 ยิง API ไปถาม Server ว่าเปิดหรือปิดรับสมัคร (ตัวบล็อกหลัก)
             fetch(GAS_URL, {
                 method: 'POST',
                 body: JSON.stringify({ action: 'getSettings' })
@@ -479,30 +478,36 @@
                     const s = res.data;
                     const now = new Date().getTime();
                     
+                    // 1. ถ้าแอดมินปิดรับสมัครทันที
                     if(s.regStatus === 'closed') {
                         alert('⛔ ขณะนี้ระบบปิดรับสมัครแล้วครับ');
                         window.location.replace('home.html');
                         return;
                     }
-                    if(s.regCloseTime) {
-                        const deadline = new Date(s.regCloseTime).getTime();
-                        if(now > deadline) {
-                            alert('⛔ หมดเวลาการรับสมัครสอบแล้วครับ');
-                            window.location.replace('home.html');
-                            return;
+                    
+                    // 2. ถ้าแอดมินตั้งเวลาอัตโนมัติ ค่อยเอาเวลามาเช็ค
+                    if(s.regStatus === 'auto') {
+                        if(s.regCloseTime) {
+                            const deadline = new Date(s.regCloseTime).getTime();
+                            if(now > deadline) {
+                                alert('⛔ หมดเวลาการรับสมัครสอบแล้วครับ');
+                                window.location.replace('home.html');
+                                return;
+                            }
+                        }
+                        if(s.regOpenTime) {
+                            const openTime = new Date(s.regOpenTime).getTime();
+                            if(now < openTime) {
+                                alert('⏳ ระบบยังไม่ถึงเวลาเปิดรับสมัครครับ');
+                                window.location.replace('home.html');
+                                return;
+                            }
                         }
                     }
-                    if(s.regOpenTime) {
-                        const openTime = new Date(s.regOpenTime).getTime();
-                        if(now < openTime) {
-                            alert('⏳ ระบบยังไม่ถึงเวลาเปิดรับสมัครครับ');
-                            window.location.replace('home.html');
-                            return;
-                        }
-                    }
+                    // ถ้า s.regStatus === 'open' จะข้ามการเช็คเวลามาตรงนี้เลย
                     
                     // อัปเดตปีการศึกษาจากเซิร์ฟเวอร์เพื่อให้ตรงกัน
-                    activeYearTh = s.activeYear;
+                    activeYearTh = s.activeYear || '2569';
                     activeYearEn = parseInt(activeYearTh) - 543;
                     document.getElementById('displayYearBadge').innerText = `ประจำปีการศึกษา ${activeYearTh}`;
                     
@@ -511,8 +516,10 @@
                 }
             })
             .catch(err => {
+                // 🛑 ถ้าเน็ตหลุด หรือติดต่อ Server ไม่ได้ ให้บล็อกทันที
                 console.error("ไม่สามารถตรวจสอบสถานะได้:", err);
-                document.getElementById('loadingOverlay').style.display = 'none'; // Fallback
+                alert("ระบบขัดข้อง: ไม่สามารถเชื่อมต่อฐานข้อมูลเพื่อตรวจสอบสถานะการรับสมัครได้ กรุณาลองใหม่ภายหลัง");
+                window.location.replace('home.html'); 
             });
         };
 

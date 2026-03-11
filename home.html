@@ -72,7 +72,7 @@
         .section-title::before { content: ''; display: block; width: 6px; height: 25px; background: var(--theme-orange); border-radius: 10px;}
 
         .action-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 50px; }
-        .card { background: white; border-radius: 15px; padding: 35px 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.03); text-decoration: none; transition: 0.3s; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: flex-start;}
+        .card { background: white; border-radius: 15px; padding: 35px 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.03); text-decoration: none; transition: 0.3s; border: 1px solid #E4E6EF; display: flex; flex-direction: column; align-items: flex-start;}
         .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(49, 27, 94, 0.08); border-color: var(--theme-purple-light); }
         
         .card-icon { width: 60px; height: 60px; border-radius: 15px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
@@ -124,12 +124,12 @@
 <body>
 
     <div id="adminTopBar" class="top-admin-bar">
-        <span><svg style="width:14px;height:14px;vertical-align:middle;fill:white;margin-top:-2px;" viewBox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 17.96,13.82 17.96,15.47C17.75,16 17.46,16.5 17.13,17Z" /></svg> โหมดผู้ดูแลระบบ:</span> คุณกำลังเข้าสู่ระบบในฐานะเจ้าหน้าที่ศูนย์สอบ
+        <span><svg style="width:14px;height:14px;vertical-align:middle;fill:white;margin-top:-2px;" viewBox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 17.96,13.82 17.96,15.47C17.75,16 17.46,16.5 17.13,17Z" /></svg> โหมดผู้ดูแลระบบ:</span> คุณกำลังเข้าสู่ระบบด้วยสิทธิ์การจัดการ
     </div>
 
     <nav class="navbar">
         <a href="home.html" class="nav-brand">
-            <img src="assets/samsen-emblem.png" alt="Samsen Logo">
+            <img src="assets/samsen-emblem.png" alt="Samsen Logo" onerror="this.src='https://via.placeholder.com/45?text=S'">
             <div>
                 <div class="brand-title">SAMSEN ASTRO</div>
                 <div class="brand-sub">POSN System</div>
@@ -142,10 +142,10 @@
             <a href="register.html">ขั้นตอนการสมัคร</a>
             <a href="#">ติดต่อเรา</a>
 
-            <a href="manage_applicants.html" class="role-admin role-it" style="display: none; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 20px; color: var(--success);">จัดการผู้สมัคร</a>
-            <a href="manage_exam.html" class="role-admin role-it" style="display: none; color: var(--success);">จัดห้องสอบ</a>
-            <a href="manage_score.html" class="role-admin role-it" style="display: none; color: var(--success);">บันทึกคะแนน</a>
-            <a href="it.html" class="role-it" style="display: none; color: var(--theme-orange);">ตั้งค่าระบบ</a>
+            <a href="manage_applicants.html" class="role-admin role-it nav-admin-link" style="display: none; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 20px; color: var(--success);">จัดการผู้สมัคร</a>
+            <a href="manage_exam.html" class="role-admin role-it nav-admin-link" style="display: none; color: var(--success);">จัดห้องสอบ</a>
+            <a href="manage_score.html" class="role-admin role-it nav-admin-link" style="display: none; color: var(--success);">บันทึกคะแนน</a>
+            <a href="it.html" class="role-it nav-admin-link" style="display: none; color: var(--theme-orange);">ตั้งค่าระบบ</a>
         </div>
 
         <div class="nav-auth" id="loginBtnContainer">
@@ -278,9 +278,7 @@
             if (countdownInterval) clearInterval(countdownInterval);
 
             // ฟังก์ชันช่วยบล็อกปุ่ม
-            // ฟังก์ชันช่วยบล็อกปุ่ม
             const disableUI = (msg, btnText, overwriteTimer = true) => {
-                // เพิ่มเงื่อนไขว่า ถ้า overwriteTimer เป็น true ถึงจะลบเวลาทิ้ง
                 if(timerEl && overwriteTimer) { 
                     timerEl.innerHTML = msg; 
                     timerEl.style.color = "#F1416C"; 
@@ -288,6 +286,7 @@
                 if(ctaBtn) {
                     ctaBtn.style.background = "#A1A5B7"; 
                     ctaBtn.style.cursor = "not-allowed";
+                    ctaBtn.style.boxShadow = "none";
                     ctaBtn.innerHTML = `<svg style="width:24px;height:24px" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12C4,13.85 4.63,15.55 5.68,16.91L16.91,5.68C15.55,4.63 13.85,4 12,4M12,20A8,8 0 0,0 20,12C20,10.15 19.37,8.45 18.32,7.09L7.09,18.32C8.45,19.37 10.15,20 12,20Z"/></svg> ${btnText}`;
                     ctaBtn.onclick = function(e) { e.preventDefault(); alert(msg); };
                 }
@@ -303,6 +302,7 @@
                 if(ctaBtn) {
                     ctaBtn.style.background = ""; // ใช้ค่า CSS เดิม
                     ctaBtn.style.cursor = "pointer";
+                    ctaBtn.style.boxShadow = "";
                     ctaBtn.innerHTML = `<svg style="width:24px;height:24px" viewBox="0 0 24 24"><path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" /></svg> สมัครสอบคลิกที่นี่`;
                     ctaBtn.onclick = null; // คืนค่าลิงก์ปกติ
                 }
@@ -349,14 +349,12 @@
                     disableUI("หมดเวลาในการรับสมัครแล้ว", "หมดเขตรับสมัคร");
                     return;
                 } else if (openTime && now >= openTime && !closeTime) {
-                    // ถึงเวลาเปิดแล้ว แต่ไม่ได้ตั้งเวลาปิด
                     clearInterval(countdownInterval);
                     if(timerLabel) timerLabel.innerText = "สถานะระบบ";
                     if(timerEl) { timerEl.innerHTML = "เปิดรับสมัครตามปกติ"; timerEl.style.color = "var(--success)"; }
                     enableUI();
                     return;
                 } else {
-                    // หากไม่ได้ตั้งเวลาอะไรเลย ให้ถือว่าเปิดปกติ
                     clearInterval(countdownInterval);
                     if(timerLabel) timerLabel.innerText = "สถานะระบบ";
                     if(timerEl) { timerEl.innerHTML = "เปิดรับสมัครตามปกติ"; timerEl.style.color = "var(--success)"; }
@@ -374,7 +372,6 @@
                 if (mode === "toOpen") {
                     if(timerLabel) { timerLabel.innerText = "เริ่มรับสมัครในอีก"; timerLabel.style.display = 'block'; }
                     if(timerEl) { timerEl.innerHTML = `${days} วัน ${hours} ชม. ${minutes} นาที ${seconds} วิ`; timerEl.style.color = "var(--theme-orange)"; }
-                    // เติม , false ต่อท้าย เพื่อไม่ให้ข้อความไปทับตัวเลข
                     disableUI("ระบบยังไม่ถึงเวลาเปิดรับสมัคร", "รอเปิดรับสมัคร", false); 
                 } else if (mode === "toClose") {
                     if(timerLabel) { timerLabel.innerText = "เหลือเวลาเปิดรับสมัครอีก"; timerLabel.style.display = 'block'; }
@@ -386,8 +383,30 @@
         }
 
         // ==================== ระบบจัดการ UI และปีการศึกษา ====================
-        function openLoginModal() { document.getElementById('loginModal').style.display = 'flex'; }
-        function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; }
+        function openLoginModal() { 
+            document.getElementById('loginModal').style.display = 'flex'; 
+            document.getElementById('loginId').focus();
+        }
+        function closeLoginModal() { 
+            document.getElementById('loginModal').style.display = 'none'; 
+            document.getElementById('loginId').value = '';
+            document.getElementById('loginPass').value = '';
+        }
+
+        // ปิด Modal เมื่อคลิกพื้นที่ว่างด้านนอก
+        window.onclick = function(event) {
+            const modal = document.getElementById('loginModal');
+            if (event.target === modal) {
+                closeLoginModal();
+            }
+        }
+
+        // กด Enter ที่ช่องรหัสผ่านเพื่อ Login ได้เลย
+        document.getElementById('loginPass').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                loginWithPassword();
+            }
+        });
 
         function updateUI() {
             let activeYear = localStorage.getItem('activeYear') || new Date().getFullYear() + 543;
@@ -428,21 +447,28 @@
             const showAdmin = (currentRole === 'admin' || currentRole === 'it');
             const showIt = (currentRole === 'it');
 
-            // แสดง/ซ่อน เมนูตามบทบาท (Role)
+            // แสดง/ซ่อน เมนูตามบทบาท (Role) แบบแยกระหว่างลิงก์ Navbar และ กล่องการ์ด
             document.querySelectorAll('.role-admin').forEach(el => {
-                el.style.display = showAdmin ? 'flex' : 'none';
-                if(el.tagName.toLowerCase() === 'a') el.style.display = showAdmin ? 'inline-block' : 'none';
+                if (showAdmin) {
+                    el.style.display = el.classList.contains('nav-admin-link') ? 'inline-block' : 'flex';
+                } else {
+                    el.style.display = 'none';
+                }
             });
+
             document.querySelectorAll('.role-it').forEach(el => {
-                el.style.display = showIt ? 'flex' : 'none';
-                if(el.tagName.toLowerCase() === 'a') el.style.display = showIt ? 'inline-block' : 'none';
+                if (showIt) {
+                    el.style.display = el.classList.contains('nav-admin-link') ? 'inline-block' : 'flex';
+                } else {
+                    el.style.display = 'none';
+                }
             });
         }
 
         // ==================== ระบบล็อกอิน ====================
         function loginWithPassword() {
-            const user = document.getElementById('loginId').value;
-            const pass = document.getElementById('loginPass').value;
+            const user = document.getElementById('loginId').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
             const btn = document.getElementById('loginSubmitBtn');
 
             if (!user || !pass) {
@@ -465,7 +491,7 @@
                     closeLoginModal(); 
                     updateUI();
                 } else {
-                    alert(result.message);
+                    alert(result.message || 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
                 }
             })
             .catch(error => {
@@ -480,9 +506,11 @@
         }
 
         function handleLogout() { 
-            localStorage.removeItem('userRole'); 
-            localStorage.removeItem('userName'); 
-            updateUI(); 
+            if(confirm('คุณต้องการออกจากระบบใช่หรือไม่?')) {
+                localStorage.removeItem('userRole'); 
+                localStorage.removeItem('userName'); 
+                updateUI(); 
+            }
         }
 
         window.onload = function() {
