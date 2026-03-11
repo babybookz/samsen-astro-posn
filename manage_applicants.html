@@ -26,7 +26,6 @@
             --text-muted: #7E8299;
             --danger: #F1416C;
             --success: #50CD89;
-            --warning: #FFC700;
             --border-color: #E4E6EF;
             --border-radius: 12px;
             --box-shadow: 0px 10px 30px 0px rgba(49, 27, 94, 0.05);
@@ -39,11 +38,9 @@
             overflow-x: hidden; 
         }
         
-        /* ================= 1. TOP ADMIN BAR ================= */
         .top-admin-bar { background-color: #181C32; color: var(--success); text-align: center; padding: 8px; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px; display: block; }
         .top-admin-bar span { color: white; font-weight: 400; margin-right: 10px; }
 
-        /* ================= HEADER & NAVIGATION ================= */
         .navbar { background-color: var(--theme-purple); padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
         .nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: white;}
         .nav-brand img { height: 45px; width: auto; background: white; padding: 3px; border-radius: 8px;}
@@ -62,7 +59,6 @@
         .btn-logout-icon { background: none; border: none; color: var(--theme-orange); font-size: 1.2rem; cursor: pointer; padding: 5px; transition: 0.3s; margin-left: 5px; display: flex; align-items: center;}
         .btn-logout-icon:hover { color: var(--danger); }
 
-        /* ================= MAIN CONTAINER ================= */
         .page-wrapper { padding: 40px 20px; display: flex; justify-content: center; }
         .container { background: #ffffff; padding: 40px; border-radius: var(--border-radius); box-shadow: var(--box-shadow); max-width: 1400px; width: 100%; box-sizing: border-box; border-top: 5px solid var(--theme-purple); }
         
@@ -70,13 +66,11 @@
         h2 { color: var(--theme-purple); margin: 0; font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px;}
         .subtitle { color: var(--text-muted); font-size: 1.05rem; margin: 5px 0 0 0; }
 
-        /* Tabs */
         .tabs { display: flex; gap: 15px; margin-bottom: 25px; }
         .tab-btn { padding: 12px 30px; border: 1px solid var(--border-color); background: var(--bg-light); color: var(--text-muted); font-size: 1.1rem; font-weight: 700; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; font-family: 'Sarabun'; }
         .tab-btn:hover { border-color: var(--theme-purple); color: var(--theme-purple); }
         .tab-btn.active { background: var(--theme-purple); color: white; border-color: var(--theme-purple); box-shadow: 0 4px 15px rgba(49, 27, 94, 0.2); }
 
-        /* Controls Row (Search & Filter) */
         .controls-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: var(--bg-light); padding: 15px 25px; border-radius: var(--border-radius); border: 1px solid var(--border-color); flex-wrap: wrap; gap: 15px;}
         .search-filter-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         .search-input { padding: 10px 15px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Sarabun'; font-size: 1rem; width: 280px; outline: none; transition: 0.3s; }
@@ -90,17 +84,20 @@
         .btn-page:disabled { color: var(--text-muted); cursor: not-allowed; opacity: 0.6;}
         .page-info { font-size: 1rem; color: var(--text-dark); font-weight: 600; margin: 0 10px;}
 
-        /* Table */
         .table-responsive { overflow-x: auto; border: 1px solid var(--border-color); border-radius: var(--border-radius); }
         table { width: 100%; border-collapse: collapse; min-width: 1100px; background: white;}
         th { background: var(--theme-purple); color: white; font-size: 0.95rem; font-weight: 600; padding: 18px; text-align: left; white-space: nowrap; letter-spacing: 0.5px;}
         td { padding: 12px 18px; font-size: 1rem; color: var(--text-dark); border-bottom: 1px dashed var(--border-color); vertical-align: middle; }
         tr:hover { background-color: #F9FAFC; }
 
+        /* จัดการสี Badge ให้เป็นระเบียบ */
         .badge { padding: 8px 15px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; display: inline-block; text-align: center; }
         .badge-wait { background: #FFF8E1; color: var(--theme-orange); border: 1px solid #FFE082;}
         .badge-success { background: #E8F5E9; color: #2E7D32; border: 1px solid #A5D6A7;}
         .badge-danger { background: #FFEBEE; color: #C62828; border: 1px solid #EF9A9A;}
+        .badge-updated { background: #E1F0FF; color: #1976D2; border: 1px solid #BBDEFB; }
+        .badge-edit { background: #FFF3E0; color: #E65100; border: 1px solid #FFCC80; }
+
         .exam-id-badge { background: var(--bg-light); color: var(--theme-purple); border: 1px solid var(--border-color); font-family: monospace; font-size: 1.1rem; padding: 6px 12px; border-radius: 8px; font-weight: 700; letter-spacing: 1px;}
         .approver-name { font-size: 0.85rem; color: var(--text-muted); display: block; margin-top: 5px; }
 
@@ -207,8 +204,10 @@
                     <select id="filterStatus" class="select-rows" onchange="applyFilters()">
                         <option value="all">สถานะทั้งหมด</option>
                         <option value="wait">รอตรวจสอบ</option>
-                        <option value="pass">ผ่านเกณฑ์</option>
-                        <option value="fail">ไม่ผ่านเกณฑ์</option>
+                        <option value="updated">อัปเดตเอกสารใหม่ 🔔</option>
+                        <option value="edit">รอแก้ไขเอกสาร 📝</option>
+                        <option value="pass">อนุมัติ ✅</option>
+                        <option value="fail">ไม่อนุมัติ ❌</option>
                     </select>
 
                     <div style="display: flex; align-items: center; gap: 5px; margin-left: 10px;">
@@ -279,13 +278,15 @@
                             <label>ผลการตรวจสอบสิทธิ์</label>
                             <select id="statusSelect" onchange="toggleReasonField()">
                                 <option value="wait">รอตรวจสอบ</option>
-                                <option value="pass">ผ่านเกณฑ์ (ระบบจะออกเลขสอบให้)</option>
-                                <option value="fail">ไม่ผ่านเกณฑ์ (ต้องระบุเหตุผล)</option>
+                                <option value="updated" disabled style="display:none;">อัปเดตเอกสารใหม่</option>
+                                <option value="pass">อนุมัติ (ระบบจะออกเลขสอบให้)</option>
+                                <option value="edit">ให้แก้ไขเอกสาร (ให้โอกาสส่งใหม่)</option>
+                                <option value="fail">ไม่อนุมัติ (ตัดสิทธิ์ / ไม่ตรงเงื่อนไข)</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label>เหตุผล / หมายเหตุ <span style="color:var(--danger); font-size:0.85rem; display:none;" id="reasonReq">(บังคับกรอก)</span></label>
-                            <textarea id="reasonNote" rows="3" placeholder="ระบุสาเหตุ เช่น ภาพสลิปโอนเงินไม่ชัดเจน, อายุผิดเกณฑ์ตามธรรมนูญ ฯลฯ"></textarea>
+                            <textarea id="reasonNote" rows="3" placeholder="ระบุสิ่งที่ต้องแก้ไข หรือ เหตุผลที่ไม่อนุมัติ"></textarea>
                         </div>
                         <div id="examIdDisplayBox" style="display:none; margin-top: 15px; padding: 15px; background: var(--theme-purple-light); border-radius: 12px; text-align: center; color: white;">
                             <div style="font-size:0.9rem; opacity: 0.8; margin-bottom: 5px;">เลขประจำตัวสอบ</div>
@@ -334,7 +335,7 @@
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec";
         
         let dbApplicants = []; 
-        let filteredApplicants = []; // เก็บข้อมูลที่ผ่านการกรองแล้ว
+        let filteredApplicants = []; 
         
         let currentReviewIdCard = '';
         let currentLevel = 'ม.ต้น'; 
@@ -383,7 +384,6 @@
             if (level === 'ม.ต้น') document.getElementById('tab-m-ton').classList.add('active');
             else document.getElementById('tab-m-plai').classList.add('active');
 
-            // ล้างค่า Search & Filter ก่อนเปลี่ยนแท็บ
             document.getElementById('searchInput').value = '';
             document.getElementById('filterStatus').value = 'all';
 
@@ -402,7 +402,7 @@
             .then(result => {
                 if (result.status === 'success') {
                     dbApplicants = result.data; 
-                    filteredApplicants = [...dbApplicants]; // จำลองข้อมูลตั้งต้น
+                    filteredApplicants = [...dbApplicants]; 
                     currentPage = 1;
                     renderTable();
                 } else {
@@ -415,7 +415,6 @@
             });
         }
 
-        // ================= SEARCH & FILTER LOGIC =================
         function applyFilters() {
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
             const status = document.getElementById('filterStatus').value;
@@ -432,7 +431,7 @@
                 return matchQuery && matchStatus;
             });
 
-            currentPage = 1; // เมื่อกรองใหม่ ให้กลับไปเริ่มหน้า 1 เสมอ
+            currentPage = 1; 
             renderTable();
         }
 
@@ -457,7 +456,7 @@
             const tbody = document.getElementById('applicantTable');
             tbody.innerHTML = '';
 
-            document.getElementById('controlsRow').style.display = 'flex'; // แสดงแถบควบคุมเสมอ
+            document.getElementById('controlsRow').style.display = 'flex'; 
 
             if (!filteredApplicants || filteredApplicants.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">ไม่พบข้อมูลที่ตรงกับเงื่อนไขการค้นหา</div></td></tr>`;
@@ -487,13 +486,20 @@
                 if(app.status === 'wait') {
                     statusBadge = '<span class="badge badge-wait">รอตรวจสอบ</span>';
                     btnText = 'ตรวจสิทธิ์';
+                } else if(app.status === 'updated') {
+                    statusBadge = '<span class="badge badge-updated">อัปเดตเอกสารใหม่ 🔔</span>';
+                    btnText = 'ตรวจสิทธิ์ใหม่';
                 } else if(app.status === 'pass') {
-                    statusBadge = '<span class="badge badge-success">ผ่านเกณฑ์</span>';
+                    statusBadge = '<span class="badge badge-success">อนุมัติ</span>';
                     btnText = 'แก้ไข';
                     btnClass = 'btn-action btn-done'; 
                     approverHtml = `<span class="approver-name">(ตรวจโดย: ${app.approverName || 'ไม่ทราบชื่อ'})</span>`;
+                } else if(app.status === 'edit') {
+                    statusBadge = '<span class="badge badge-edit">รอแก้ไขเอกสาร 📝</span>';
+                    btnText = 'แก้ไข';
+                    approverHtml = `<span class="approver-name">(แจ้งโดย: ${app.approverName || 'ไม่ทราบชื่อ'})</span>`;
                 } else if(app.status === 'fail') {
-                    statusBadge = '<span class="badge badge-danger">ไม่ผ่านเกณฑ์</span>';
+                    statusBadge = '<span class="badge badge-danger">ไม่อนุมัติ</span>';
                     btnText = 'แก้ไข';
                     approverHtml = `<span class="approver-name">(ตรวจโดย: ${app.approverName || 'ไม่ทราบชื่อ'})</span>`;
                 }
@@ -516,6 +522,14 @@
             });
         }
 
+        // ================= ฟังก์ชันป้องกันการดึงวันที่เพี้ยน =================
+        function formatDateSafe(dateStr) {
+            if(!dateStr || dateStr === '-') return '-';
+            let d = new Date(dateStr);
+            if(isNaN(d.getTime())) return dateStr;
+            return d.toLocaleDateString('th-TH', { day:'2-digit', month:'2-digit', year:'numeric' });
+        }
+
         // ================= MODAL LOGIC =================
         function openReviewModal(idCard) {
             try {
@@ -530,49 +544,44 @@
                 document.getElementById('v_idCard').innerText = app.idCard || '-';
                 document.getElementById('v_fullname').innerText = `${app.prefix || ''}${app.fname || ''} ${app.lname || ''}`;
                 
-                let dobText = app.dob || '-';
                 let ageText = '-';
-                if (typeof dobText === 'string' && dobText.includes('T')) {
+                let dobText = app.dob || '-';
+                
+                if (dobText !== '-') {
                     let d = new Date(dobText);
-                    dobText = d.toLocaleDateString('th-TH', { day:'2-digit', month:'2-digit', year:'numeric' });
-                    
-                    let activeYearEn = parseInt(activeYear) - 543;
-                    let baseDate = new Date(`${activeYearEn}-01-01`);
-                    let age = baseDate.getFullYear() - d.getFullYear();
-                    if (d.getMonth() > 0 || (d.getMonth() === 0 && d.getDate() > 1)) { age--; }
-                    
-                    ageText = `${age} ปี (นับถึง 1 ม.ค. ${activeYear})`;
-                    
-                    let isAgeValid = true;
-                    if(age < 13) isAgeValid = false;
-                    if(app.applyLevel.includes('ต้น') && age > 15) isAgeValid = false;
-                    if(app.applyLevel.includes('ปลาย') && age > 19) isAgeValid = false;
+                    if (!isNaN(d.getTime())) {
+                        let activeYearEn = parseInt(activeYear) - 543;
+                        let baseDate = new Date(`${activeYearEn}-01-01`);
+                        let age = baseDate.getFullYear() - d.getFullYear();
+                        if (d.getMonth() > 0 || (d.getMonth() === 0 && d.getDate() > 1)) { age--; }
+                        
+                        ageText = `${age} ปี (นับถึง 1 ม.ค. ${activeYear})`;
+                        
+                        let isAgeValid = true;
+                        if(age < 13) isAgeValid = false;
+                        if(app.applyLevel.includes('ต้น') && age > 15) isAgeValid = false;
+                        if(app.applyLevel.includes('ปลาย') && age > 19) isAgeValid = false;
 
-                    document.getElementById('v_age').innerHTML = isAgeValid 
-                        ? `<span style="color: var(--success); font-weight: bold;">${ageText}</span>` 
-                        : `<span style="color: var(--danger); font-weight: bold;">${ageText} (ผิดเกณฑ์!)</span>`;
+                        document.getElementById('v_age').innerHTML = isAgeValid 
+                            ? `<span style="color: var(--success); font-weight: bold;">${ageText}</span>` 
+                            : `<span style="color: var(--danger); font-weight: bold;">${ageText} (ผิดเกณฑ์!)</span>`;
+                    } else {
+                        document.getElementById('v_age').innerText = '-';
+                    }
                 } else {
                     document.getElementById('v_age').innerText = '-';
                 }
-                document.getElementById('v_dob').innerText = dobText;
+                
+                document.getElementById('v_dob').innerText = formatDateSafe(app.dob);
                 
                 document.getElementById('v_applyLevel').innerText = app.applyLevel || '-';
                 document.getElementById('v_grade').innerText = app.grade || '-';
                 document.getElementById('v_school').innerText = `${app.school || '-'} (${app.province || '-'})`;
                 document.getElementById('v_phone').innerText = app.phone || '-';
                 
-                let tDate = app.transferDate || '-';
-                if (typeof tDate === 'string' && tDate.includes('T')) {
-                    let d = new Date(tDate);
-                    tDate = d.toLocaleDateString('th-TH', { day:'2-digit', month:'2-digit', year:'numeric' });
-                }
-                document.getElementById('v_transferDate').innerText = tDate;
+                document.getElementById('v_transferDate').innerText = formatDateSafe(app.transferDate);
                 
                 let tTime = app.transferTime || '-';
-                if (typeof tTime === 'string' && tTime.includes('T')) {
-                     let d = new Date(tTime);
-                     tTime = d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
-                }
                 document.getElementById('v_transferTime').innerText = tTime !== '-' ? tTime + ' น.' : '-';
                 document.getElementById('v_transferAmount').innerText = app.transferAmount ? `${app.transferAmount} บาท` : '-';
 
@@ -617,12 +626,13 @@
 
         function closeModal() { 
             document.getElementById('reviewModal').style.display = 'none'; 
-            document.getElementById('v_slipIframe').src = ""; // เคลียร์ iframe เพื่อไม่ให้เปลืองทรัพยากร
+            document.getElementById('v_slipIframe').src = ""; 
         }
 
         function toggleReasonField() {
             const status = document.getElementById('statusSelect').value;
-            document.getElementById('reasonReq').style.display = (status === 'fail') ? 'inline' : 'none';
+            // บังคับกรอกเหตุผลเฉพาะ ไม่อนุมัติ(fail) และ แก้ไขเอกสาร(edit)
+            document.getElementById('reasonReq').style.display = (status === 'fail' || status === 'edit') ? 'inline' : 'none';
         }
 
         function submitReview() {
@@ -630,7 +640,10 @@
             const note = document.getElementById('reasonNote').value;
             const btn = document.getElementById('btnSaveData');
             
-            if(status === 'fail' && note.trim() === '') { alert('กรุณาระบุเหตุผลที่ไม่ผ่านเกณฑ์'); return; }
+            if((status === 'fail' || status === 'edit') && note.trim() === '') { 
+                alert('กรุณาระบุเหตุผลหรือสิ่งที่ต้องแก้ไขให้ชัดเจน'); 
+                return; 
+            }
 
             const appIndex = dbApplicants.findIndex(a => String(a.idCard).trim() === currentReviewIdCard);
             if(appIndex === -1) return alert('ไม่สามารถบันทึกได้ เนื่องจากหาข้อมูลอ้างอิงไม่พบ');
@@ -659,10 +672,16 @@
             .then(res => res.json())
             .then(result => {
                 if (result.status === 'success') {
-                    alert(`บันทึกข้อมูลสำเร็จ!\nสถานะ: ${status === 'pass' ? 'ผ่านเกณฑ์ (ได้เลขสอบ: '+app.examId+')' : (status === 'fail' ? 'ไม่ผ่านเกณฑ์' : 'รอตรวจสอบ')}`);
+                    let statusMsgText = '';
+                    if (status === 'pass') statusMsgText = 'อนุมัติ (ได้เลขสอบ: ' + app.examId + ')';
+                    else if (status === 'fail') statusMsgText = 'ไม่อนุมัติ';
+                    else if (status === 'edit') statusMsgText = 'แจ้งให้แก้ไขเอกสาร';
+                    else statusMsgText = 'รอตรวจสอบ';
+                    
+                    alert(`บันทึกข้อมูลสำเร็จ!\nสถานะ: ${statusMsgText}`);
                     
                     dbApplicants[appIndex] = app; 
-                    applyFilters(); // อัปเดตตารางแบบอิงฟิลเตอร์ปัจจุบัน
+                    applyFilters(); 
                     closeModal(); 
                 } else { alert(result.message); }
             })
