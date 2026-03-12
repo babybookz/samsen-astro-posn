@@ -6,7 +6,6 @@
     <title>IT Control Panel | Samsen Astro POSN</title>
     
     <script>
-        // 🔒 ตรวจสอบสิทธิ์เฉพาะ IT เท่านั้น (หน้า it.html ไม่ควรโดนบล็อกด้วย Maintenance Mode)
         const currentRole = localStorage.getItem('userRole');
         const currentUserName = localStorage.getItem('userName') || 'IT Support';
         if (currentRole !== 'it') {
@@ -33,11 +32,10 @@
         }
         body { font-family: 'Sarabun', sans-serif; background: var(--bg-light); margin: 0; color: var(--text-dark); overflow-x: hidden; }
 
-        /* ================= 1. TOP ADMIN BAR ================= */
+        /* ================= TOP ADMIN BAR & NAVBAR ================= */
         .top-admin-bar { background-color: #181C32; color: var(--success); text-align: center; padding: 8px; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px; display: block; }
         .top-admin-bar span { color: white; font-weight: 400; margin-right: 10px; }
 
-        /* ================= HEADER & NAVIGATION ================= */
         .navbar { background-color: var(--theme-purple); padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
         .nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: white;}
         .nav-brand img { height: 45px; width: auto; background: white; padding: 3px; border-radius: 8px;}
@@ -194,6 +192,36 @@
                 <p class="subtitle">จัดการข้อมูลพื้นฐานและควบคุมการแสดงผลของเว็บไซต์</p>
             </div>
             
+            <div class="setting-card card-orange">
+                <div class="card-header-flex">
+                    <div class="card-title-box">
+                        <div class="card-icon icon-orange">
+                            <svg viewBox="0 0 24 24"><path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2M20 16H5.2L4 17.2V4H20V16M18 14H6V12H18V14M18 10H6V8H18V10M18 6H6V4H18V6Z"/></svg>
+                        </div>
+                        <h3 class="card-title-text">จัดการประกาศข่าวสาร</h3>
+                    </div>
+                </div>
+                
+                <div class="add-admin-form" style="grid-template-columns: 1fr; gap: 15px; border-color: var(--theme-orange);">
+                    <input type="text" id="annTitle" class="add-admin-input" placeholder="หัวข้อประกาศ (เช่น ประกาศผังที่นั่งสอบ)">
+                    <textarea id="annContent" class="add-admin-input" rows="3" placeholder="รายละเอียดประกาศ... (รองรับการขึ้นบรรทัดใหม่)"></textarea>
+                    <button class="btn-add" id="btnAddAnn" style="background: var(--theme-orange); width: 200px;" onclick="addAnnouncement()">+ โพสต์ประกาศ</button>
+                </div>
+
+                <table class="admin-table" style="margin-top: 20px;">
+                    <thead>
+                        <tr>
+                            <th style="width: 150px;">วัน/เวลา</th>
+                            <th>หัวข้อและรายละเอียด</th>
+                            <th style="width: 80px; text-align: center;">จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="annListBody">
+                        <tr><td colspan="3" class="loading-text">กำลังโหลดประกาศ... ⏳</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
             <div class="setting-card">
                 <div class="card-header-flex">
                     <div class="card-title-box">
@@ -333,19 +361,9 @@
             <button class="btn-close" onclick="closeEditModal()">&times;</button>
             <h3 class="modal-title">แก้ไขบัญชี</h3>
             <input type="hidden" id="editIndex">
-            
-            <div class="form-group">
-                <label>ชื่อผู้ดูแลระบบ</label>
-                <input type="text" id="editName" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>Username</label>
-                <input type="text" id="editId" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>Password ใหม่</label>
-                <input type="text" id="editPass" class="form-control">
-            </div>
+            <div class="form-group"><label>ชื่อผู้ดูแลระบบ</label><input type="text" id="editName" class="form-control"></div>
+            <div class="form-group"><label>Username</label><input type="text" id="editId" class="form-control"></div>
+            <div class="form-group"><label>Password ใหม่</label><input type="text" id="editPass" class="form-control"></div>
             <div class="form-group">
                 <label>สิทธิ์การใช้งาน (Role)</label>
                 <select id="editRole" class="form-control">
@@ -353,7 +371,6 @@
                     <option value="it">ฝ่ายไอที (IT)</option>
                 </select>
             </div>
-
             <button class="btn-submit-edit" id="btnSubmitEdit" onclick="saveEditAdmin()">บันทึกการแก้ไข</button>
         </div>
     </div>
@@ -363,15 +380,13 @@
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec";
         
         let adminUsers = [];
+        let announcements = [];
 
         window.onload = function() {
             updateProfileUI();
 
-            // โหลดตั้งค่าจาก Server ก่อน (ถ้ามี) ถ้าไม่มีให้ใช้จาก LocalStorage
-            fetch(GAS_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'getSettings' })
-            })
+            // โหลดตั้งค่าจาก Server
+            fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'getSettings' }) })
             .then(res => res.json())
             .then(res => {
                 if(res.status === 'success') {
@@ -394,8 +409,8 @@
             })
             .catch(err => console.error("โหลดตั้งค่าไม่สำเร็จ"));
 
-            // ดึงรายชื่อ Admin
             fetchAdmins();
+            fetchAnnouncements();
         }
 
         function updateProfileUI() {
@@ -409,6 +424,88 @@
             localStorage.removeItem('userName'); 
             window.location.replace('home.html'); 
         }
+
+        // =====================================
+        // ANNOUNCEMENTS
+        // =====================================
+        function fetchAnnouncements() {
+            fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'getAnnouncements' }) })
+            .then(res => res.json())
+            .then(r => {
+                if(r.status === 'success') {
+                    announcements = r.data;
+                    renderAnnouncements();
+                }
+            })
+            .catch(err => {
+                document.getElementById('annListBody').innerHTML = '<tr><td colspan="3" style="text-align:center;color:red;">โหลดข้อมูลผิดพลาด</td></tr>';
+            });
+        }
+
+        function renderAnnouncements() {
+            const tbody = document.getElementById('annListBody');
+            tbody.innerHTML = '';
+            if(announcements.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);">ไม่มีประกาศในขณะนี้</td></tr>';
+                return;
+            }
+            announcements.forEach(a => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="color:var(--theme-orange); font-weight:bold;">${a.date}</td>
+                        <td>
+                            <div style="font-weight:700; color:var(--theme-purple);">${a.title}</div>
+                            <div style="font-size:0.9rem; color:var(--text-muted); white-space: pre-wrap;">${a.content}</div>
+                        </td>
+                        <td style="text-align:center;">
+                            <button class="btn-delete" onclick="deleteAnnouncement('${a.id}')">ลบ</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function addAnnouncement() {
+            const title = document.getElementById('annTitle').value.trim();
+            const content = document.getElementById('annContent').value.trim();
+            const btn = document.getElementById('btnAddAnn');
+
+            if(!title || !content) return alert("กรุณากรอกหัวข้อและรายละเอียดให้ครบถ้วน");
+
+            btn.innerHTML = "กำลังโพสต์... ⏳";
+            btn.disabled = true;
+
+            fetch(GAS_URL, { 
+                method: 'POST', 
+                body: JSON.stringify({ action: 'addAnnouncement', title: title, content: content }) 
+            })
+            .then(res => res.json())
+            .then(r => {
+                if(r.status === 'success') {
+                    announcements = r.data;
+                    renderAnnouncements();
+                    document.getElementById('annTitle').value = '';
+                    document.getElementById('annContent').value = '';
+                }
+            })
+            .finally(() => { btn.innerHTML = "+ โพสต์ประกาศ"; btn.disabled = false; });
+        }
+
+        function deleteAnnouncement(id) {
+            if(!confirm("ต้องการลบประกาศนี้ใช่หรือไม่?")) return;
+            fetch(GAS_URL, { 
+                method: 'POST', 
+                body: JSON.stringify({ action: 'deleteAnnouncement', id: id }) 
+            })
+            .then(res => res.json())
+            .then(r => {
+                if(r.status === 'success') {
+                    announcements = r.data;
+                    renderAnnouncements();
+                }
+            });
+        }
+
 
         // =====================================
         // ฟังก์ชัน UI ของ Radio Buttons เฟสระบบ
@@ -489,7 +586,7 @@
             btn.innerHTML = "⏳ กำลังบันทึก...";
             btn.disabled = true;
 
-            // ส่งค่าไปเซฟที่ Server (Google Apps Script)
+            // ส่งค่าไปเซฟที่ Server
             fetch(GAS_URL, {
                 method: 'POST',
                 body: JSON.stringify({ action: 'saveSettings', payload: payload })

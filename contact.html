@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ติดต่อเรา | Samsen Astro POSN</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --theme-purple: #311B5E; 
+            --theme-purple-light: #4A2B8C;
+            --theme-orange: #FF8F00; 
+            --theme-orange-hover: #E68100;
+            --bg-light: #F8F9FA;
+            --text-dark: #181C32;
+            --text-muted: #7E8299;
+            --danger: #F1416C;
+            --success: #50CD89;
+            --border-color: #E4E6EF;
+            --card-radius: 16px;
+            --box-shadow: 0px 10px 30px 0px rgba(49, 27, 94, 0.05);
+        }
+
+        body { 
+            font-family: 'Sarabun', sans-serif; 
+            background: var(--bg-light); 
+            margin: 0; 
+            color: var(--text-dark); 
+            overflow-x: hidden; 
+        }
+
+        /* ================= TOP ADMIN BAR ================= */
+        .top-admin-bar { 
+            background-color: #181C32; 
+            color: var(--success); 
+            text-align: center; 
+            padding: 8px; 
+            font-size: 0.85rem; 
+            font-weight: 600; 
+            letter-spacing: 0.5px; 
+            display: none; 
+        }
+        .top-admin-bar span { color: white; font-weight: 400; margin-right: 10px; }
+        
+        /* ================= HEADER & NAVIGATION ================= */
+        .navbar { 
+            background-color: var(--theme-purple); 
+            padding: 15px 50px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+        }
+        .nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: white;}
+        .nav-brand img { height: 45px; width: auto; background: white; padding: 3px; border-radius: 8px;}
+        .brand-title { font-weight: 700; font-size: 1.2rem; line-height: 1.1; }
+        .brand-sub { font-size: 0.8rem; color: #D1C4E9; }
+
+        .nav-links { display: flex; gap: 25px; align-items: center; }
+        .nav-links a { color: white; text-decoration: none; font-weight: 500; font-size: 1rem; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--theme-orange); }
+
+        .nav-profile { display: none; align-items: center; gap: 12px; background: rgba(255,255,255,0.1); padding: 5px 15px 5px 5px; border-radius: 50px;}
+        .profile-avatar { width: 35px; height: 35px; background: var(--success); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+        .profile-info { color: white; font-size: 0.9rem; line-height: 1.2; }
+        .profile-name { font-weight: 600; }
+        .profile-role { font-size: 0.75rem; color: #D1C4E9; }
+        .btn-logout-icon { background: none; border: none; color: var(--theme-orange); font-size: 1.2rem; cursor: pointer; padding: 5px; transition: 0.3s; margin-left: 5px; display: flex; align-items: center;}
+        .btn-logout-icon:hover { color: var(--danger); }
+
+        /* ================= MAIN CONTAINER ================= */
+        .page-wrapper { 
+            display: flex; 
+            justify-content: center; 
+            padding: 50px 20px; 
+        }
+        .container { 
+            max-width: 1100px; 
+            width: 100%; 
+        }
+
+        .header-title { 
+            text-align: center; 
+            margin-bottom: 40px; 
+        }
+        h2 { 
+            color: var(--theme-purple); 
+            margin: 0 0 10px 0; 
+            font-weight: 700; 
+            font-size: 2.2rem; 
+            letter-spacing: -0.5px; 
+        }
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.15rem;
+            margin: 0;
+        }
+
+        /* ================= CONTACT LAYOUT ================= */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 30px;
+        }
+
+        .info-card {
+            background: white;
+            padding: 35px;
+            border-radius: var(--card-radius);
+            box-shadow: var(--box-shadow);
+            border-top: 4px solid var(--theme-orange);
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-icon {
+            width: 45px;
+            height: 45px;
+            background: #FFF8E1;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .info-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--theme-orange);
+        }
+
+        .info-text h4 {
+            margin: 0 0 5px 0;
+            font-size: 1.1rem;
+            color: var(--theme-purple);
+            font-weight: 700;
+        }
+        .info-text p {
+            margin: 0;
+            color: var(--text-dark);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        .info-text a {
+            color: var(--theme-orange);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .info-text a:hover {
+            text-decoration: underline;
+        }
+
+        .map-card {
+            background: white;
+            border-radius: var(--card-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .map-header {
+            background: var(--bg-light);
+            padding: 15px 25px;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 700;
+            color: var(--theme-purple);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .map-header svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--theme-purple);
+        }
+        .map-container {
+            flex: 1;
+            min-height: 400px;
+            width: 100%;
+        }
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        @media (max-width: 768px) { 
+            .navbar { flex-direction: column; gap: 15px; padding: 15px;}
+            .contact-grid { grid-template-columns: 1fr; }
+            .map-container { min-height: 300px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="adminTopBar" class="top-admin-bar">
+        <span><svg style="width:14px;height:14px;vertical-align:middle;fill:white;margin-top:-2px;" viewBox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 17.96,13.82 17.96,15.47C17.75,16 17.46,16.5 17.13,17Z" /></svg> โหมดผู้ดูแลระบบ:</span> คุณกำลังเข้าสู่ระบบในฐานะเจ้าหน้าที่ศูนย์สอบ
+    </div>
+
+    <nav class="navbar">
+        <a href="home.html" class="nav-brand">
+            <img src="assets/samsen-emblem.png" alt="Samsen Logo">
+            <div>
+                <div class="brand-title">SAMSEN ASTRO</div>
+                <div class="brand-sub">POSN System</div>
+            </div>
+        </a>
+        <div class="nav-links">
+            <a href="home.html">หน้าแรก</a>
+            <a href="register.html">สมัครสอบ</a>
+            <a href="status.html">ตรวจสอบสถานะ</a>
+            <a href="contact.html" style="color: var(--theme-orange); font-weight: 700;">ติดต่อเรา</a>
+            
+            <a href="manage_applicants.html" class="role-admin role-it" style="display: none; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 20px; color: var(--success);">จัดการผู้สมัคร</a>
+            <a href="manage_exam.html" class="role-admin role-it" style="display: none; color: var(--success);">จัดห้องสอบ</a>
+            <a href="manage_score.html" class="role-admin role-it" style="display: none; color: var(--success);">บันทึกคะแนน</a>
+        </div>
+
+        <div class="nav-profile" id="profileForm">
+            <div class="profile-avatar" id="userAvatar">A</div>
+            <div class="profile-info">
+                <div class="profile-name" id="displayName">ชื่อผู้ใช้</div>
+                <div class="profile-role" id="displayRole">ตำแหน่ง</div>
+            </div>
+            <button class="btn-logout-icon" onclick="handleLogout()" title="ออกจากระบบ">
+                <svg viewBox="0 0 24 24" style="width:20px;height:20px;"><path d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z" /></svg>
+            </button>
+        </div>
+    </nav>
+
+    <div class="page-wrapper">
+        <div class="container">
+            <div class="header-title">
+                <h2>ติดต่อเรา</h2>
+                <p class="subtitle">ศูนย์สอบ สอวน. ดาราศาสตร์ โรงเรียนสามเสนวิทยาลัย</p>
+            </div>
+            
+            <div class="contact-grid">
+                <div class="info-card">
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12,2C8.13,2 5,5.13 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9C19,5.13 15.87,2 12,2M7,9A5,5 0 0,1 12,4A5,5 0 0,1 17,9C17,11.88 14.12,16.19 12,18.88C9.88,16.19 7,11.88 7,9M12,11.5A2.5,2.5 0 0,0 14.5,9A2.5,2.5 0 0,0 12,6.5A2.5,2.5 0 0,0 9.5,9A2.5,2.5 0 0,0 12,11.5Z"/></svg>
+                        </div>
+                        <div class="info-text">
+                            <h4>สถานที่ตั้งศูนย์สอบ</h4>
+                            <p>โรงเรียนสามเสนวิทยาลัย<br>
+                                132/11 ถนนพระรามที่ 6 แขวงพญาไท<br>
+                                เขตพญาไท กรุงเทพมหานคร 10400
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <svg viewBox="0 0 24 24"><path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21C10.6,21 3,13.4 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"/></svg>
+                        </div>
+                        <div class="info-text">
+                            <h4>เบอร์โทรศัพท์ (กลุ่มสาระฯ วิทยาศาสตร์)</h4>
+                            <p>02-279-1992 ต่อ 117<br>
+                                <span style="font-size: 0.9rem; color: var(--text-muted);">ในวันและเวลาราชการ (08:30 - 16:30 น.)</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <svg viewBox="0 0 24 24"><path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"/></svg>
+                        </div>
+                        <div class="info-text">
+                            <h4>อีเมลติดต่อโครงการ</h4>
+                            <p><a href="mailto:astro.posn@samsenwit.ac.th">astro.posn@samsenwit.ac.th</a></p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon" style="background: #E3F2FD;">
+                            <svg viewBox="0 0 24 24" style="fill: #1976D2;"><path d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96A10 10 0 0 0 22 12.06C22 6.53 17.5 2.04 12 2.04Z"/></svg>
+                        </div>
+                        <div class="info-text">
+                            <h4>เว็บไซต์โรงเรียน</h4>
+                            <p><a href="http://www.samsenwit.ac.th" target="_blank">www.samsenwit.ac.th</a></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="map-card">
+                    <div class="map-header">
+                        <svg viewBox="0 0 24 24"><path d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z"/></svg>
+                        แผนที่โรงเรียนสามเสนวิทยาลัย
+                    </div>
+                    <div class="map-container">
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3875.2917711090333!2d100.52989131527712!3d13.7824148903273!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30e29c0a6b106ec9%3A0x6b8db7eb452db16!2sSamsen%20Wittayalai%20School!5e0!3m2!1sen!2sth!4v1620000000000!5m2!1sen!2sth" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            // โชว์เมนูแอดมินถ้าคนที่ล็อกอินอยู่เป็นแอดมิน
+            const currentRole = localStorage.getItem('userRole') || 'guest';
+            const currentName = localStorage.getItem('userName') || '';
+            const showAdmin = (currentRole === 'admin' || currentRole === 'it');
+            
+            const profileForm = document.getElementById('profileForm');
+            const adminTopBar = document.getElementById('adminTopBar');
+
+            if (currentRole !== 'guest') {
+                profileForm.style.display = 'flex';
+                adminTopBar.style.display = 'block';
+                
+                document.getElementById('displayName').innerText = currentName;
+                document.getElementById('userAvatar').innerText = currentName ? currentName.charAt(0) : 'A';
+
+                if(currentRole === 'admin') {
+                    document.getElementById('displayRole').innerText = 'Administrator';
+                    document.getElementById('userAvatar').style.background = '#50CD89';
+                } else if(currentRole === 'it') {
+                    document.getElementById('displayRole').innerText = 'IT Support';
+                    document.getElementById('userAvatar').style.background = '#F1416C';
+                }
+            }
+
+            document.querySelectorAll('.role-admin').forEach(el => {
+                if(el.tagName.toLowerCase() === 'a') el.style.display = showAdmin ? 'inline-block' : 'none';
+            });
+        };
+
+        // ฟังก์ชันสำหรับปุ่มออกจากระบบ (Logout)
+        function handleLogout() { 
+            localStorage.removeItem('userRole'); 
+            localStorage.removeItem('userName'); 
+            window.location.replace('home.html'); 
+        }
+    </script>
+</body>
+</html>

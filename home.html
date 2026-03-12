@@ -71,6 +71,15 @@
         .section-title { font-size: 1.5rem; color: var(--theme-purple); font-weight: 700; margin-bottom: 25px; display: flex; align-items: center; gap: 10px;}
         .section-title::before { content: ''; display: block; width: 6px; height: 25px; background: var(--theme-orange); border-radius: 10px;}
 
+        /* ANNOUNCEMENTS (NEW) */
+        .ann-card { background: white; border-left: 5px solid var(--theme-orange); padding: 25px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.04); display: flex; flex-direction: column; gap: 10px; border-right: 1px solid #E4E6EF; border-top: 1px solid #E4E6EF; border-bottom: 1px solid #E4E6EF; transition: 0.3s;}
+        .ann-card:hover { transform: translateX(5px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        .ann-date { font-size: 0.85rem; color: var(--theme-orange); font-weight: 700; background: #FFF8E1; display: inline-block; padding: 4px 12px; border-radius: 50px; align-self: flex-start;}
+        .ann-title { font-size: 1.25rem; font-weight: 700; color: var(--theme-purple); margin: 0;}
+        .ann-content { font-size: 1rem; color: var(--text-dark); margin: 0; line-height: 1.6; white-space: pre-wrap;}
+        /* Support links in text */
+        .ann-content a { color: #1976D2; text-decoration: underline; font-weight: 600; }
+
         .action-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 50px; }
         .card { background: white; border-radius: 15px; padding: 35px 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.03); text-decoration: none; transition: 0.3s; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: flex-start;}
         .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(49, 27, 94, 0.08); border-color: var(--theme-purple-light); }
@@ -140,6 +149,7 @@
             <a href="home.html" style="color: var(--theme-orange); font-weight: 700;">หน้าแรก</a>
             <a href="register.html">สมัครสอบ</a>
             <a href="status.html">ตรวจสอบสถานะ</a>
+            <a href="contact.html">ติดต่อเรา</a>
 
             <a href="manage_applicants.html" class="role-admin role-it nav-admin-link" style="display: none; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 20px; color: var(--success);">จัดการผู้สมัคร</a>
             <a href="manage_exam.html" class="role-admin role-it nav-admin-link" style="display: none; color: var(--success);">จัดห้องสอบ</a>
@@ -183,6 +193,12 @@
     </header>
 
     <main class="container">
+
+        <div id="announcementContainer" style="display: none; margin-bottom: 50px;">
+            <div class="section-title">📢 ประกาศล่าสุดจากศูนย์สอบ</div>
+            <div id="announcementList" style="display: flex; flex-direction: column; gap: 15px;">
+                </div>
+        </div>
         
         <div class="section-title">เมนูสำหรับผู้สมัครสอบ</div>
         <div class="action-grid">
@@ -264,8 +280,40 @@
         let countdownInterval;
 
         window.onload = function() {
-            updateUI(); // โหลดหน้าตาพื้นฐานก่อน
+            updateUI(); 
             
+            // 🌟 ดึงข้อมูลประกาศข่าวสารมาแสดง
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'getAnnouncements' })
+            })
+            .then(res => res.json())
+            .then(r => {
+                if(r.status === 'success' && r.data && r.data.length > 0) {
+                    document.getElementById('announcementContainer').style.display = 'block';
+                    const list = document.getElementById('announcementList');
+                    list.innerHTML = '';
+                    
+                    // แปลงข้อความ URL ให้เป็น Link ที่คลิกได้
+                    const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+                    r.data.forEach(ann => {
+                        let formattedContent = ann.content.replace(urlRegex, function(url) {
+                            return '<a href="' + url + '" target="_blank">' + url + '</a>';
+                        });
+
+                        list.innerHTML += `
+                            <div class="ann-card">
+                                <span class="ann-date">${ann.date}</span>
+                                <h4 class="ann-title">${ann.title}</h4>
+                                <p class="ann-content">${formattedContent}</p>
+                            </div>
+                        `;
+                    });
+                }
+            })
+            .catch(err => console.error("โหลดประกาศไม่ได้:", err));
+
             // 🌟 วิ่งไปเช็คสถานะจาก Server ทันที
             fetch(GAS_URL, {
                 method: 'POST',
@@ -274,11 +322,8 @@
             .then(res => res.json())
             .then(res => {
                 if (res.status === 'success') {
-                    // แก้ไข: เพิ่มการอัปเดต LocalStorage อัตโนมัติ เพื่อเป็นข้อมูลให้หน้าอื่นๆ
                     if (res.data.activeYear) localStorage.setItem('activeYear', res.data.activeYear);
                     if (res.data.systemPhase) localStorage.setItem('systemPhase', res.data.systemPhase);
-
-                    // ส่งข้อมูลที่ได้จากเซิร์ฟเวอร์ไปให้ฟังก์ชันนับถอยหลังทำงาน
                     startCountdown(res.data);
                 } else {
                     document.getElementById("countdown").innerText = "โหลดข้อมูลผิดพลาด";
@@ -290,13 +335,12 @@
             });
         };
 
-        // 🌟 รับค่าที่ดึงมาจาก Server (ไม่ใช่ LocalStorage ในเครื่องอีกต่อไป)
+        // 🌟 รับค่าที่ดึงมาจาก Server
         function startCountdown(settings) {
             const regStatus = settings.regStatus || 'open';
             const openTimeStr = settings.regOpenTime;
             const closeTimeStr = settings.regCloseTime;
             
-            // อัปเดตปีการศึกษาให้ตรงกับฐานข้อมูล
             const activeYearTh = settings.activeYear || new Date().getFullYear() + 543;
             document.getElementById('displayYearBadge').innerText = `ปีการศึกษา ${activeYearTh}`;
             document.getElementById('displayYearDesc').innerHTML = `ศูนย์สอบโรงเรียนสามเสนวิทยาลัย เปิดรับสมัครนักเรียนเพื่อสอบคัดเลือกเข้าค่ายโอลิมปิกวิชาการ <br>ประจำปีการศึกษา ${activeYearTh}`;
@@ -308,7 +352,6 @@
 
             if (countdownInterval) clearInterval(countdownInterval);
 
-            // ฟังก์ชันช่วยบล็อกปุ่ม
             const disableUI = (msg, btnText, overwriteTimer = true) => {
                 if(timerEl && overwriteTimer) { 
                     timerEl.innerHTML = msg; 
@@ -328,7 +371,6 @@
                 }
             };
 
-            // ฟังก์ชันช่วยเปิดปุ่ม
             const enableUI = () => {
                 if(ctaBtn) {
                     ctaBtn.style.background = ""; 
@@ -344,14 +386,12 @@
                 }
             };
 
-            // 1. ถ้าแอดมินปิดรับสมัครทันที
             if (regStatus === 'closed') {
                 if(timerLabel) timerLabel.style.display = 'none';
                 disableUI("ขณะนี้ระบบปิดรับสมัครแล้ว", "ปิดรับสมัครแล้ว");
                 return;
             }
 
-            // 2. ถ้าแอดมินเปิดรับสมัครทันที
             if (regStatus === 'open') {
                 if(timerLabel) timerLabel.innerText = "สถานะระบบ";
                 if(timerEl) { timerEl.innerHTML = "เปิดรับสมัครตามปกติ"; timerEl.style.color = "var(--success)"; }
@@ -359,17 +399,14 @@
                 return;
             }
 
-            // 3. ระบบตั้งเวลาอัตโนมัติ
             countdownInterval = setInterval(function() {
                 const now = new Date().getTime();
                 let targetTime = null;
                 let mode = ""; 
 
-                // ป้องกันกรณีที่ String เป็นค่าว่าง 
                 const openTime = openTimeStr ? new Date(openTimeStr).getTime() : 0;
                 const closeTime = closeTimeStr ? new Date(closeTimeStr).getTime() : 0;
 
-                // ตรวจสอบเงื่อนไขเวลา
                 if (openTime && now < openTime) {
                     targetTime = openTime;
                     mode = "toOpen";
@@ -395,7 +432,6 @@
                     return;
                 }
 
-                // คำนวณเวลาที่เหลือ
                 const distance = targetTime - now;
                 const days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -414,7 +450,6 @@
             }, 1000);
         }
 
-        // ==================== ระบบจัดการ UI พื้นฐาน ====================
         function openLoginModal() { document.getElementById('loginModal').style.display = 'flex'; }
         function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; }
 
