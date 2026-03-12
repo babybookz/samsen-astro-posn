@@ -371,8 +371,9 @@
         // ⚠️ นำ Web App URL อันใหม่ที่ Deploy เสร็จแล้วมาใส่ตรงนี้
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec";
 
-        // โหลดปีการศึกษาปัจจุบัน
-        const activeYear = localStorage.getItem('activeYear') || new Date().getFullYear() + 543;
+        // ตัวแปรเก็บค่าจากเซิร์ฟเวอร์
+        let activeYear = new Date().getFullYear() + 543;
+        let systemPhase = '1';
 
         window.onload = function() {
             // โชว์เมนูแอดมินถ้าคนที่ล็อกอินอยู่เป็นแอดมิน
@@ -401,6 +402,22 @@
 
             document.querySelectorAll('.role-admin').forEach(el => {
                 if(el.tagName.toLowerCase() === 'a') el.style.display = showAdmin ? 'inline-block' : 'none';
+            });
+
+            // 🌟 สำคัญ: ไปถามเซิร์ฟเวอร์ก่อนว่าตอนนี้อยู่เฟสอะไร เพื่อนำมาใช้เปิดปิดการมองเห็นห้องสอบและคะแนน
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'getSettings' })
+            })
+            .then(res => res.json())
+            .then(res => {
+                if(res.status === 'success') {
+                    if (res.data.activeYear) activeYear = res.data.activeYear;
+                    if (res.data.systemPhase) systemPhase = res.data.systemPhase;
+                }
+            })
+            .catch(err => {
+                console.error("ไม่สามารถโหลดตั้งค่าระบบได้, อาจทำให้แสดงผลผิดพลาด", err);
             });
         };
 
@@ -453,7 +470,6 @@
 
         // ฟังก์ชันวนลูปวาดกล่องใบสมัคร
         function displayMultipleData(appsData) {
-            const currentPhase = localStorage.getItem('systemPhase') || '1';
             const wrapper = document.getElementById('resultWrapper');
             wrapper.innerHTML = ''; // เคลียร์ของเก่าทิ้งก่อน
             
@@ -476,7 +492,7 @@
 
                 // === จัดการเงื่อนไขเฟส 2 (ห้องสอบ) ===
                 let examIdText = "-", roomText = "-", seatText = "-";
-                if (currentPhase >= 2 && data.applyStatus === 'pass') {
+                if (systemPhase >= 2 && data.applyStatus === 'pass') {
                     examIdText = data.examId || "รอประกาศ";
                     roomText = data.room || "รอประกาศ";
                     seatText = data.seat || "-";
@@ -487,7 +503,7 @@
 
                 // === จัดการเงื่อนไขเฟส 3 (คะแนนและอันดับ) ===
                 let examId2Text = "-", scoreText = "-", rankText = "-", scoreColor = "var(--text-muted)";
-                if (currentPhase == 3 && data.applyStatus === 'pass') {
+                if (systemPhase == 3 && data.applyStatus === 'pass') {
                     examId2Text = data.examId || "รอประกาศ";
                     scoreText = data.score || "รอประกาศ";
                     rankText = data.rank ? `${data.rank} / ${data.totalExaminees}` : "รอประกาศ";

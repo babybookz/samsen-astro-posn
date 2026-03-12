@@ -271,6 +271,7 @@
                         <div class="info-row"><div class="info-label">ชั้นเรียน:</div><div class="info-value" id="v_grade"></div></div>
                         <div class="info-row"><div class="info-label">โรงเรียน:</div><div class="info-value" id="v_school"></div></div>
                         <div class="info-row"><div class="info-label">เบอร์นักเรียน:</div><div class="info-value" id="v_phone"></div></div>
+                        <div class="info-row"><div class="info-label">เบอร์ผู้ปกครอง:</div><div class="info-value" id="v_parentPhone"></div></div>
                     </div>
 
                     <div class="info-section" style="border-color: var(--theme-purple);">
@@ -336,18 +337,41 @@
         let dbApplicants = []; 
         let filteredApplicants = []; 
         
-        let currentReviewRowIndex = -1; // 🌟 เปลี่ยนจากการอ้างอิง idCard มาใช้ RowIndex แทน
+        let currentReviewRowIndex = -1; 
         let currentLevel = 'ม.ต้น'; 
-        let activeYear = localStorage.getItem('activeYear') || new Date().getFullYear() + 543;
+        let activeYear = new Date().getFullYear() + 543; // กำหนดค่า Default ไว้ก่อน
 
         let currentPage = 1;
         let rowsPerPage = 50;
 
         window.onload = function() {
             updateProfileUI();
-            document.getElementById('pageSubtitle').innerText = `ประจำปีการศึกษา ${activeYear}`;
             document.getElementById('currentAdminNameDisplay').innerText = currentUserName;
-            fetchDataFromSheet();
+            
+            // 🌟 แก้ไข Logic: บังคับวิ่งไปเช็คตั้งค่าปีการศึกษาจาก Server ก่อนโหลดตาราง
+            document.getElementById('applicantTable').innerHTML = `<tr><td colspan="7"><div class="loading-box">กำลังตรวจสอบตั้งค่าระบบ... ⏳</div></td></tr>`;
+            
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'getSettings' })
+            })
+            .then(res => res.json())
+            .then(res => {
+                if(res.status === 'success' && res.data.activeYear) {
+                    activeYear = res.data.activeYear;
+                    localStorage.setItem('activeYear', activeYear); // บันทึกเป็น Cache เผื่อหน้าอื่น
+                } else {
+                    activeYear = localStorage.getItem('activeYear') || activeYear;
+                }
+            })
+            .catch(err => {
+                console.error("โหลดตั้งค่าไม่สำเร็จ ใช้ค่าเริ่มต้นหรือในเครื่องแทน", err);
+                activeYear = localStorage.getItem('activeYear') || activeYear;
+            })
+            .finally(() => {
+                document.getElementById('pageSubtitle').innerText = `ประจำปีการศึกษา ${activeYear}`;
+                fetchDataFromSheet(); // โหลดข้อมูลผู้สมัครหลังจากรู้ปีที่แน่นอนแล้ว
+            });
         };
 
         function updateProfileUI() {
@@ -390,7 +414,7 @@
         }
 
         function fetchDataFromSheet() {
-            document.getElementById('applicantTable').innerHTML = `<tr><td colspan="7"><div class="loading-box">กำลังโหลดข้อมูล... ⏳</div></td></tr>`;
+            document.getElementById('applicantTable').innerHTML = `<tr><td colspan="7"><div class="loading-box">กำลังโหลดข้อมูลผู้สมัคร... ⏳</div></td></tr>`;
             document.getElementById('controlsRow').style.display = 'none';
             
             fetch(GAS_URL, {
@@ -419,7 +443,7 @@
             const status = document.getElementById('filterStatus').value;
 
             filteredApplicants = dbApplicants.filter(app => {
-                const fullName = (`${app.fname || ''} ${app.lname || ''}`).toLowerCase();
+                const fullName = (`${app.prefix || ''}${app.fname || ''} ${app.lname || ''}`).toLowerCase();
                 const idCardStr = String(app.idCard || '').toLowerCase();
                 
                 const matchQuery = query === '' || fullName.includes(query) || idCardStr.includes(query);
@@ -523,7 +547,6 @@
         }
 
         // ================= MODAL LOGIC =================
-        // 🌟 เปลี่ยนการค้นหาใบสมัคร จาก ID เป็น RowIndex (แถวใน Excel) เพื่อไม่ให้สับสนกรณีมีหลายใบ
         function openReviewModal(rowIndex) {
             try {
                 currentReviewRowIndex = rowIndex;
@@ -536,6 +559,7 @@
                 document.getElementById('v_time').innerText = app.time || '-';
                 document.getElementById('v_idCard').innerText = app.idCard || '-';
                 document.getElementById('v_fullname').innerText = `${app.prefix || ''}${app.fname || ''} ${app.lname || ''}`;
+                document.getElementById('v_parentPhone').innerText = app.parentPhone || '-';
                 
                 let ageText = '-';
                 let dobText = app.dob || '-';

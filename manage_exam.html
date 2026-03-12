@@ -235,7 +235,7 @@
                         </tr>
                     </thead>
                     <tbody id="examTableBody">
-                        <tr><td colspan="6"><div class="loading-box">กำลังโหลดข้อมูลจากฐานข้อมูล... ⏳</div></td></tr>
+                        <tr><td colspan="6"><div class="loading-box">กำลังตรวจสอบตั้งค่าระบบ... ⏳</div></td></tr>
                     </tbody>
                 </table>
             </div>
@@ -249,15 +249,36 @@
         let dbApplicants = []; 
         let filteredData = []; 
         let currentLevel = 'ม.ต้น'; 
-        let activeYear = localStorage.getItem('activeYear') || new Date().getFullYear() + 543;
+        let activeYear = new Date().getFullYear() + 543; // Default
 
         let currentPage = 1;
         let rowsPerPage = 50;
 
         window.onload = function() {
             updateProfileUI();
-            document.getElementById('pageSubtitle').innerText = `บันทึกข้อมูลอาคาร ห้องสอบ และสถานะการมาสอบ (ปีการศึกษา ${activeYear})`;
-            fetchDataFromSheet();
+            
+            // 🌟 บังคับวิ่งไปเช็คตั้งค่าปีการศึกษาจาก Server ก่อนโหลดข้อมูล
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'getSettings' })
+            })
+            .then(res => res.json())
+            .then(res => {
+                if(res.status === 'success' && res.data.activeYear) {
+                    activeYear = res.data.activeYear;
+                    localStorage.setItem('activeYear', activeYear);
+                } else {
+                    activeYear = localStorage.getItem('activeYear') || activeYear;
+                }
+            })
+            .catch(err => {
+                console.error("โหลดตั้งค่าไม่สำเร็จ", err);
+                activeYear = localStorage.getItem('activeYear') || activeYear;
+            })
+            .finally(() => {
+                document.getElementById('pageSubtitle').innerText = `บันทึกข้อมูลอาคาร ห้องสอบ และสถานะการมาสอบ (ปีการศึกษา ${activeYear})`;
+                fetchDataFromSheet();
+            });
         };
 
         // ฟังก์ชันสำหรับอัปเดตชื่อผู้ใช้งานมุมขวาบน
@@ -383,8 +404,8 @@
                     <td><span class="exam-id-badge">${app.examId}</span></td>
                     <td style="font-weight: 600;">${app.prefix}${app.fname} ${app.lname}</td>
                     <td>${app.school}</td>
-                    <td><input type="text" id="room_${app.idCard}" class="inline-input" placeholder="ระบุห้องสอบ" value="${app.room}"></td>
-                    <td><input type="text" id="seat_${app.idCard}" class="inline-input" placeholder="ระบุเลขที่นั่ง" value="${app.seat}"></td>
+                    <td><input type="text" id="room_${app.idCard}" class="inline-input" placeholder="ระบุห้องสอบ" value="${app.room || ''}"></td>
+                    <td><input type="text" id="seat_${app.idCard}" class="inline-input" placeholder="ระบุเลขที่นั่ง" value="${app.seat || ''}"></td>
                     <td style="text-align: center;">
                         <select id="att_${app.idCard}" class="${selectClass}" onchange="changeStatusColor(this)">
                             <option value="wait" ${att === 'wait' ? 'selected' : ''}>-- รอยืนยัน --</option>

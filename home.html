@@ -138,9 +138,8 @@
 
         <div class="nav-links">
             <a href="home.html" style="color: var(--theme-orange); font-weight: 700;">หน้าแรก</a>
-            <a href="#">ระเบียบการสอบ</a>
-            <a href="register.html">ขั้นตอนการสมัคร</a>
-            <a href="#">ติดต่อเรา</a>
+            <a href="register.html">สมัครสอบ</a>
+            <a href="status.html">ตรวจสอบสถานะ</a>
 
             <a href="manage_applicants.html" class="role-admin role-it nav-admin-link" style="display: none; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 20px; color: var(--success);">จัดการผู้สมัคร</a>
             <a href="manage_exam.html" class="role-admin role-it nav-admin-link" style="display: none; color: var(--success);">จัดห้องสอบ</a>
@@ -275,6 +274,10 @@
             .then(res => res.json())
             .then(res => {
                 if (res.status === 'success') {
+                    // แก้ไข: เพิ่มการอัปเดต LocalStorage อัตโนมัติ เพื่อเป็นข้อมูลให้หน้าอื่นๆ
+                    if (res.data.activeYear) localStorage.setItem('activeYear', res.data.activeYear);
+                    if (res.data.systemPhase) localStorage.setItem('systemPhase', res.data.systemPhase);
+
                     // ส่งข้อมูลที่ได้จากเซิร์ฟเวอร์ไปให้ฟังก์ชันนับถอยหลังทำงาน
                     startCountdown(res.data);
                 } else {

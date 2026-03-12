@@ -6,15 +6,7 @@
     <title>บันทึกคะแนนสอบ | Samsen Astro POSN</title>
     
     <script>
-        const maintState = localStorage.getItem('maintenanceMode');
         const currentRole = localStorage.getItem('userRole');
-        
-        // ถ้าโหมดซ่อมบำรุงเปิดอยู่ และคนเข้าไม่ใช่ IT ให้เด้งออก
-        if (maintState === 'on' && currentRole !== 'it') {
-            document.write('<div style="display:flex; justify-content:center; align-items:center; height:100vh; background:#F8F9FA; font-family:sans-serif; text-align:center;"><div style="background:white; padding:40px; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.1); border-top: 5px solid #F1416C;"><h2>🔴 ปิดปรับปรุงระบบชั่วคราว</h2><p style="color:#7E8299; margin-top:10px;">ระบบกำลังอยู่ระหว่างการบำรุงรักษาโดยเจ้าหน้าที่<br>กรุณากลับมาใช้งานใหม่อีกครั้งในภายหลังครับ</p></div></div>');
-            document.close();
-            window.stop();
-        }
         
         // ล็อกให้เข้าได้เฉพาะ Admin และ IT
         if (currentRole !== 'admin' && currentRole !== 'it') {
@@ -258,7 +250,7 @@
         </a>
         <div class="nav-links">
             <a href="home.html">หน้าแรก</a>
-            <a href="manage_applicants.html"">จัดการผู้สมัคร</a>
+            <a href="manage_applicants.html">จัดการผู้สมัคร</a>
             <a href="manage_exam.html">จัดห้องสอบ</a>
             <a href="manage_score.html" style="color: var(--theme-orange); font-weight: 700;">บันทึกคะแนน</a>
             <a href="it.html" class="role-it" style="display: none;">ตั้งค่าระบบ</a>
@@ -279,7 +271,7 @@
     <div class="container">
         <div class="header-title">
             <h2>ระบบบันทึกคะแนนสอบคัดเลือก</h2>
-            <p class="subtitle">ระบบจะแสดงรายชื่อเฉพาะนักเรียนที่มีสถานะ "มาสอบ" เท่านั้น</p>
+            <p class="subtitle" id="pageSubtitle">ระบบจะแสดงรายชื่อเฉพาะนักเรียนที่มีสถานะ "มาสอบ" เท่านั้น</p>
         </div>
 
         <div class="tabs">
@@ -302,7 +294,7 @@
                     </tr>
                 </thead>
                 <tbody id="scoreTableBody">
-                    <tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--theme-purple); font-weight: 700;">กำลังโหลดข้อมูล... ⏳</td></tr>
+                    <tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--theme-purple); font-weight: 700;">กำลังตรวจสอบข้อมูลระบบ... ⏳</td></tr>
                 </tbody>
             </table>
         </div>
@@ -314,12 +306,34 @@
         
         let filteredData = []; 
         let currentLevel = 'ม.ต้น'; 
-        let activeYear = localStorage.getItem('activeYear') || new Date().getFullYear() + 543;
+        let activeYear = new Date().getFullYear() + 543; // Default
         const currentUserName = localStorage.getItem('userName') || 'Admin ไม่ระบุชื่อ';
 
         window.onload = function() { 
             updateProfileUI();
-            fetchDataFromSheet(); 
+
+            // 🌟 บังคับวิ่งไปเช็คตั้งค่าปีการศึกษาจาก Server ก่อนโหลดข้อมูล
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'getSettings' })
+            })
+            .then(res => res.json())
+            .then(res => {
+                if(res.status === 'success' && res.data.activeYear) {
+                    activeYear = res.data.activeYear;
+                    localStorage.setItem('activeYear', activeYear);
+                } else {
+                    activeYear = localStorage.getItem('activeYear') || activeYear;
+                }
+            })
+            .catch(err => {
+                console.error("โหลดตั้งค่าไม่สำเร็จ", err);
+                activeYear = localStorage.getItem('activeYear') || activeYear;
+            })
+            .finally(() => {
+                document.getElementById('pageSubtitle').innerText = `ระบบจะแสดงรายชื่อเฉพาะนักเรียนที่มีสถานะ "มาสอบ" เท่านั้น (ปีการศึกษา ${activeYear})`;
+                fetchDataFromSheet();
+            });
         };
 
         // ฟังก์ชันสำหรับอัปเดตชื่อผู้ใช้งานมุมขวาบน
@@ -342,7 +356,6 @@
                     if(el.tagName.toLowerCase() === 'a') el.style.display = 'inline-block';
                 });
             }
-
         }
 
         // ฟังก์ชันสำหรับออกจากระบบ

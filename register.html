@@ -5,40 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>รับสมัครสอบ | Samsen Astro POSN</title>
     
-    <script>
-        const maintState = localStorage.getItem('maintenanceMode');
-        const usrRole = localStorage.getItem('userRole');
-        
-        if (maintState === 'on' && usrRole !== 'it') {
-            document.write(`
-            <div style="display:flex; justify-content:center; align-items:center; height:100vh; background:#F8F9FA; font-family:'Sarabun', sans-serif; text-align:center;">
-                <div style="background:white; padding:50px; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.1); border-top: 5px solid #F1416C;">
-                    <h2 style="color:#311B5E; margin-top:0;">🔴 ปิดปรับปรุงระบบชั่วคราว</h2>
-                    <p style="color:#7E8299; margin-top:10px; font-size:1.1rem;">ระบบกำลังอยู่ระหว่างการบำรุงรักษาโดยเจ้าหน้าที่<br>กรุณากลับมาใช้งานใหม่อีกครั้งในภายหลังครับ</p>
-                    
-                    <div style="margin-top: 40px;">
-                        <a href="#" onclick="emergencyUnlock()" style="color: #E4E6EF; font-size: 0.8rem; text-decoration: none;">IT Access</a>
-                    </div>
-                </div>
-            </div>
-            <script>
-                function emergencyUnlock() {
-                    const pass = prompt("🔒 ปลดล็อกฉุกเฉิน (ระบุรหัสลับ):");
-                    if(pass === "1234") { 
-                        localStorage.setItem('maintenanceMode', 'off');
-                        alert("✅ ปลดล็อกสำเร็จ! กำลังโหลดหน้าเว็บใหม่...");
-                        window.location.reload();
-                    } else if(pass) {
-                        alert("❌ รหัสลับไม่ถูกต้อง");
-                    }
-                }
-            <\/script>
-            `);
-            document.close();
-            window.stop();
-        }
-    </script>
-
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -433,12 +399,11 @@
         // ⚠️ วาง Web App URL ของคุณที่นี่
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzzwaptCzF04rIZ3FKlC3mlbzQPtKEi_j3Yi1Wccuya_V3bo-EBz4_VOOT12kFRD-2uDg/exec"; 
 
-        let activeYearTh = localStorage.getItem('activeYear') || '2569';
-        let activeYearEn = parseInt(activeYearTh) - 543; 
+        let activeYearTh = new Date().getFullYear() + 543;
+        let activeYearEn = new Date().getFullYear();
 
         window.onload = function() {
-            // ดึงข้อมูลปี และตั้งค่า Profile
-            document.getElementById('displayYearBadge').innerText = `ประจำปีการศึกษา ${activeYearTh}`;
+            // ตั้งค่า Profile ก่อนเลย
             const currentRole = localStorage.getItem('userRole') || 'guest';
             const currentName = localStorage.getItem('userName') || '';
             const showAdmin = (currentRole === 'admin' || currentRole === 'it');
@@ -468,7 +433,7 @@
                 });
             }
 
-            // 🌟 ยิง API ไปถาม Server ว่าเปิดหรือปิดรับสมัคร (ตัวบล็อกหลัก)
+            // 🌟 ยิง API ไปถาม Server ก่อนว่าตอนนี้ปีอะไร และเปิดหรือปิดรับสมัคร 
             fetch(GAS_URL, {
                 method: 'POST',
                 body: JSON.stringify({ action: 'getSettings' })
@@ -505,15 +470,19 @@
                             }
                         }
                     }
-                    // ถ้า s.regStatus === 'open' จะข้ามการเช็คเวลามาตรงนี้เลย
                     
-                    // อัปเดตปีการศึกษาจากเซิร์ฟเวอร์เพื่อให้ตรงกัน
-                    activeYearTh = s.activeYear || '2569';
-                    activeYearEn = parseInt(activeYearTh) - 543;
+                    // 🌟 อัปเดตปีการศึกษาจากเซิร์ฟเวอร์เพื่อให้ตรงกัน และนำมาใช้คำนวณอายุ
+                    if (s.activeYear) {
+                        activeYearTh = s.activeYear;
+                        activeYearEn = parseInt(activeYearTh) - 543;
+                        localStorage.setItem('activeYear', activeYearTh);
+                    }
                     document.getElementById('displayYearBadge').innerText = `ประจำปีการศึกษา ${activeYearTh}`;
                     
                     // ปิดหน้าจอโหลด เข้าสู่ฟอร์มได้
                     document.getElementById('loadingOverlay').style.display = 'none';
+                } else {
+                    throw new Error("Failed to get settings");
                 }
             })
             .catch(err => {
