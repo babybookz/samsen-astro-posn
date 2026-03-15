@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>หน้าแรก | Samsen Astro POSN</title>
+    
     <link rel="icon" type="image/png" href="assets/logo.png">
+    
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Theme Colors */
             --theme-purple: #311B5E; 
             --theme-purple-light: #4A2B8C;
             --theme-orange: #FF8F00; 
@@ -18,15 +19,17 @@
             --text-muted: #7E8299;
             --danger: #F1416C;
             --success: #50CD89;
+            --border-color: #E4E6EF;
+            --border-radius: 12px;
+            --box-shadow: 0px 10px 30px 0px rgba(49, 27, 94, 0.05);
         }
 
         body { font-family: 'Sarabun', sans-serif; margin: 0; background-color: var(--bg-light); color: var(--text-dark); overflow-x: hidden;}
 
-        /* ================= 1. TOP ADMIN BAR ================= */
+        /* ================= TOP ADMIN BAR & NAVBAR ================= */
         .top-admin-bar { background-color: #181C32; color: var(--success); text-align: center; padding: 8px; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px; display: none; }
         .top-admin-bar span { color: white; font-weight: 400; margin-right: 10px; }
 
-        /* ================= 2. HEADER & NAVIGATION ================= */
         .navbar { background-color: var(--theme-purple); padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
         .nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: white;}
         .nav-brand img { height: 45px; width: auto; background: white; padding: 3px; border-radius: 8px;}
@@ -49,8 +52,8 @@
         .btn-logout-icon { background: none; border: none; color: var(--theme-orange); font-size: 1.2rem; cursor: pointer; padding: 5px; transition: 0.3s; margin-left: 5px; display: flex; align-items: center;}
         .btn-logout-icon:hover { color: var(--danger); }
 
-        /* ================= 3. HERO SECTION ================= */
-        .hero { background: linear-gradient(135deg, #F3E5F5 0%, #FFF3E0 100%); padding: 80px 20px; text-align: center; border-bottom: 1px solid #E4E6EF; position: relative; overflow: hidden; }
+        /* ================= HERO SECTION ================= */
+        .hero { background: linear-gradient(135deg, #F3E5F5 0%, #FFF3E0 100%); padding: 80px 20px; text-align: center; border-bottom: 1px solid var(--border-color); position: relative; overflow: hidden; }
         .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,143,0,0.05) 0%, transparent 50%); z-index: 0; }
         
         .hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
@@ -58,7 +61,7 @@
         .hero h1 { color: var(--theme-purple); font-size: 3rem; font-weight: 700; margin: 0 0 15px 0; letter-spacing: -1px; }
         .hero p { color: var(--text-muted); font-size: 1.2rem; line-height: 1.6; margin: 0 0 30px 0; }
         
-        .countdown-box { background: white; display: inline-block; padding: 15px 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 35px; border: 1px solid #E4E6EF;}
+        .countdown-box { background: white; display: inline-block; padding: 15px 30px; border-radius: 15px; box-shadow: var(--box-shadow); margin-bottom: 35px; border: 1px solid var(--border-color);}
         .countdown-title { display: block; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin-bottom: 5px;}
         .countdown-timer { font-size: 1.5rem; font-weight: 700; color: var(--theme-orange); font-family: monospace;}
 
@@ -66,19 +69,106 @@
         .btn-cta:hover { background: var(--theme-orange-hover); transform: translateY(-3px); box-shadow: 0 15px 35px rgba(255, 143, 0, 0.4); }
         .btn-cta svg { fill: currentColor; }
 
-        /* ================= 4. QUICK ACTIONS GRID ================= */
-        .container { max-width: 1200px; margin: 60px auto; padding: 0 20px; }
-        .section-title { font-size: 1.5rem; color: var(--theme-purple); font-weight: 700; margin-bottom: 25px; display: flex; align-items: center; gap: 10px;}
-        .section-title::before { content: ''; display: block; width: 6px; height: 25px; background: var(--theme-orange); border-radius: 10px;}
+        /* ================= PR CAROUSEL (1200 x 628) ================= */
+        .pr-carousel-section { margin-bottom: 50px; display: none; }
+        .carousel-container {
+            position: relative;
+            background: #F8F9FA;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            
+            /* 🌟 ปรับขนาดให้เป็น 1200x628 และอยู่กึ่งกลาง */
+            width: 100%;
+            max-width: 800px; 
+            margin: 0 auto;
+            aspect-ratio: 1400 / 400; 
+            max-height: 300px;
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .carousel-slide {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        .carousel-item {
+            min-width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #F8F9FA;
+        }
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; 
+        }
+        .carousel-error {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: var(--danger);
+            font-size: 1.2rem;
+            font-weight: 600;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            background: #FFF5F8;
+        }
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            transition: 0.3s;
+        }
+        .carousel-btn:hover { background: var(--theme-orange); }
+        .carousel-btn:hover svg { fill: white; }
+        .carousel-btn svg { width: 24px; height: 24px; fill: var(--text-dark); transition: 0.3s; }
+        .btn-prev { left: 15px; }
+        .btn-next { right: 15px; }
 
-        /* ANNOUNCEMENTS (NEW) */
-        .ann-card { background: white; border-left: 5px solid var(--theme-orange); padding: 25px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.04); display: flex; flex-direction: column; gap: 10px; border-right: 1px solid #E4E6EF; border-top: 1px solid #E4E6EF; border-bottom: 1px solid #E4E6EF; transition: 0.3s;}
+        .carousel-footer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 15px;
+            gap: 10px;
+        }
+        .carousel-dots { display: flex; gap: 8px; }
+        .dot { width: 12px; height: 12px; background: #E4E6EF; border-radius: 50%; cursor: pointer; transition: 0.3s; }
+        .dot.active { background: var(--theme-purple-light); transform: scale(1.2); }
+        .carousel-counter { font-size: 0.95rem; color: var(--text-muted); font-weight: 600; }
+
+        /* ================= ANNOUNCEMENTS ================= */
+        .ann-card { background: white; border-left: 5px solid var(--theme-orange); padding: 25px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.04); display: flex; flex-direction: column; gap: 10px; border-right: 1px solid var(--border-color); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); transition: 0.3s;}
         .ann-card:hover { transform: translateX(5px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
         .ann-date { font-size: 0.85rem; color: var(--theme-orange); font-weight: 700; background: #FFF8E1; display: inline-block; padding: 4px 12px; border-radius: 50px; align-self: flex-start;}
         .ann-title { font-size: 1.25rem; font-weight: 700; color: var(--theme-purple); margin: 0;}
         .ann-content { font-size: 1rem; color: var(--text-dark); margin: 0; line-height: 1.6; white-space: pre-wrap;}
-        /* Support links in text */
         .ann-content a { color: #1976D2; text-decoration: underline; font-weight: 600; }
+
+        /* ================= ACTIONS GRID ================= */
+        .container { max-width: 1200px; margin: 60px auto; padding: 0 20px; }
+        .section-title { font-size: 1.5rem; color: var(--theme-purple); font-weight: 700; margin-bottom: 25px; display: flex; align-items: center; gap: 10px;}
+        .section-title::before { content: ''; display: block; width: 6px; height: 25px; background: var(--theme-orange); border-radius: 10px;}
 
         .action-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 50px; }
         .card { background: white; border-radius: 15px; padding: 35px 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.03); text-decoration: none; transition: 0.3s; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: flex-start;}
@@ -94,7 +184,7 @@
         .card-title { font-size: 1.25rem; font-weight: 700; color: var(--text-dark); margin: 0 0 10px 0; }
         .card-desc { font-size: 0.95rem; color: var(--text-muted); margin: 0; line-height: 1.5;}
 
-        /* ================= 5. ADMIN ZONE ================= */
+        /* ================= ADMIN ZONE ================= */
         .admin-zone { background: rgba(74, 20, 140, 0.02); border: 2px dashed rgba(74, 20, 140, 0.2); padding: 40px; border-radius: 20px; margin-bottom: 60px; display: none; }
         .admin-zone .section-title { color: var(--theme-purple); }
         .admin-zone .section-title::before { background: var(--theme-purple); }
@@ -112,7 +202,7 @@
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 1000; }
         .modal-box { background: white; padding: 40px 30px; border-radius: 20px; width: 350px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); text-align: center; position: relative; }
         .modal-title { font-size: 1.4rem; font-weight: 700; color: var(--theme-purple); margin: 0 0 25px 0; }
-        .form-control { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid #E4E6EF; border-radius: 10px; font-family: 'Sarabun'; font-size: 1rem; box-sizing: border-box; background: #F9F9F9; transition: 0.2s; text-align: center;}
+        .form-control { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 10px; font-family: 'Sarabun'; font-size: 1rem; box-sizing: border-box; background: #F9F9F9; transition: 0.2s; text-align: center;}
         .form-control:focus { border-color: var(--theme-purple); outline: none; background: white; }
         .btn-submit-login { width: 100%; padding: 14px; background: var(--theme-purple); color: white; border: none; border-radius: 10px; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: 'Sarabun'; }
         .btn-submit-login:hover { background: var(--theme-purple-light); }
@@ -120,13 +210,14 @@
         .btn-close:hover { color: var(--danger); }
 
         /* Footer */
-        footer { text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid #E4E6EF;}
+        footer { text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border-color);}
 
         @media (max-width: 768px) {
             .navbar { flex-direction: column; padding: 15px; gap: 15px; }
             .nav-links { flex-wrap: wrap; justify-content: center; gap: 15px; }
             .hero h1 { font-size: 2.2rem; }
             .admin-zone { padding: 20px; }
+            .carousel-container { aspect-ratio: auto; height: 300px; }
         }
     </style>
 </head>
@@ -193,13 +284,11 @@
     </header>
 
     <main class="container">
-
         <div id="announcementContainer" style="display: none; margin-bottom: 50px;">
             <div class="section-title">📢 ประกาศล่าสุดจากศูนย์สอบ</div>
-            <div id="announcementList" style="display: flex; flex-direction: column; gap: 15px;">
-                </div>
+            <div id="announcementList" style="display: flex; flex-direction: column; gap: 15px;"></div>
         </div>
-        
+
         <div class="section-title">เมนูสำหรับผู้สมัครสอบ</div>
         <div class="action-grid">
             <a href="register.html" class="card" id="cardRegister" style="pointer-events: none; opacity: 0.6;">
@@ -217,6 +306,24 @@
                 <p class="card-desc">เช็คสถานะการอนุมัติใบสมัคร, ค้นหาที่นั่งสอบ และตรวจสอบผลคะแนนสอบของคุณ</p>
             </a>
         </div>
+
+        <div class="pr-carousel-section" id="prSection">
+            <div class="carousel-container">
+                <button class="carousel-btn btn-prev" onclick="moveSlide(-1)">
+                    <svg viewBox="0 0 24 24"><path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"/></svg>
+                </button>
+                <button class="carousel-btn btn-next" onclick="moveSlide(1)">
+                    <svg viewBox="0 0 24 24"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/></svg>
+                </button>
+                <div class="carousel-slide" id="carouselSlide"></div>
+            </div>
+            <div class="carousel-footer">
+                <div class="carousel-dots" id="carouselDots"></div>
+                <div class="carousel-counter" id="carouselCounter">รูปที่ 1 / 1</div>
+            </div>
+        </div>
+
+        
 
         <div class="admin-zone" id="adminZone">
             <div class="section-title">พื้นที่เฉพาะผู้ดูแลระบบ (Admin Control Panel)</div>
@@ -281,6 +388,7 @@
 
         window.onload = function() {
             updateUI(); 
+            fetchPRImages(); // โหลดรูปสไลด์
             
             // 🌟 ดึงข้อมูลประกาศข่าวสารมาแสดง
             fetch(GAS_URL, {
@@ -335,7 +443,97 @@
             });
         };
 
-        // 🌟 รับค่าที่ดึงมาจาก Server
+        // ==========================================
+        // 🌟 ระบบ PR Carousel (ดึงรูปตรงจาก Server)
+        // ==========================================
+        let prImages = [];
+        let currentSlideIndex = 0;
+        let slideTimer;
+
+        function fetchPRImages() {
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'getPRImages' })
+            })
+            .then(res => res.json())
+            .then(r => {
+                if (r.status === 'success' && r.data && r.data.length > 0) {
+                    prImages = r.data;
+                    document.getElementById('prSection').style.display = 'block';
+                    buildCarousel();
+                    startSlideTimer();
+                }
+            })
+            .catch(err => console.error("ดึงรูป PR ไม่สำเร็จ:", err));
+        }
+
+        function buildCarousel() {
+            const slideContainer = document.getElementById('carouselSlide');
+            const dotsContainer = document.getElementById('carouselDots');
+            
+            slideContainer.innerHTML = '';
+            dotsContainer.innerHTML = '';
+
+            prImages.forEach((img, index) => {
+                
+                // ใช้ URL ที่ Server ส่งมาให้ (ซึ่งเป็น Thumbnail 1280px ไม่ใช่ uc?export=view)
+                slideContainer.innerHTML += `
+                    <div class="carousel-item">
+                        <img src="${img.url}" alt="PR Image ${index + 1}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="carousel-error" style="display:none; flex-direction:column; gap:10px;">
+                            <span>⚠️ ไม่สามารถโหลดรูปที่ ${index + 1} ได้</span>
+                            <span style="font-size:0.9rem; font-weight:normal; color:var(--text-muted);">โปรดตรวจสอบว่าโฟลเดอร์ PR ตั้งค่าเป็น "ทุกคนที่มีลิงก์"</span>
+                        </div>
+                    </div>
+                `;
+
+                dotsContainer.innerHTML += `<div class="dot ${index === 0 ? 'active' : ''}" onclick="goToSlide(${index})"></div>`;
+            });
+
+            updateCarouselUI();
+        }
+
+        function updateCarouselUI() {
+            const slideContainer = document.getElementById('carouselSlide');
+            const dots = document.querySelectorAll('.dot');
+            const counter = document.getElementById('carouselCounter');
+
+            slideContainer.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
+
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlideIndex);
+            });
+
+            counter.innerText = `รูปที่ ${currentSlideIndex + 1} / ${prImages.length}`;
+        }
+
+        function moveSlide(step) {
+            currentSlideIndex += step;
+            if (currentSlideIndex >= prImages.length) currentSlideIndex = 0;
+            if (currentSlideIndex < 0) currentSlideIndex = prImages.length - 1;
+            
+            updateCarouselUI();
+            resetSlideTimer(); 
+        }
+
+        function goToSlide(index) {
+            currentSlideIndex = index;
+            updateCarouselUI();
+            resetSlideTimer();
+        }
+
+        function startSlideTimer() {
+            slideTimer = setInterval(() => moveSlide(1), 5000);
+        }
+
+        function resetSlideTimer() {
+            clearInterval(slideTimer);
+            startSlideTimer();
+        }
+
+        // ==========================================
+        // รับค่าที่ดึงมาจาก Server (Countdown)
+        // ==========================================
         function startCountdown(settings) {
             const regStatus = settings.regStatus || 'open';
             const openTimeStr = settings.regOpenTime;
@@ -450,6 +648,7 @@
             }, 1000);
         }
 
+        // ==================== ระบบจัดการ UI พื้นฐาน ====================
         function openLoginModal() { document.getElementById('loginModal').style.display = 'flex'; }
         function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; }
 
@@ -457,31 +656,37 @@
             const currentRole = localStorage.getItem('userRole') || 'guest';
             const currentName = localStorage.getItem('userName') || '';
             const showAdmin = (currentRole === 'admin' || currentRole === 'it');
+            
             const profileForm = document.getElementById('profileForm');
             const adminTopBar = document.getElementById('adminTopBar');
             const adminZone = document.getElementById('adminZone');
             const loginBtn = document.getElementById('loginBtnContainer');
 
+            // 🌟 เพิ่มระบบป้องกัน Error: เช็คว่า element มีอยู่จริงในหน้าหรือไม่
             if (currentRole === 'guest') {
-                loginBtn.style.display = 'block';
-                profileForm.style.display = 'none';
-                adminTopBar.style.display = 'none';
-                adminZone.style.display = 'none';
+                if(loginBtn) loginBtn.style.display = 'block';
+                if(profileForm) profileForm.style.display = 'none';
+                if(adminTopBar) adminTopBar.style.display = 'none';
+                if(adminZone) adminZone.style.display = 'none';
             } else {
-                loginBtn.style.display = 'none';
-                profileForm.style.display = 'flex';
-                adminTopBar.style.display = 'block';
-                adminZone.style.display = 'block';
+                if(loginBtn) loginBtn.style.display = 'none';
+                if(profileForm) profileForm.style.display = 'flex';
+                if(adminTopBar) adminTopBar.style.display = 'block';
+                if(adminZone) adminZone.style.display = 'block';
                 
-                document.getElementById('displayName').innerText = currentName;
-                document.getElementById('userAvatar').innerText = currentName ? currentName.charAt(0) : 'A';
+                const dispName = document.getElementById('displayName');
+                if(dispName) dispName.innerText = currentName;
+                
+                const avatar = document.getElementById('userAvatar');
+                if(avatar) avatar.innerText = currentName ? currentName.charAt(0) : 'A';
 
+                const dispRole = document.getElementById('displayRole');
                 if(currentRole === 'admin') {
-                    document.getElementById('displayRole').innerText = 'Administrator';
-                    document.getElementById('userAvatar').style.background = '#50CD89';
+                    if(dispRole) dispRole.innerText = 'Administrator';
+                    if(avatar) avatar.style.background = '#50CD89';
                 } else if(currentRole === 'it') {
-                    document.getElementById('displayRole').innerText = 'IT Support';
-                    document.getElementById('userAvatar').style.background = '#F1416C';
+                    if(dispRole) dispRole.innerText = 'IT Support';
+                    if(avatar) avatar.style.background = '#F1416C';
                 }
             }
 
