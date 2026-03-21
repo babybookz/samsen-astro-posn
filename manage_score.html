@@ -55,6 +55,7 @@
             font-weight: 400; 
             margin-right: 10px; 
         }
+        #topBarRoleText { color: var(--success); }
 
         /* ================= HEADER & NAVIGATION ================= */
         .navbar { 
@@ -88,8 +89,9 @@
 
         .nav-links { 
             display: flex; 
-            gap: 25px; 
+            gap: 22px; 
             align-items: center; 
+            flex-wrap: wrap;
         }
         .nav-links a { 
             color: white; 
@@ -145,7 +147,7 @@
             box-shadow: 0px 10px 30px rgba(0,0,0,0.05); 
             max-width: 1200px; 
             margin: 40px auto; 
-            border-top: 5px solid var(--success);
+            border-top: 5px solid var(--theme-purple);
         }
         
         .header-title { 
@@ -160,6 +162,9 @@
             display: flex; 
             justify-content: space-between; 
             margin-bottom: 25px; 
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
         .tab-btn { 
             padding: 12px 30px; 
@@ -182,7 +187,7 @@
         
         .btn-save-all { 
             padding: 14px 30px; 
-            background: var(--success); 
+            background: var(--theme-orange); 
             color: white; 
             border: none; 
             border-radius: 50px; 
@@ -191,11 +196,12 @@
             cursor: pointer; 
             font-family: 'Sarabun';
             transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(80, 205, 137, 0.3);
+            box-shadow: 0 4px 15px rgba(255, 143, 0, 0.3);
         }
         .btn-save-all:hover { 
-            background: #47BE7D; 
+            background: var(--theme-orange-hover); 
             transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 143, 0, 0.4);
         }
         .btn-save-all:disabled { 
             background: var(--text-muted); 
@@ -223,13 +229,14 @@
             background: var(--bg-light);
             transition: 0.3s;
         }
-        .inline-input:focus { border-color: var(--success); outline: none; background: white;}
+        .inline-input:focus { border-color: var(--theme-orange); outline: none; background: white; box-shadow: 0 0 0 3px rgba(255, 143, 0, 0.15);}
         .exam-id-badge { background: var(--bg-light); color: var(--theme-purple); font-family: monospace; font-size: 1.2rem; padding: 5px 10px; border-radius: 6px; font-weight: 700; border: 1px solid var(--border-color);}
         .recorder-name { font-size: 0.85rem; color: var(--text-muted); display: block; margin-top: 5px; font-weight: 600;}
 
         @media (max-width: 768px) {
             .navbar { flex-direction: column; gap: 15px; padding: 15px; }
-            .tabs { flex-direction: column; gap: 15px; align-items: stretch; }
+            .nav-links { justify-content: center; }
+            .tabs { flex-direction: column; align-items: stretch; }
             .btn-save-all { width: 100%; }
         }
     </style>
@@ -237,7 +244,8 @@
 <body>
 
     <div id="adminTopBar" class="top-admin-bar">
-        <span><svg style="width:14px;height:14px;vertical-align:middle;fill:white;margin-top:-2px;" viewBox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 17.96,13.82 17.96,15.47C17.75,16 17.46,16.5 17.13,17Z" /></svg> โหมดผู้ดูแลระบบ:</span> คุณกำลังเข้าสู่ระบบในฐานะเจ้าหน้าที่ศูนย์สอบ
+        <span><svg style="width:14px;height:14px;vertical-align:middle;fill:white;margin-top:-2px;" viewBox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 17.96,13.82 17.96,15.47C17.75,16 17.46,16.5 17.13,17Z" /></svg> โหมดผู้ดูแลระบบ:</span> 
+        <span id="topBarRoleText">คุณกำลังเข้าสู่ระบบในฐานะเจ้าหน้าที่ศูนย์สอบ</span>
     </div>
 
     <nav class="navbar">
@@ -250,13 +258,19 @@
         </a>
         <div class="nav-links">
             <a href="home.html">หน้าแรก</a>
-            <a href="manage_applicants.html">จัดการผู้สมัคร</a>
-            <a href="manage_exam.html">จัดห้องสอบ</a>
-            <a href="manage_score.html" style="color: var(--theme-orange); font-weight: 700;">บันทึกคะแนน</a>
-            <a href="it.html" class="role-it" style="display: none;">ตั้งค่าระบบ</a>
+            <a href="register.html">สมัครสอบ</a>
+            <a href="status.html">ตรวจสอบสถานะ</a>
+            <a href="contact.html">ติดต่อเรา</a>
+
+            <a href="dashboard.html" class="auth-admin" style="display: none; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 20px; color: var(--success);">ภาพรวม</a>
+            <a href="manage_applicants.html" class="auth-admin" style="display: none; color: var(--success);">จัดการผู้สมัคร</a>
+            <a href="manage_exam.html" class="auth-admin" style="display: none; color: var(--success);">จัดห้องสอบ</a>
+            <a href="manage_score.html" class="auth-admin" style="display: none; color: var(--theme-orange); font-weight: 700;">บันทึกคะแนน</a>
+            
+            <a href="it.html" class="auth-it" style="display: none; color: var(--success);">ตั้งค่าระบบ</a>
         </div>
 
-        <div class="nav-profile" id="profileForm">
+        <div class="nav-profile" id="profileForm" style="display: flex;">
             <div class="profile-avatar" id="userAvatar">A</div>
             <div class="profile-info">
                 <div class="profile-name" id="displayName">ชื่อผู้ใช้</div>
@@ -275,14 +289,14 @@
         </div>
 
         <div class="tabs">
-            <div style="display:flex; gap:10px;">
+            <div style="display:flex; gap:10px; flex-wrap: wrap;">
                 <button class="tab-btn active" id="tab-m-ton" onclick="switchTab('ม.ต้น')">มัธยมศึกษาตอนต้น</button>
                 <button class="tab-btn" id="tab-m-plai" onclick="switchTab('ม.ปลาย')">มัธยมศึกษาตอนปลาย</button>
             </div>
             <button class="btn-save-all" id="btnSaveAll" onclick="saveScoreData()">บันทึกคะแนนทั้งหมด</button>
         </div>
 
-        <div style="overflow-x: auto;">
+        <div style="overflow-x: auto; border: 1px solid var(--border-color); border-radius: 12px;">
             <table id="scoreTable">
                 <thead>
                     <tr>
@@ -336,26 +350,41 @@
             });
         };
 
-        // ฟังก์ชันสำหรับอัปเดตชื่อผู้ใช้งานมุมขวาบน
+        // ฟังก์ชันสำหรับอัปเดตชื่อผู้ใช้งานและจัดการเมนู
         function updateProfileUI() {
             const role = localStorage.getItem('userRole');
             document.getElementById('displayName').innerText = currentUserName;
             document.getElementById('userAvatar').innerText = currentUserName ? currentUserName.charAt(0) : 'A';
 
+            const dispRole = document.getElementById('displayRole');
+            const topBarText = document.getElementById('topBarRoleText');
+
             if(role === 'admin') {
-                document.getElementById('displayRole').innerText = 'Administrator';
+                if(dispRole) dispRole.innerText = 'Administrator';
                 document.getElementById('userAvatar').style.background = '#50CD89'; 
+                if(topBarText) topBarText.innerHTML = 'คุณกำลังเข้าสู่ระบบในฐานะ <b>เจ้าหน้าที่ศูนย์สอบ</b>';
             } else if(role === 'it') {
-                document.getElementById('displayRole').innerText = 'IT Support';
+                if(dispRole) dispRole.innerText = 'IT Support';
                 document.getElementById('userAvatar').style.background = '#F1416C'; 
+                if(topBarText) topBarText.innerHTML = 'คุณกำลังเข้าสู่ระบบในฐานะ <b>ฝ่ายไอที (IT Support)</b>';
             }
             
-            // แสดงปุ่ม IT เฉพาะคนที่เป็น IT
-            if(role === 'it') {
-                document.querySelectorAll('.role-it').forEach(el => {
-                    if(el.tagName.toLowerCase() === 'a') el.style.display = 'inline-block';
-                });
-            }
+            // แสดง/ซ่อน เมนูตามสิทธิ์
+            document.querySelectorAll('.auth-admin').forEach(el => {
+                if (role === 'admin' || role === 'it') {
+                    el.style.display = el.tagName.toLowerCase() === 'a' ? 'inline-block' : 'flex';
+                } else {
+                    el.style.display = 'none';
+                }
+            });
+
+            document.querySelectorAll('.auth-it').forEach(el => {
+                if (role === 'it') {
+                    el.style.display = el.tagName.toLowerCase() === 'a' ? 'inline-block' : 'flex';
+                } else {
+                    el.style.display = 'none';
+                }
+            });
         }
 
         // ฟังก์ชันสำหรับออกจากระบบ

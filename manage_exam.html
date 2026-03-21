@@ -17,7 +17,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Theme Colors */
             --theme-purple: #311B5E; 
             --theme-purple-light: #4A2B8C;
             --theme-orange: #FF8F00; 
@@ -27,6 +26,7 @@
             --text-muted: #7E8299;
             --danger: #F1416C;
             --success: #50CD89;
+            --warning: #FFC700;
             --border-color: #E4E6EF;
             --border-radius: 12px;
             --box-shadow: 0px 10px 30px 0px rgba(49, 27, 94, 0.05);
@@ -34,21 +34,9 @@
         body { font-family: 'Sarabun', sans-serif; background: var(--bg-light); margin: 0; color: var(--text-dark); overflow-x: hidden; }
         
         /* ================= TOP ADMIN BAR ================= */
-        .top-admin-bar { 
-            background-color: #181C32; 
-            color: var(--success); 
-            text-align: center; 
-            padding: 8px; 
-            font-size: 0.85rem; 
-            font-weight: 600; 
-            letter-spacing: 0.5px; 
-            display: block; 
-        }
-        .top-admin-bar span { 
-            color: white; 
-            font-weight: 400; 
-            margin-right: 10px; 
-        }
+        .top-admin-bar { background-color: #181C32; color: var(--success); text-align: center; padding: 8px; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px; display: block; }
+        .top-admin-bar span { color: white; font-weight: 400; margin-right: 10px; }
+        #topBarRoleText { color: var(--success); }
 
         /* ================= HEADER & NAVIGATION ================= */
         .navbar { background-color: var(--theme-purple); padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
@@ -58,45 +46,17 @@
         .brand-title { font-weight: 700; font-size: 1.2rem; }
         .brand-sub { font-size: 0.8rem; color: #D1C4E9; }
 
-        .nav-links { display: flex; gap: 25px; align-items: center; }
+        .nav-links { display: flex; gap: 22px; align-items: center; flex-wrap: wrap;}
         .nav-links a { color: white; text-decoration: none; font-weight: 500; font-size: 1rem; transition: color 0.3s; }
         .nav-links a:hover { color: var(--theme-orange); }
 
         /* ================= PROFILE BOX ================= */
-        .nav-profile { 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            background: rgba(255,255,255,0.1); 
-            padding: 5px 15px 5px 5px; 
-            border-radius: 50px;
-        }
-        .profile-avatar { 
-            width: 35px; 
-            height: 35px; 
-            background: var(--success); 
-            color: white; 
-            border-radius: 50%; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            font-weight: bold; 
-        }
+        .nav-profile { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.1); padding: 5px 15px 5px 5px; border-radius: 50px;}
+        .profile-avatar { width: 35px; height: 35px; background: var(--success); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; }
         .profile-info { color: white; font-size: 0.9rem; line-height: 1.2; }
         .profile-name { font-weight: 600; }
         .profile-role { font-size: 0.75rem; color: #D1C4E9; }
-        .btn-logout-icon { 
-            background: none; 
-            border: none; 
-            color: var(--theme-orange); 
-            font-size: 1.2rem; 
-            cursor: pointer; 
-            padding: 5px; 
-            transition: 0.3s; 
-            margin-left: 5px; 
-            display: flex; 
-            align-items: center;
-        }
+        .btn-logout-icon { background: none; border: none; color: var(--theme-orange); font-size: 1.2rem; cursor: pointer; padding: 5px; transition: 0.3s; margin-left: 5px; display: flex; align-items: center;}
         .btn-logout-icon:hover { color: var(--danger); }
 
         /* ================= MAIN CONTAINER ================= */
@@ -152,13 +112,15 @@
             .controls-row { flex-direction: column; gap: 15px; align-items: flex-start; }
             .tabs { flex-direction: column; align-items: stretch; }
             .btn-save-all { width: 100%; }
+            .nav-links { justify-content: center; }
         }
     </style>
 </head>
 <body>
 
     <div id="adminTopBar" class="top-admin-bar">
-        <span><svg style="width:14px;height:14px;vertical-align:middle;fill:white;margin-top:-2px;" viewBox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 17.96,13.82 17.96,15.47C17.75,16 17.46,16.5 17.13,17Z" /></svg> โหมดผู้ดูแลระบบ:</span> คุณกำลังเข้าสู่ระบบในฐานะเจ้าหน้าที่ศูนย์สอบ
+        <span><svg style="width:14px;height:14px;vertical-align:middle;fill:white;margin-top:-2px;" viewBox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 17.96,13.82 17.96,15.47C17.75,16 17.46,16.5 17.13,17Z" /></svg> โหมดผู้ดูแลระบบ:</span> 
+        <span id="topBarRoleText">คุณกำลังเข้าสู่ระบบในฐานะเจ้าหน้าที่ศูนย์สอบ</span>
     </div>
 
     <nav class="navbar">
@@ -171,10 +133,16 @@
         </a>
         <div class="nav-links">
             <a href="home.html">หน้าแรก</a>
-            <a href="manage_applicants.html" >จัดการผู้สมัคร</a>
-            <a href="manage_exam.html" style="color: var(--theme-orange); font-weight: 700;" >จัดห้องสอบ</a>
-            <a href="manage_score.html">บันทึกคะแนน</a>
-            <a href="it.html" class="role-it" style="display: none;">ตั้งค่าระบบ</a>
+            <a href="register.html">สมัครสอบ</a>
+            <a href="status.html">ตรวจสอบสถานะ</a>
+            <a href="contact.html">ติดต่อเรา</a>
+
+            <a href="dashboard.html" class="auth-admin" style="display: none; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 20px; color: var(--success);">ภาพรวม</a>
+            <a href="manage_applicants.html" class="auth-admin" style="display: none; color: var(--success);">จัดการผู้สมัคร</a>
+            <a href="manage_exam.html" class="auth-admin" style="display: none; color: var(--theme-orange); font-weight: 700;">จัดห้องสอบ</a>
+            <a href="manage_score.html" class="auth-admin" style="display: none; color: var(--success);">บันทึกคะแนน</a>
+            
+            <a href="it.html" class="auth-it" style="display: none; color: var(--success);">ตั้งค่าระบบ</a>
         </div>
 
         <div class="nav-profile" id="profileForm" style="display: flex;">
@@ -281,26 +249,41 @@
             });
         };
 
-        // ฟังก์ชันสำหรับอัปเดตชื่อผู้ใช้งานมุมขวาบน
+        // ฟังก์ชันสำหรับอัปเดตชื่อผู้ใช้งานและเมนู
         function updateProfileUI() {
             const role = localStorage.getItem('userRole');
             document.getElementById('displayName').innerText = currentUserName;
             document.getElementById('userAvatar').innerText = currentUserName ? currentUserName.charAt(0) : 'A';
 
+            const dispRole = document.getElementById('displayRole');
+            const topBarText = document.getElementById('topBarRoleText');
+
             if(role === 'admin') {
-                document.getElementById('displayRole').innerText = 'Administrator';
+                if(dispRole) dispRole.innerText = 'Administrator';
                 document.getElementById('userAvatar').style.background = '#50CD89'; 
+                if(topBarText) topBarText.innerHTML = 'คุณกำลังเข้าสู่ระบบในฐานะ <b>เจ้าหน้าที่ศูนย์สอบ</b>';
             } else if(role === 'it') {
-                document.getElementById('displayRole').innerText = 'IT Support';
+                if(dispRole) dispRole.innerText = 'IT Support';
                 document.getElementById('userAvatar').style.background = '#F1416C'; 
+                if(topBarText) topBarText.innerHTML = 'คุณกำลังเข้าสู่ระบบในฐานะ <b>ฝ่ายไอที (IT Support)</b>';
             }
 
-            // แสดงปุ่ม IT เฉพาะคนที่เป็น IT
-            if(role === 'it') {
-                document.querySelectorAll('.role-it').forEach(el => {
-                    if(el.tagName.toLowerCase() === 'a') el.style.display = 'inline-block';
-                });
-            }
+            // จัดการแสดงผลเมนู Admin/IT
+            document.querySelectorAll('.auth-admin').forEach(el => {
+                if (role === 'admin' || role === 'it') {
+                    el.style.display = el.tagName.toLowerCase() === 'a' ? 'inline-block' : 'flex';
+                } else {
+                    el.style.display = 'none';
+                }
+            });
+
+            document.querySelectorAll('.auth-it').forEach(el => {
+                if (role === 'it') {
+                    el.style.display = el.tagName.toLowerCase() === 'a' ? 'inline-block' : 'flex';
+                } else {
+                    el.style.display = 'none';
+                }
+            });
         }
 
         // ฟังก์ชันสำหรับออกจากระบบ

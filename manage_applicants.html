@@ -42,6 +42,7 @@
         /* ================= 1. TOP ADMIN BAR ================= */
         .top-admin-bar { background-color: #181C32; color: var(--success); text-align: center; padding: 8px; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px; display: block; }
         .top-admin-bar span { color: white; font-weight: 400; margin-right: 10px; }
+        #topBarRoleText { color: var(--success); }
 
         /* ================= HEADER & NAVIGATION ================= */
         .navbar { background-color: var(--theme-purple); padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
@@ -50,7 +51,7 @@
         .brand-title { font-weight: 700; font-size: 1.2rem; line-height: 1.1; }
         .brand-sub { font-size: 0.8rem; color: #D1C4E9; }
 
-        .nav-links { display: flex; gap: 25px; align-items: center; }
+        .nav-links { display: flex; gap: 22px; align-items: center; flex-wrap: wrap;}
         .nav-links a { color: white; text-decoration: none; font-weight: 500; font-size: 1rem; transition: color 0.3s; }
         .nav-links a:hover { color: var(--theme-orange); }
 
@@ -71,7 +72,7 @@
         .subtitle { color: var(--text-muted); font-size: 1.05rem; margin: 5px 0 0 0; }
 
         /* Tabs */
-        .tabs { display: flex; gap: 15px; margin-bottom: 25px; }
+        .tabs { display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap;}
         .tab-btn { padding: 12px 30px; border: 1px solid var(--border-color); background: var(--bg-light); color: var(--text-muted); font-size: 1.1rem; font-weight: 700; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; font-family: 'Sarabun'; }
         .tab-btn:hover { border-color: var(--theme-purple); color: var(--theme-purple); }
         .tab-btn.active { background: var(--theme-purple); color: white; border-color: var(--theme-purple); box-shadow: 0 4px 15px rgba(49, 27, 94, 0.2); }
@@ -84,7 +85,7 @@
         .select-rows { padding: 10px 15px; border: 1px solid var(--border-color); border-radius: 8px; font-family: 'Sarabun'; font-size: 1rem; outline: none; color: var(--text-dark); background: white; cursor: pointer; transition: 0.3s; }
         .select-rows:focus { border-color: var(--theme-purple); }
         
-        .pagination { display: flex; gap: 10px; align-items: center; }
+        .pagination { display: flex; gap: 10px; align-items: center; flex-wrap: wrap;}
         .btn-page { padding: 8px 15px; background: white; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: 0.2s; font-family: 'Sarabun'; font-weight: 600; color: var(--theme-purple);}
         .btn-page:hover:not(:disabled) { background: var(--theme-purple-light); color: white; border-color: var(--theme-purple-light);}
         .btn-page:disabled { color: var(--text-muted); cursor: not-allowed; opacity: 0.6;}
@@ -120,7 +121,6 @@
         .btn-close-modal:hover { color: var(--danger); }
         
         .modal-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 25px; }
-        @media (max-width: 768px) { .modal-grid { grid-template-columns: 1fr; } }
         
         .info-section { background: var(--bg-light); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); }
         .info-title { font-size: 1.15rem; font-weight: 700; color: var(--theme-purple); margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid var(--theme-orange); padding-bottom: 8px; display: inline-block;}
@@ -143,19 +143,22 @@
         .btn-cancel { flex: 1; padding: 15px; background: white; color: var(--text-muted); border: 1px solid var(--border-color); border-radius: 50px; font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: 0.3s; font-family: 'Sarabun';}
         .btn-cancel:hover { background: var(--bg-light); color: var(--text-dark); }
         
+        /* 🌟 Responsive Adjustments */
         @media (max-width: 768px) {
             .navbar { flex-direction: column; gap: 15px; padding: 15px; }
+            .nav-links { justify-content: center; }
             .header-title { flex-direction: column; align-items: flex-start; gap: 10px; }
             .controls-row { flex-direction: column; gap: 15px; align-items: flex-start; }
-            .tabs { flex-direction: column; align-items: stretch; }
             .search-input { width: 100%; }
+            .modal-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
     <div id="adminTopBar" class="top-admin-bar">
-        <span><svg style="width:14px;height:14px;vertical-align:middle;fill:white;margin-top:-2px;" viewBox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 17.96,13.82 17.96,15.47C17.75,16 17.46,16.5 17.13,17Z" /></svg> โหมดผู้ดูแลระบบ:</span> คุณกำลังเข้าสู่ระบบในฐานะเจ้าหน้าที่ศูนย์สอบ
+        <span><svg style="width:14px;height:14px;vertical-align:middle;fill:white;margin-top:-2px;" viewBox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 17.96,13.82 17.96,15.47C17.75,16 17.46,16.5 17.13,17Z" /></svg> โหมดผู้ดูแลระบบ:</span> 
+        <span id="topBarRoleText">คุณกำลังเข้าสู่ระบบในฐานะเจ้าหน้าที่ศูนย์สอบ</span>
     </div>
 
     <nav class="navbar">
@@ -168,10 +171,16 @@
         </a>
         <div class="nav-links">
             <a href="home.html">หน้าแรก</a>
-            <a href="manage_applicants.html" style="color: var(--theme-orange); font-weight: 700;">จัดการผู้สมัคร</a>
-            <a href="manage_exam.html">จัดห้องสอบ</a>
-            <a href="manage_score.html">บันทึกคะแนน</a>
-            <a href="it.html" class="role-it" style="display: none;">ตั้งค่าระบบ</a>
+            <a href="register.html">สมัครสอบ</a>
+            <a href="status.html">ตรวจสอบสถานะ</a>
+            <a href="contact.html">ติดต่อเรา</a>
+
+            <a href="dashboard.html" class="auth-admin" style="display: none; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 20px; color: var(--success);">ภาพรวม</a>
+            <a href="manage_applicants.html" class="auth-admin" style="display: none; color: var(--theme-orange); font-weight: 700;">จัดการผู้สมัคร</a>
+            <a href="manage_exam.html" class="auth-admin" style="display: none; color: var(--success);">จัดห้องสอบ</a>
+            <a href="manage_score.html" class="auth-admin" style="display: none; color: var(--success);">บันทึกคะแนน</a>
+            
+            <a href="it.html" class="auth-it" style="display: none; color: var(--success);">ตั้งค่าระบบ</a>
         </div>
 
         <div class="nav-profile" id="profileForm" style="display: flex;">
@@ -211,7 +220,7 @@
                         <option value="fail">ไม่อนุมัติ</option>
                     </select>
 
-                    <div style="display: flex; align-items: center; gap: 5px; margin-left: 10px;">
+                    <div style="display: flex; align-items: center; gap: 5px;">
                         <label style="font-weight: 600; font-size: 0.95rem; color: var(--theme-purple); margin: 0;">แสดง:</label>
                         <select id="rowsPerPage" class="select-rows" onchange="changeRowsPerPage()" style="padding: 10px;">
                             <option value="50">50</option>
@@ -293,8 +302,8 @@
                             <div id="v_examId" style="font-size:1.5rem; font-weight:700; font-family:monospace; letter-spacing: 2px;"></div>
                         </div>
                         <div style="margin-top: 10px; font-size: 0.85rem; color: var(--text-muted); text-align: right;">
-                            ผู้ทำรายการ: <span style="font-weight: bold; color: var(--theme-purple);" id="currentAdminNameDisplay"></span>
-                        </div>
+                            ผู้ทำรายการ: <span style="font-weight: bold; color: var(--theme-purple);" id="currentAdminNameDisplay"></span><br>
+                            <span id="approvalTimeDisplay" style="font-size: 0.8rem;"></span> </div>
                     </div>
                 </div>
 
@@ -339,7 +348,7 @@
         
         let currentReviewRowIndex = -1; 
         let currentLevel = 'ม.ต้น'; 
-        let activeYear = new Date().getFullYear() + 543; // กำหนดค่า Default ไว้ก่อน
+        let activeYear = new Date().getFullYear() + 543; 
 
         let currentPage = 1;
         let rowsPerPage = 50;
@@ -348,7 +357,6 @@
             updateProfileUI();
             document.getElementById('currentAdminNameDisplay').innerText = currentUserName;
             
-            // 🌟 แก้ไข Logic: บังคับวิ่งไปเช็คตั้งค่าปีการศึกษาจาก Server ก่อนโหลดตาราง
             document.getElementById('applicantTable').innerHTML = `<tr><td colspan="7"><div class="loading-box">กำลังตรวจสอบตั้งค่าระบบ... ⏳</div></td></tr>`;
             
             fetch(GAS_URL, {
@@ -359,18 +367,18 @@
             .then(res => {
                 if(res.status === 'success' && res.data.activeYear) {
                     activeYear = res.data.activeYear;
-                    localStorage.setItem('activeYear', activeYear); // บันทึกเป็น Cache เผื่อหน้าอื่น
+                    localStorage.setItem('activeYear', activeYear); 
                 } else {
                     activeYear = localStorage.getItem('activeYear') || activeYear;
                 }
             })
             .catch(err => {
-                console.error("โหลดตั้งค่าไม่สำเร็จ ใช้ค่าเริ่มต้นหรือในเครื่องแทน", err);
+                console.error("โหลดตั้งค่าไม่สำเร็จ", err);
                 activeYear = localStorage.getItem('activeYear') || activeYear;
             })
             .finally(() => {
                 document.getElementById('pageSubtitle').innerText = `ประจำปีการศึกษา ${activeYear}`;
-                fetchDataFromSheet(); // โหลดข้อมูลผู้สมัครหลังจากรู้ปีที่แน่นอนแล้ว
+                fetchDataFromSheet(); 
             });
         };
 
@@ -379,19 +387,34 @@
             document.getElementById('displayName').innerText = currentUserName;
             document.getElementById('userAvatar').innerText = currentUserName ? currentUserName.charAt(0) : 'A';
 
+            const dispRole = document.getElementById('displayRole');
+            const topBarText = document.getElementById('topBarRoleText');
+
             if(role === 'admin') {
-                document.getElementById('displayRole').innerText = 'Administrator';
+                if(dispRole) dispRole.innerText = 'Administrator';
                 document.getElementById('userAvatar').style.background = '#50CD89'; 
+                if(topBarText) topBarText.innerHTML = 'คุณกำลังเข้าสู่ระบบในฐานะ <b>เจ้าหน้าที่ศูนย์สอบ</b>';
             } else if(role === 'it') {
-                document.getElementById('displayRole').innerText = 'IT Support';
+                if(dispRole) dispRole.innerText = 'IT Support';
                 document.getElementById('userAvatar').style.background = '#F1416C'; 
+                if(topBarText) topBarText.innerHTML = 'คุณกำลังเข้าสู่ระบบในฐานะ <b>ฝ่ายไอที (IT Support)</b>';
             }
 
-            if(role === 'it') {
-                document.querySelectorAll('.role-it').forEach(el => {
-                    if(el.tagName.toLowerCase() === 'a') el.style.display = 'inline-block';
-                });
-            }
+            document.querySelectorAll('.auth-admin').forEach(el => {
+                if (role === 'admin' || role === 'it') {
+                    el.style.display = el.tagName.toLowerCase() === 'a' ? 'inline-block' : 'flex';
+                } else {
+                    el.style.display = 'none';
+                }
+            });
+
+            document.querySelectorAll('.auth-it').forEach(el => {
+                if (role === 'it') {
+                    el.style.display = el.tagName.toLowerCase() === 'a' ? 'inline-block' : 'flex';
+                } else {
+                    el.style.display = 'none';
+                }
+            });
         }
 
         function handleLogout() { 
@@ -538,7 +561,6 @@
             });
         }
 
-        // ================= ฟังก์ชันป้องกันการดึงวันที่เพี้ยน =================
         function formatDateSafe(dateStr) {
             if(!dateStr || dateStr === '-') return '-';
             let d = new Date(dateStr);
@@ -546,7 +568,6 @@
             return d.toLocaleDateString('th-TH', { day:'2-digit', month:'2-digit', year:'numeric' });
         }
 
-        // ================= MODAL LOGIC =================
         function openReviewModal(rowIndex) {
             try {
                 currentReviewRowIndex = rowIndex;
@@ -636,6 +657,13 @@
                     document.getElementById('examIdDisplayBox').style.display = 'none'; 
                 }
 
+                // 🌟 เพิ่มการดึงเวลาที่อนุมัติล่าสุด (ถ้าเคยทำรายการแล้ว)
+                let updateTimeText = "สถานะ: ยังไม่ได้ตรวจสอบ";
+                if(app.status !== 'wait' && app.lastUpdate) {
+                    updateTimeText = `(อัปเดตล่าสุด: ${app.lastUpdate})`;
+                }
+                document.getElementById('approvalTimeDisplay').innerText = updateTimeText;
+
                 document.getElementById('reviewModal').style.display = 'flex';
                 
             } catch (error) { console.error(error); alert("พบข้อผิดพลาด: " + error.message); }
@@ -648,7 +676,6 @@
 
         function toggleReasonField() {
             const status = document.getElementById('statusSelect').value;
-            // บังคับกรอกเหตุผลเฉพาะ ไม่อนุมัติ(fail)
             document.getElementById('reasonReq').style.display = (status === 'fail') ? 'inline' : 'none';
         }
 
@@ -668,13 +695,11 @@
             let app = dbApplicants[appIndex];
             app.status = status; app.note = note;
             app.approverName = (status === 'wait') ? '' : currentUserName;
-
-            if(status === 'pass' && !app.examId) {
-                const yearPrefix = activeYear.toString().substring(2); 
-                const levelCode = (app.applyLevel.includes("ต้น")) ? "1" : "2";
-                const sequence = String(app.no).padStart(4, '0');
-                app.examId = yearPrefix + levelCode + sequence; 
-            } else if (status !== 'pass') { app.examId = ''; }
+            
+            // 🌟 จำลองการเปลี่ยนเวลาฝั่ง Client เพื่อแสดงผลลัพธ์ทันที โดยใช้เวลาปัจจุบัน
+            const now = new Date();
+            const timeString = now.toLocaleDateString('th-TH', { day:'2-digit', month:'2-digit', year:'numeric'}) + " " + now.toLocaleTimeString('th-TH', {hour: '2-digit', minute: '2-digit'});
+            app.lastUpdate = (status === 'wait') ? '' : timeString; 
 
             btn.innerHTML = "กำลังบันทึก... ⏳"; btn.disabled = true;
 
@@ -682,19 +707,21 @@
                 method: 'POST',
                 body: JSON.stringify({
                     action: 'updateStatus', activeYear: activeYear, level: currentLevel,
-                    rowIndex: app.rowIndex, status: app.status, note: app.note, examId: app.examId,
-                    approverName: app.approverName
+                    rowIndex: app.rowIndex, status: app.status, note: app.note,
+                    approverName: app.approverName 
                 })
             })
             .then(res => res.json())
             .then(result => {
                 if (result.status === 'success') {
+                    app.examId = result.newExamId || '';
+
                     let statusMsgText = '';
                     if (status === 'pass') statusMsgText = 'อนุมัติ (ได้เลขสอบ: ' + app.examId + ')';
                     else if (status === 'fail') statusMsgText = 'ไม่อนุมัติ';
                     else statusMsgText = 'รอตรวจสอบ';
                     
-                    alert(`บันทึกข้อมูลสำเร็จ!\nสถานะ: ${statusMsgText}`);
+                    alert(`บันทึกข้อมูลสำเร็จ!\\nสถานะ: ${statusMsgText}`);
                     
                     dbApplicants[appIndex] = app; 
                     applyFilters(); 

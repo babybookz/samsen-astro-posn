@@ -29,12 +29,14 @@
         /* ================= NAVIGATION ================= */
         .top-admin-bar { background-color: #181C32; color: var(--success); text-align: center; padding: 8px; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.5px; display: none; }
         .top-admin-bar span { color: white; font-weight: 400; margin-right: 10px; }
+        #topBarRoleText { color: var(--success); }
+
         .navbar { background-color: var(--theme-purple); padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
         .nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: white;}
         .nav-brand img { height: 45px; width: auto; background: white; padding: 3px; border-radius: 8px;}
         .brand-title { font-weight: 700; font-size: 1.2rem; line-height: 1.1;}
         .brand-sub { font-size: 0.8rem; color: #D1C4E9; line-height: 1.1;}
-        .nav-links { display: flex; gap: 25px; align-items: center; }
+        .nav-links { display: flex; gap: 22px; align-items: center; flex-wrap: wrap;}
         .nav-links a { color: white; text-decoration: none; font-weight: 500; font-size: 1rem; transition: color 0.3s; }
         .nav-links a:hover { color: var(--theme-orange); }
         .nav-profile { display: none; align-items: center; gap: 12px; background: rgba(255,255,255,0.1); padding: 5px 15px 5px 5px; border-radius: 50px;}
@@ -128,7 +130,8 @@
 <body>
 
     <div id="adminTopBar" class="top-admin-bar">
-        <span><svg style="width:14px;height:14px;vertical-align:middle;fill:white;margin-top:-2px;" viewBox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 17.96,13.82 17.96,15.47C17.75,16 17.46,16.5 17.13,17Z" /></svg> โหมดผู้ดูแลระบบ:</span> คุณกำลังเข้าสู่ระบบในฐานะเจ้าหน้าที่ศูนย์สอบ
+        <span><svg style="width:14px;height:14px;vertical-align:middle;fill:white;margin-top:-2px;" viewBox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M17.13,17C15.92,18.85 14.11,20.24 12,20.92C9.89,20.24 8.08,18.85 6.87,17C6.53,16.5 6.24,16 6,15.47C6,13.82 8.71,12.47 12,12.47C15.29,12.47 17.96,13.82 17.96,15.47C17.75,16 17.46,16.5 17.13,17Z" /></svg> โหมดผู้ดูแลระบบ:</span> 
+        <span id="topBarRoleText">คุณกำลังเข้าสู่ระบบในฐานะเจ้าหน้าที่ศูนย์สอบ</span>
     </div>
 
     <nav class="navbar">
@@ -144,10 +147,13 @@
             <a href="register.html" style="color: var(--theme-orange); font-weight: 700;">สมัครสอบ</a>
             <a href="status.html">ตรวจสอบสถานะ</a>
             <a href="contact.html">ติดต่อเรา</a>
-            <a href="manage_applicants.html" class="role-admin role-it" style="display: none;">จัดการผู้สมัคร</a>
-            <a href="manage_exam.html" class="role-admin role-it" style="display: none;">จัดห้องสอบ</a>
-            <a href="manage_score.html" class="role-admin role-it" style="display: none;">บันทึกคะแนน</a>
-            <a href="it.html" class="role-it" style="display: none;">ตั้งค่าระบบ</a>
+
+            <a href="dashboard.html" class="auth-admin" style="display: none; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 20px; color: var(--success);">ภาพรวม</a>
+            <a href="manage_applicants.html" class="auth-admin" style="display: none; color: var(--success);">จัดการผู้สมัคร</a>
+            <a href="manage_exam.html" class="auth-admin" style="display: none; color: var(--success);">จัดห้องสอบ</a>
+            <a href="manage_score.html" class="auth-admin" style="display: none; color: var(--success);">บันทึกคะแนน</a>
+            
+            <a href="it.html" class="auth-it" style="display: none; color: var(--success);">ตั้งค่าระบบ</a>
         </div>
         <div class="nav-profile" id="profileForm">
             <div class="profile-avatar" id="userAvatar">A</div>
@@ -407,7 +413,6 @@
             // ตั้งค่า Profile ก่อนเลย
             const currentRole = localStorage.getItem('userRole') || 'guest';
             const currentName = localStorage.getItem('userName') || '';
-            const showAdmin = (currentRole === 'admin' || currentRole === 'it');
             const profileForm = document.getElementById('profileForm');
             const adminTopBar = document.getElementById('adminTopBar');
 
@@ -416,23 +421,36 @@
                 adminTopBar.style.display = 'block';
                 document.getElementById('displayName').innerText = currentName;
                 document.getElementById('userAvatar').innerText = currentName ? currentName.charAt(0) : 'A';
+                
+                const dispRole = document.getElementById('displayRole');
+                const topBarText = document.getElementById('topBarRoleText');
+
                 if(currentRole === 'admin') {
-                    document.getElementById('displayRole').innerText = 'Administrator';
+                    if(dispRole) dispRole.innerText = 'Administrator';
                     document.getElementById('userAvatar').style.background = '#50CD89';
+                    if(topBarText) topBarText.innerHTML = 'คุณกำลังเข้าสู่ระบบในฐานะ <b>เจ้าหน้าที่ศูนย์สอบ</b>';
                 } else if(currentRole === 'it') {
-                    document.getElementById('displayRole').innerText = 'IT Support';
+                    if(dispRole) dispRole.innerText = 'IT Support';
                     document.getElementById('userAvatar').style.background = '#F1416C';
+                    if(topBarText) topBarText.innerHTML = 'คุณกำลังเข้าสู่ระบบในฐานะ <b>ฝ่ายไอที (IT Support)</b>';
                 }
             }
 
-            document.querySelectorAll('.role-admin').forEach(el => {
-                if(el.tagName.toLowerCase() === 'a') el.style.display = showAdmin ? 'inline-block' : 'none';
+            document.querySelectorAll('.auth-admin').forEach(el => {
+                if (currentRole === 'admin' || currentRole === 'it') {
+                    el.style.display = el.tagName.toLowerCase() === 'a' ? 'inline-block' : 'flex';
+                } else {
+                    el.style.display = 'none';
+                }
             });
-            if(currentRole === 'it') {
-                document.querySelectorAll('.role-it').forEach(el => {
-                    if(el.tagName.toLowerCase() === 'a') el.style.display = 'inline-block';
-                });
-            }
+
+            document.querySelectorAll('.auth-it').forEach(el => {
+                if (currentRole === 'it') {
+                    el.style.display = el.tagName.toLowerCase() === 'a' ? 'inline-block' : 'flex';
+                } else {
+                    el.style.display = 'none';
+                }
+            });
 
             // 🌟 ยิง API ไปถาม Server ก่อนว่าตอนนี้ปีอะไร และเปิดหรือปิดรับสมัคร 
             fetch(GAS_URL, {
@@ -497,7 +515,7 @@
         function handleLogout() { 
             localStorage.removeItem('userRole'); 
             localStorage.removeItem('userName'); 
-            window.location.reload(); 
+            window.location.replace('home.html'); 
         }
 
         function formatPhoneNumber(input) {
