@@ -34,6 +34,10 @@
         /* ================= HEADER & NAVIGATION ================= */
         .navbar { background-color: var(--theme-purple); padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
         
+        .nav-left { flex: 1; display: flex; justify-content: flex-start; }
+        .nav-center { flex: 2; display: flex; justify-content: center; }
+        .nav-right { flex: 1; display: flex; justify-content: flex-end; align-items: center; }
+
         .nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: white; position: relative; z-index: 101;}
         .nav-brand img { height: 45px; width: auto; background: white; padding: 3px; border-radius: 8px;}
         .nav-brand div { line-height: 1.1; }
@@ -47,12 +51,12 @@
         /* Container คลุมเมนูกลางและขวา */
         .nav-content { display: flex; flex: 1; align-items: center; justify-content: space-between;}
 
-        /* 🌟 จัดเมนูให้อยู่กึ่งกลางเป๊ะๆ บน Desktop */
+        /* เมนูกึ่งกลาง */
         .nav-links { position: absolute; left: 50%; transform: translateX(-50%); display: flex; gap: 25px; align-items: center; }
         .nav-links a { color: white; text-decoration: none; font-weight: 500; font-size: 1rem; transition: color 0.3s; }
         .nav-links a:hover { color: var(--theme-orange); }
 
-        /* 🌟 จัดกล่องเข้าสู่ระบบ / โปรไฟล์ ไปไว้ขวาสุด */
+        /* กล่องเข้าสู่ระบบ / โปรไฟล์ */
         .nav-right-actions { margin-left: auto; display: flex; align-items: center; }
 
         .nav-auth .btn-login { 
@@ -81,23 +85,47 @@
         .btn-logout-icon { background: none; border: none; color: var(--theme-orange); font-size: 1.2rem; cursor: pointer; padding: 5px; transition: 0.3s; margin-left: 5px; display: flex; align-items: center;}
         .btn-logout-icon:hover { color: var(--danger); }
 
-        /* 🌟 Responsive Settings สำหรับมือถือ (Hamburger Menu) */
+        /* พื้นหลังสีดำเมื่อเปิดเมนูในมือถือ */
+        .mobile-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.5); z-index: 101; opacity: 0; transition: opacity 0.3s ease;}
+        .mobile-overlay.show { opacity: 1; }
+
+        /* ปุ่มปิดเมนูมือถือ (กากบาท) */
+        .mobile-close-btn { display: none; background: none; border: none; color: white; font-size: 2.5rem; cursor: pointer; align-self: flex-end; margin-bottom: 20px; line-height: 1;}
+
+        /* 🌟 Responsive Settings สำหรับมือถือ (Sidebar Menu) */
         @media (max-width: 992px) {
-            .navbar { padding: 15px 20px; flex-wrap: wrap; }
+            .navbar { padding: 15px 20px; }
             .mobile-menu-btn { display: block; }
+            .mobile-close-btn { display: block; }
+            
             .nav-content { 
-                display: none; /* ซ่อนไว้ก่อน */
-                flex-direction: column; 
-                width: 100%; 
-                margin-top: 15px; 
-                padding-top: 15px; 
-                border-top: 1px solid rgba(255,255,255,0.1); 
+                position: fixed;
+                top: 0;
+                right: -100%; /* ซ่อนไว้นอกจอทางขวา */
+                width: 280px;
+                max-width: 80vw;
+                height: 100vh;
+                background-color: var(--theme-purple);
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: flex-start;
+                padding: 25px 20px;
+                margin: 0;
+                z-index: 102; /* ลอยอยู่บนสุด */
+                box-shadow: -5px 0 25px rgba(0,0,0,0.2);
+                transition: right 0.3s ease-in-out;
+                overflow-y: auto;
             }
-            .nav-content.show { display: flex; } /* แสดงเมื่อกดปุ่ม */
-            .nav-links { position: static; transform: none; flex-direction: column; width: 100%; gap: 0; }
-            .nav-links a { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); width: 100%; text-align: center; }
-            .nav-links a:last-child { border-bottom: none; }
-            .nav-right-actions { margin-left: 0; width: 100%; justify-content: center; margin-top: 15px; }
+            .nav-content.show { right: 0; /* สไลด์เข้ามา */ }
+            
+            .nav-links { position: static; transform: none; flex-direction: column; width: 100%; gap: 5px; align-items: flex-start;}
+            .nav-links a { padding: 15px; border-radius: 8px; width: 100%; box-sizing: border-box; text-align: left; font-size: 1.1rem; }
+            .nav-links a:hover { background-color: rgba(255,255,255,0.08); }
+            
+            .nav-right-actions { margin-left: 0; width: 100%; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;}
+            .nav-auth { width: 100%; }
+            .nav-auth .btn-login { width: 100%; padding: 14px; font-size: 1.05rem; }
+            .nav-profile { width: 100%; justify-content: space-between; border-radius: 12px; padding: 10px; background: rgba(0,0,0,0.2);}
         }
 
         /* ================= HERO SECTION ================= */
@@ -175,7 +203,6 @@
         .bg-purple { background: #F3E5F5; color: #8E24AA; } .bg-purple svg { fill: #8E24AA; }
 
         /* ================= MODAL LOGIN ================= */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 1000; }
         .modal-box { background: white; padding: 40px 30px; border-radius: 20px; width: 350px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); text-align: center; position: relative; }
         .modal-title { font-size: 1.4rem; font-weight: 700; color: var(--theme-purple); margin: 0 0 25px 0; }
         .form-control { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 10px; font-family: 'Sarabun'; font-size: 1rem; box-sizing: border-box; background: #F9F9F9; transition: 0.2s; text-align: center;}
@@ -202,20 +229,26 @@
         <span id="topBarRoleText">คุณกำลังเข้าสู่ระบบในฐานะเจ้าหน้าที่ศูนย์สอบ</span>
     </div>
 
+    <div class="mobile-overlay" id="mobileOverlay" onclick="toggleMobileMenu()"></div>
+
     <nav class="navbar">
-        <a href="home.html" class="nav-brand">
-            <img src="assets/samsen-emblem.png" alt="Samsen Logo">
-            <div>
-                <div class="brand-title">SAMSEN ASTRO</div>
-                <div class="brand-sub">POSN System</div>
-            </div>
-        </a>
+        <div class="nav-left">
+            <a href="home.html" class="nav-brand">
+                <img src="assets/samsen-emblem.png" alt="Samsen Logo">
+                <div>
+                    <div class="brand-title">SAMSEN ASTRO</div>
+                    <div class="brand-sub">POSN System</div>
+                </div>
+            </a>
+        </div>
 
         <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
             <svg viewBox="0 0 24 24"><path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z"/></svg>
         </button>
 
         <div class="nav-content" id="navContent">
+            <button class="mobile-close-btn" onclick="toggleMobileMenu()">&times;</button>
+
             <div class="nav-links">
                 <a href="home.html" style="color: var(--theme-orange); font-weight: 700;">หน้าแรก</a>
                 <a href="register.html">สมัครสอบ</a>
@@ -352,13 +385,13 @@
         © 2026 กมลภพ เตชะวันสกุล - Samsen Astro POSN System
     </footer>
 
-    <div class="modal-overlay" id="loginModal">
-        <div class="modal-box">
-            <button class="btn-close" onclick="closeLoginModal()">&times;</button>
-            <h3 class="modal-title">เข้าสู่ระบบเจ้าหน้าที่</h3>
-            <input type="text" id="loginId" class="form-control" placeholder="ชื่อผู้ใช้งาน (Username)">
-            <input type="password" id="loginPass" class="form-control" placeholder="รหัสผ่าน (Password)">
-            <button class="btn-submit-login" id="loginSubmitBtn" onclick="loginWithPassword()">ลงชื่อเข้าใช้</button>
+    <div class="modal-overlay" id="loginModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); justify-content: center; align-items: center; z-index: 1000;">
+        <div class="modal-box" style="background: white; padding: 40px 30px; border-radius: 20px; width: 350px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); text-align: center; position: relative;">
+            <button class="btn-close" onclick="closeLoginModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5rem; color: #A1A5B7; cursor: pointer; transition: 0.2s; line-height: 1;">&times;</button>
+            <h3 class="modal-title" style="font-size: 1.4rem; font-weight: 700; color: var(--theme-purple); margin: 0 0 25px 0;">เข้าสู่ระบบเจ้าหน้าที่</h3>
+            <input type="text" id="loginId" class="form-control" placeholder="ชื่อผู้ใช้งาน (Username)" style="width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 10px; font-family: 'Sarabun'; font-size: 1rem; box-sizing: border-box; background: #F9F9F9; transition: 0.2s; text-align: center;">
+            <input type="password" id="loginPass" class="form-control" placeholder="รหัสผ่าน (Password)" style="width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 10px; font-family: 'Sarabun'; font-size: 1rem; box-sizing: border-box; background: #F9F9F9; transition: 0.2s; text-align: center;">
+            <button class="btn-submit-login" id="loginSubmitBtn" onclick="loginWithPassword()" style="width: 100%; padding: 14px; background: var(--theme-purple); color: white; border: none; border-radius: 10px; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: 'Sarabun';">ลงชื่อเข้าใช้</button>
         </div>
     </div>
 
@@ -414,10 +447,6 @@
                 document.getElementById("countdown").innerText = "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้";
             });
 
-            // ==========================================
-            // 🌟 ระบบ Real-time Background Polling 
-            // แอบเช็คสถานะระบบทุกๆ 15 วินาทีโดยไม่ต้องรีเฟรชหน้า
-            // ==========================================
             setInterval(() => {
                 fetch(GAS_URL, {
                     method: 'POST',
@@ -610,9 +639,19 @@
             }, 1000);
         }
 
-        // ฟังก์ชันเปิด/ปิดเมนูมือถือ
+        // 🌟 ฟังก์ชันเปิด/ปิดเมนูมือถือ
         function toggleMobileMenu() {
-            document.getElementById('navContent').classList.toggle('show');
+            const navContent = document.getElementById('navContent');
+            const overlay = document.getElementById('mobileOverlay');
+            
+            navContent.classList.toggle('show');
+            if (navContent.classList.contains('show')) {
+                overlay.style.display = 'block';
+                setTimeout(() => overlay.classList.add('show'), 10);
+            } else {
+                overlay.classList.remove('show');
+                setTimeout(() => overlay.style.display = 'none', 300);
+            }
         }
 
         function openLoginModal() { document.getElementById('loginModal').style.display = 'flex'; }
@@ -658,7 +697,6 @@
                 }
             }
 
-            // 🌟 แก้ปัญหาเมนูทับกัน: แบ่งคลาส auth-admin และ auth-it ให้ทำงานแยกกันชัดเจน
             document.querySelectorAll('.auth-admin').forEach(el => {
                 if (currentRole === 'admin' || currentRole === 'it') {
                     el.style.display = el.tagName.toLowerCase() === 'a' ? 'inline-block' : 'flex';
