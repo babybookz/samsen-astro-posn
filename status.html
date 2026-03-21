@@ -32,18 +32,24 @@
         #topBarRoleText { color: var(--success); }
 
         .navbar { background-color: var(--theme-purple); padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        
+        /* แบ่ง Navbar เป็น 3 ส่วน */
+        .nav-left { flex: 1; display: flex; justify-content: flex-start; }
+        .nav-center { flex: 2; display: flex; justify-content: center; }
+        .nav-right { flex: 1; display: flex; justify-content: flex-end; align-items: center; }
+
         .nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: white;}
         .nav-brand img { height: 45px; width: auto; background: white; padding: 3px; border-radius: 8px;}
         .brand-title { font-weight: 700; font-size: 1.2rem; line-height: 1.1;}
         .brand-sub { font-size: 0.8rem; color: #D1C4E9; line-height: 1.1;}
         
-        .nav-links { display: flex; gap: 22px; align-items: center; flex-wrap: wrap;}
+        .nav-links { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; justify-content: center;}
         .nav-links a { color: white; text-decoration: none; font-weight: 500; font-size: 1rem; transition: color 0.3s; }
         .nav-links a:hover { color: var(--theme-orange); }
 
         .nav-profile { display: none; align-items: center; gap: 12px; background: rgba(255,255,255,0.1); padding: 5px 15px 5px 5px; border-radius: 50px;}
         .profile-avatar { width: 35px; height: 35px; background: var(--success); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; }
-        .profile-info { color: white; font-size: 0.9rem; line-height: 1.2; }
+        .profile-info { color: white; font-size: 0.9rem; line-height: 1.2; text-align: left; }
         .profile-name { font-weight: 600; }
         .profile-role { font-size: 0.75rem; color: #D1C4E9; }
         .btn-logout-icon { background: none; border: none; color: var(--theme-orange); font-size: 1.2rem; cursor: pointer; padding: 5px; transition: 0.3s; margin-left: 5px; display: flex; align-items: center;}
@@ -64,13 +70,6 @@
         .search-box button:hover:not(:disabled) { background: var(--theme-purple-light); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(49, 27, 94, 0.3);}
         .search-box button:disabled { background: var(--text-muted); cursor: not-allowed; box-shadow: none; }
 
-        @media (max-width: 768px) { 
-            .search-box { flex-direction: column; } 
-            .search-box button { width: 100%; } 
-            .navbar { flex-direction: column; gap: 15px; padding: 15px;}
-            .nav-links { justify-content: center; }
-        }
-
         #resultWrapper { display: none; animation: fadeIn 0.5s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
@@ -83,8 +82,7 @@
         
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 25px 20px; margin-bottom: 25px; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-        @media (max-width: 600px) { .grid-2, .grid-3 { grid-template-columns: 1fr; gap: 20px; } }
-
+        
         .data-item { display: flex; flex-direction: column; }
         .label { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;}
         .value { font-size: 1.1rem; font-weight: 600; color: var(--text-dark); }
@@ -98,6 +96,19 @@
         .note-text { color: var(--danger); font-size: 0.95rem; margin-top: 15px; font-weight: 500; background: #FFF5F8; padding: 10px; border-radius: 8px;}
         .score-highlight { font-size: 1.8rem; font-weight: 700; color: var(--theme-orange); }
         .rank-highlight { font-size: 1.5rem; font-weight: 700; color: var(--theme-purple); }
+
+        /* 🌟 Responsive Adjustments */
+        @media (max-width: 992px) {
+            .navbar { flex-direction: column; padding: 15px; gap: 15px; }
+            .nav-left, .nav-center, .nav-right { flex: unset; justify-content: center; width: 100%; }
+        }
+
+        @media (max-width: 768px) { 
+            .search-box { flex-direction: column; } 
+            .search-box button { width: 100%; } 
+            .grid-2, .grid-3 { grid-template-columns: 1fr; gap: 20px; }
+            .card-body { padding: 20px; }
+        }
     </style>
 </head>
 <body>
@@ -108,37 +119,43 @@
     </div>
 
     <nav class="navbar">
-        <a href="home.html" class="nav-brand">
-            <img src="assets/samsen-emblem.png" alt="Samsen Logo">
-            <div>
-                <div class="brand-title">SAMSEN ASTRO</div>
-                <div class="brand-sub">POSN System</div>
-            </div>
-        </a>
-
-        <div class="nav-links">
-            <a href="home.html">หน้าแรก</a>
-            <a href="register.html">สมัครสอบ</a>
-            <a href="status.html" style="color: var(--theme-orange); font-weight: 700;">ตรวจสอบสถานะ</a>
-            <a href="contact.html">ติดต่อเรา</a>
-
-            <a href="dashboard.html" class="auth-admin" style="display: none; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 20px; color: var(--success);">ภาพรวม</a>
-            <a href="manage_applicants.html" class="auth-admin" style="display: none; color: var(--success);">จัดการผู้สมัคร</a>
-            <a href="manage_exam.html" class="auth-admin" style="display: none; color: var(--success);">จัดห้องสอบ</a>
-            <a href="manage_score.html" class="auth-admin" style="display: none; color: var(--success);">บันทึกคะแนน</a>
-            
-            <a href="it.html" class="auth-it" style="display: none; color: var(--success);">ตั้งค่าระบบ</a>
+        <div class="nav-left">
+            <a href="home.html" class="nav-brand">
+                <img src="assets/samsen-emblem.png" alt="Samsen Logo">
+                <div>
+                    <div class="brand-title">SAMSEN ASTRO</div>
+                    <div class="brand-sub">POSN System</div>
+                </div>
+            </a>
         </div>
 
-        <div class="nav-profile" id="profileForm">
-            <div class="profile-avatar" id="userAvatar">A</div>
-            <div class="profile-info">
-                <div class="profile-name" id="displayName">ชื่อผู้ใช้</div>
-                <div class="profile-role" id="displayRole">ตำแหน่ง</div>
+        <div class="nav-center">
+            <div class="nav-links">
+                <a href="home.html">หน้าแรก</a>
+                <a href="register.html">สมัครสอบ</a>
+                <a href="status.html" style="color: var(--theme-orange); font-weight: 700;">ตรวจสอบสถานะ</a>
+                <a href="contact.html">ติดต่อเรา</a>
+
+                <a href="dashboard.html" class="auth-admin" style="display: none; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 20px; color: var(--success);">ภาพรวม</a>
+                <a href="manage_applicants.html" class="auth-admin" style="display: none; color: var(--success);">จัดการผู้สมัคร</a>
+                <a href="manage_exam.html" class="auth-admin" style="display: none; color: var(--success);">จัดห้องสอบ</a>
+                <a href="manage_score.html" class="auth-admin" style="display: none; color: var(--success);">บันทึกคะแนน</a>
+                
+                <a href="it.html" class="auth-it" style="display: none; color: var(--success);">ตั้งค่าระบบ</a>
             </div>
-            <button class="btn-logout-icon" onclick="handleLogout()" title="ออกจากระบบ">
-                <svg viewBox="0 0 24 24" style="width:20px;height:20px;"><path d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z" /></svg>
-            </button>
+        </div>
+
+        <div class="nav-right">
+            <div class="nav-profile" id="profileForm">
+                <div class="profile-avatar" id="userAvatar">A</div>
+                <div class="profile-info">
+                    <div class="profile-name" id="displayName">ชื่อผู้ใช้</div>
+                    <div class="profile-role" id="displayRole">ตำแหน่ง</div>
+                </div>
+                <button class="btn-logout-icon" onclick="handleLogout()" title="ออกจากระบบ">
+                    <svg viewBox="0 0 24 24" style="width:20px;height:20px;"><path d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z" /></svg>
+                </button>
+            </div>
         </div>
     </nav>
 

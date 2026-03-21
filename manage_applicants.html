@@ -103,7 +103,7 @@
         .badge-success { background: #E8F5E9; color: #2E7D32; border: 1px solid #A5D6A7;}
         .badge-danger { background: #FFEBEE; color: #C62828; border: 1px solid #EF9A9A;}
         .exam-id-badge { background: var(--bg-light); color: var(--theme-purple); border: 1px solid var(--border-color); font-family: monospace; font-size: 1.1rem; padding: 6px 12px; border-radius: 8px; font-weight: 700; letter-spacing: 1px;}
-        .approver-name { font-size: 0.85rem; color: var(--text-muted); display: block; margin-top: 5px; }
+        .approver-name { font-size: 0.85rem; color: var(--text-muted); display: block; margin-top: 5px; font-weight: 500;}
 
         .btn-action { padding: 10px 20px; background: var(--theme-orange); color: white; border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: 'Sarabun'; box-shadow: 0 4px 10px rgba(255, 143, 0, 0.2);}
         .btn-action:hover { background: var(--theme-orange-hover); transform: translateY(-2px);}
@@ -121,6 +121,7 @@
         .btn-close-modal:hover { color: var(--danger); }
         
         .modal-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 25px; }
+        @media (max-width: 768px) { .modal-grid { grid-template-columns: 1fr; } }
         
         .info-section { background: var(--bg-light); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); }
         .info-title { font-size: 1.15rem; font-weight: 700; color: var(--theme-purple); margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid var(--theme-orange); padding-bottom: 8px; display: inline-block;}
@@ -143,14 +144,12 @@
         .btn-cancel { flex: 1; padding: 15px; background: white; color: var(--text-muted); border: 1px solid var(--border-color); border-radius: 50px; font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: 0.3s; font-family: 'Sarabun';}
         .btn-cancel:hover { background: var(--bg-light); color: var(--text-dark); }
         
-        /* 🌟 Responsive Adjustments */
         @media (max-width: 768px) {
             .navbar { flex-direction: column; gap: 15px; padding: 15px; }
-            .nav-links { justify-content: center; }
+            .nav-links { justify-content: center; flex-wrap: wrap; }
             .header-title { flex-direction: column; align-items: flex-start; gap: 10px; }
             .controls-row { flex-direction: column; gap: 15px; align-items: flex-start; }
             .search-input { width: 100%; }
-            .modal-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -303,7 +302,8 @@
                         </div>
                         <div style="margin-top: 10px; font-size: 0.85rem; color: var(--text-muted); text-align: right;">
                             ผู้ทำรายการ: <span style="font-weight: bold; color: var(--theme-purple);" id="currentAdminNameDisplay"></span><br>
-                            <span id="approvalTimeDisplay" style="font-size: 0.8rem;"></span> </div>
+                            <span id="approvalTimeDisplay" style="font-size: 0.8rem;"></span> 
+                        </div>
                     </div>
                 </div>
 
@@ -657,10 +657,12 @@
                     document.getElementById('examIdDisplayBox').style.display = 'none'; 
                 }
 
-                // 🌟 เพิ่มการดึงเวลาที่อนุมัติล่าสุด (ถ้าเคยทำรายการแล้ว)
+                // 🌟 เพิ่มการดึงเวลาที่อนุมัติมาโชว์ใน Modal (ถ้าเคยบันทึกแล้วและมันต่อท้ายชื่อมา)
                 let updateTimeText = "สถานะ: ยังไม่ได้ตรวจสอบ";
-                if(app.status !== 'wait' && app.lastUpdate) {
-                    updateTimeText = `(อัปเดตล่าสุด: ${app.lastUpdate})`;
+                if(app.status !== 'wait' && app.approverName && app.approverName.includes('เวลา')) {
+                    // แตกข้อความ "ฝ่ายไอที เวลา : 22/03/2569 11:00 น." ออกมาเอาเฉพาะส่วนเวลามาโชว์ใน Modal
+                    const timePart = app.approverName.split('เวลา :')[1];
+                    updateTimeText = `(อัปเดตล่าสุดเมื่อ: ${timePart ? timePart.trim() : '-'})`;
                 }
                 document.getElementById('approvalTimeDisplay').innerText = updateTimeText;
 
@@ -694,12 +696,12 @@
 
             let app = dbApplicants[appIndex];
             app.status = status; app.note = note;
-            app.approverName = (status === 'wait') ? '' : currentUserName;
             
-            // 🌟 จำลองการเปลี่ยนเวลาฝั่ง Client เพื่อแสดงผลลัพธ์ทันที โดยใช้เวลาปัจจุบัน
+            // 🌟 คำนวณเวลาและจัดรูปแบบ (เช่น: ฝ่ายไอที เวลา : 22/03/2569 10:30 น.)
             const now = new Date();
-            const timeString = now.toLocaleDateString('th-TH', { day:'2-digit', month:'2-digit', year:'numeric'}) + " " + now.toLocaleTimeString('th-TH', {hour: '2-digit', minute: '2-digit'});
-            app.lastUpdate = (status === 'wait') ? '' : timeString; 
+            const timeString = now.toLocaleDateString('th-TH', { day:'2-digit', month:'2-digit', year:'numeric'}) + " " + now.toLocaleTimeString('th-TH', {hour: '2-digit', minute: '2-digit'}) + " น.";
+            
+            app.approverName = (status === 'wait') ? '' : `${currentUserName} เวลา : ${timeString}`;
 
             btn.innerHTML = "กำลังบันทึก... ⏳"; btn.disabled = true;
 
@@ -721,7 +723,7 @@
                     else if (status === 'fail') statusMsgText = 'ไม่อนุมัติ';
                     else statusMsgText = 'รอตรวจสอบ';
                     
-                    alert(`บันทึกข้อมูลสำเร็จ!\\nสถานะ: ${statusMsgText}`);
+                    alert(`บันทึกข้อมูลสำเร็จ!\nสถานะ: ${statusMsgText}`);
                     
                     dbApplicants[appIndex] = app; 
                     applyFilters(); 

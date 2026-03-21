@@ -33,22 +33,44 @@
 
         /* ================= HEADER & NAVIGATION ================= */
         .navbar { background-color: var(--theme-purple); padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        
+        /* แบ่ง Navbar เป็น 3 ส่วน */
+        .nav-left { flex: 1; display: flex; justify-content: flex-start; }
+        .nav-center { flex: 2; display: flex; justify-content: center; }
+        .nav-right { flex: 1; display: flex; justify-content: flex-end; align-items: center; }
+
         .nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: white;}
         .nav-brand img { height: 45px; width: auto; background: white; padding: 3px; border-radius: 8px;}
         .nav-brand div { line-height: 1.1; }
         .brand-title { font-weight: 700; font-size: 1.2rem; }
         .brand-sub { font-size: 0.8rem; color: #D1C4E9; }
 
-        .nav-links { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; justify-content: center;}
+        .nav-links { display: flex; gap: 25px; align-items: center; flex-wrap: wrap; justify-content: center;}
         .nav-links a { color: white; text-decoration: none; font-weight: 500; font-size: 1rem; transition: color 0.3s; }
         .nav-links a:hover { color: var(--theme-orange); }
 
-        .nav-auth .btn-login { background: var(--theme-orange); color: white; padding: 10px 25px; border-radius: 50px; font-weight: 600; font-family: 'Sarabun'; font-size: 1rem; border: none; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(255, 143, 0, 0.3); }
-        .nav-auth .btn-login:hover { background: var(--theme-orange-hover); transform: translateY(-2px); }
+        /* ปุ่มเข้าสู่ระบบแบบซ่อนรูป (ไม่เด่น) */
+        .nav-auth .btn-login { 
+            background: transparent; 
+            border: 1px solid rgba(255, 255, 255, 0.3); 
+            color: #D1C4E9; 
+            padding: 8px 20px; 
+            border-radius: 50px; 
+            font-weight: 500; 
+            font-family: 'Sarabun'; 
+            font-size: 0.95rem; 
+            cursor: pointer; 
+            transition: 0.3s; 
+        }
+        .nav-auth .btn-login:hover { 
+            background: rgba(255, 255, 255, 0.1); 
+            color: white; 
+            border-color: white; 
+        }
         
         .nav-profile { display: none; align-items: center; gap: 12px; background: rgba(255,255,255,0.1); padding: 5px 15px 5px 5px; border-radius: 50px;}
         .profile-avatar { width: 35px; height: 35px; background: var(--success); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; }
-        .profile-info { color: white; font-size: 0.9rem; line-height: 1.2; }
+        .profile-info { color: white; font-size: 0.9rem; line-height: 1.2; text-align: left; }
         .profile-name { font-weight: 600; }
         .profile-role { font-size: 0.75rem; color: #D1C4E9; }
         .btn-logout-icon { background: none; border: none; color: var(--theme-orange); font-size: 1.2rem; cursor: pointer; padding: 5px; transition: 0.3s; margin-left: 5px; display: flex; align-items: center;}
@@ -142,9 +164,10 @@
         /* Footer */
         footer { text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border-color);}
 
-        @media (max-width: 768px) {
+        /* 🌟 Responsive สำหรับ Navbar ให้พับลงมาตรงกลาง */
+        @media (max-width: 992px) {
             .navbar { flex-direction: column; padding: 15px; gap: 15px; }
-            .nav-links { flex-wrap: wrap; justify-content: center; gap: 15px; }
+            .nav-left, .nav-center, .nav-right { flex: unset; justify-content: center; width: 100%; }
             .hero h1 { font-size: 2.2rem; }
             .admin-zone { padding: 20px; }
             .carousel-container { aspect-ratio: auto; height: 300px; }
@@ -159,41 +182,47 @@
     </div>
 
     <nav class="navbar">
-        <a href="home.html" class="nav-brand">
-            <img src="assets/samsen-emblem.png" alt="Samsen Logo">
-            <div>
-                <div class="brand-title">SAMSEN ASTRO</div>
-                <div class="brand-sub">POSN System</div>
-            </div>
-        </a>
-
-        <div class="nav-links">
-            <a href="home.html" style="color: var(--theme-orange); font-weight: 700;">หน้าแรก</a>
-            <a href="register.html">สมัครสอบ</a>
-            <a href="status.html">ตรวจสอบสถานะ</a>
-            <a href="contact.html">ติดต่อเรา</a>
-
-            <a href="dashboard.html" class="auth-admin" style="display: none; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 20px; color: var(--success);">ภาพรวม</a>
-            <a href="manage_applicants.html" class="auth-admin" style="display: none; color: var(--success);">จัดการผู้สมัคร</a>
-            <a href="manage_exam.html" class="auth-admin" style="display: none; color: var(--success);">จัดห้องสอบ</a>
-            <a href="manage_score.html" class="auth-admin" style="display: none; color: var(--success);">บันทึกคะแนน</a>
-            
-            <a href="it.html" class="auth-it" style="display: none; color: var(--success);">ตั้งค่าระบบ</a>
+        <div class="nav-left">
+            <a href="home.html" class="nav-brand">
+                <img src="assets/samsen-emblem.png" alt="Samsen Logo">
+                <div>
+                    <div class="brand-title">SAMSEN ASTRO</div>
+                    <div class="brand-sub">POSN System</div>
+                </div>
+            </a>
         </div>
 
-        <div class="nav-auth" id="loginBtnContainer">
-            <button class="btn-login" onclick="openLoginModal()">เข้าสู่ระบบเจ้าหน้าที่</button>
+        <div class="nav-center">
+            <div class="nav-links">
+                <a href="home.html" style="color: var(--theme-orange); font-weight: 700;">หน้าแรก</a>
+                <a href="register.html">สมัครสอบ</a>
+                <a href="status.html">ตรวจสอบสถานะ</a>
+                <a href="contact.html">ติดต่อเรา</a>
+
+                <a href="dashboard.html" class="auth-admin" style="display: none; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 20px; color: var(--success);">ภาพรวม</a>
+                <a href="manage_applicants.html" class="auth-admin" style="display: none; color: var(--success);">จัดการผู้สมัคร</a>
+                <a href="manage_exam.html" class="auth-admin" style="display: none; color: var(--success);">จัดห้องสอบ</a>
+                <a href="manage_score.html" class="auth-admin" style="display: none; color: var(--success);">บันทึกคะแนน</a>
+                
+                <a href="it.html" class="auth-it" style="display: none; color: var(--success);">ตั้งค่าระบบ</a>
+            </div>
         </div>
 
-        <div class="nav-profile" id="profileForm">
-            <div class="profile-avatar" id="userAvatar">A</div>
-            <div class="profile-info">
-                <div class="profile-name" id="displayName">ชื่อผู้ใช้</div>
-                <div class="profile-role" id="displayRole">ตำแหน่ง</div>
+        <div class="nav-right">
+            <div class="nav-auth" id="loginBtnContainer">
+                <button class="btn-login" onclick="openLoginModal()">เข้าสู่ระบบเจ้าหน้าที่</button>
             </div>
-            <button class="btn-logout-icon" onclick="handleLogout()" title="ออกจากระบบ">
-                <svg viewBox="0 0 24 24" style="width:20px;height:20px;"><path d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z" /></svg>
-            </button>
+
+            <div class="nav-profile" id="profileForm">
+                <div class="profile-avatar" id="userAvatar">A</div>
+                <div class="profile-info">
+                    <div class="profile-name" id="displayName">ชื่อผู้ใช้</div>
+                    <div class="profile-role" id="displayRole">ตำแหน่ง</div>
+                </div>
+                <button class="btn-logout-icon" onclick="handleLogout()" title="ออกจากระบบ">
+                    <svg viewBox="0 0 24 24" style="width:20px;height:20px;"><path d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z" /></svg>
+                </button>
+            </div>
         </div>
     </nav>
 
@@ -362,6 +391,54 @@
                 console.error("Failed to load settings", err);
                 document.getElementById("countdown").innerText = "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้";
             });
+
+            // ==========================================
+            // 🌟 ระบบ Real-time Background Polling 
+            // แอบเช็คสถานะระบบทุกๆ 15 วินาทีโดยไม่ต้องรีเฟรชหน้า
+            // ==========================================
+            setInterval(() => {
+                fetch(GAS_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'getSettings' })
+                })
+                .then(res => res.json())
+                .then(res => {
+                    if (res.status === 'success') {
+                        const currentStatus = res.data.regStatus;
+                        
+                        if (currentStatus === 'closed') {
+                            const ctaBtn = document.getElementById("ctaBtn");
+                            const cardRegister = document.getElementById("cardRegister");
+                            const timerEl = document.getElementById("countdown");
+                            const timerLabel = document.getElementById("countdownLabel");
+
+                            if(timerLabel) timerLabel.style.display = 'none';
+                            if(timerEl) { 
+                                timerEl.innerHTML = "ขณะนี้ระบบปิดรับสมัครแล้ว"; 
+                                timerEl.style.color = "var(--danger)"; 
+                            }
+                            if(ctaBtn && ctaBtn.style.pointerEvents !== "none") {
+                                ctaBtn.style.background = "#A1A5B7"; 
+                                ctaBtn.style.cursor = "not-allowed";
+                                ctaBtn.style.pointerEvents = "none"; 
+                                ctaBtn.style.opacity = "0.6";
+                                ctaBtn.innerHTML = `ปิดรับสมัครแล้ว`;
+                            }
+                            if(cardRegister) { 
+                                cardRegister.style.opacity = "0.6"; 
+                                cardRegister.style.cursor = "not-allowed"; 
+                                cardRegister.style.pointerEvents = "none"; 
+                            }
+
+                            if (window.location.pathname.includes('register.html') || window.location.href.includes('register.html')) {
+                                alert('⚠️ ขณะนี้ระบบได้ปิดรับสมัครแล้ว ทางศูนย์สอบขออภัยในความไม่สะดวก');
+                                window.location.replace('home.html');
+                            }
+                        }
+                    }
+                })
+                .catch(err => console.log("Background check failed (Ignored)"));
+            }, 15000); 
         };
 
         let prImages = [];
@@ -554,7 +631,6 @@
                 }
             }
 
-            // 🌟 แก้ปัญหาเมนูทับกัน: แบ่งคลาส auth-admin และ auth-it ให้ทำงานแยกกันชัดเจน
             document.querySelectorAll('.auth-admin').forEach(el => {
                 if (currentRole === 'admin' || currentRole === 'it') {
                     el.style.display = el.tagName.toLowerCase() === 'a' ? 'inline-block' : 'flex';
